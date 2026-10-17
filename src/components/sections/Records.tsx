@@ -63,7 +63,7 @@ export function EducationSection() {
                       <svg viewBox="0 0 24 24" className="size-4 text-accent" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                         <path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3V5Zm18 0h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7V5Z" />
                       </svg>
-                      Coursework &amp; academic projects
+                      {e.coursework.length ? 'Coursework & academic projects' : 'Academic projects'}
                     </p>
                     <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                       {e.coursework.map((c) => (

@@ -127,7 +127,7 @@ export const education: Education[] = [
     cgpa: { value: '8.27', scale: '10' },
     startYear: '2025',
     graduationYear: '2029',
-    coursework: ['21CSC203P — Advanced Programming Practice'],
+    coursework: [],
     projects: [
       { name: 'Agri-Yield Pro', href: '/work/agri-yield-pro', note: 'Advanced Programming Practice course project · team of three' },
       { name: 'SITTO', href: '/work/sitto', note: 'Built at Tech Horizon 2.0 hackathon · team of four' },
