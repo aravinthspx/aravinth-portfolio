@@ -35,7 +35,9 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
 
   const green = project.accent === 'green'
   const code = project.slug === 'agri-yield-pro' ? 'AGRI_YIELD // PROTOTYPE' : 'SITTO // CAMPUS'
-  const keyFeatures = project.features.filter((f) => f.status === 'documented').slice(0, 3)
+  const implemented = project.features.some((f) => f.status === 'implemented')
+  // Prefer features proven by screenshots, then those documented in the report.
+  const keyFeatures = [...project.features.filter((f) => f.status === 'implemented'), ...project.features.filter((f) => f.status === 'documented')].slice(0, 3)
 
   return (
     <article aria-labelledby={`p-${project.slug}`} style={{ perspective: 1200 }} className="h-full">
@@ -52,7 +54,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
 
         <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
           <span className="font-mono text-[11px] tracking-wider text-muted">{code}</span>
-          <StatusTag status="documented" />
+          <StatusTag status={implemented ? 'implemented' : 'documented'} />
         </div>
 
         <div className="p-3">

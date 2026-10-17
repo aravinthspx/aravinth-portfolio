@@ -1,6 +1,7 @@
 // Project and case-study content. Components render whatever is here.
 //
 // Status labels keep claims honest:
+//   implemented  – visible working in screenshots of the running application
 //   documented   – described as implemented in the project's own report/presentation
 //   planned      – requested or proposed, not confirmed as built
 //   development  – being worked on / concept stage, not in the current build
@@ -12,7 +13,7 @@
 // Draft fields: any field set to null is hidden on the site. Fill it in once confirmed
 // (e.g. your exact role, timeline or test results) and it will appear automatically.
 
-export type Status = 'documented' | 'planned' | 'development' | 'illustrative' | 'screenshot' | 'observed' | 'hypothesis'
+export type Status = 'implemented' | 'documented' | 'planned' | 'development' | 'illustrative' | 'screenshot' | 'observed' | 'hypothesis'
 
 export type Feature = { label: string; status: Status; note?: string }
 
@@ -232,9 +233,14 @@ export const projects: Project[] = [
       'A campus platform exploring how students can find buildings, libraries, laboratories, and suitable spaces through filters and map navigation.',
     accent: 'amber',
     logo: '/images/sitto-logo.webp',
-    journey: ['Explore campus', 'Select building', 'Inspect spaces', 'Check availability'],
-    stack: ['React', 'Vite', 'Tailwind CSS', 'Python', 'Flask', 'Supabase', 'PostgreSQL'],
-    stackNote: 'Stack described in the project presentation.',
+    journey: ['Choose a building', 'Pick a lab or reading hall', 'Select seat, date & duration', 'Get a QR pass', 'Check in with the scanner'],
+    stack: ['React', 'Vite', 'Tailwind CSS', 'Python', 'Flask', 'Supabase', 'PostgreSQL', 'jsQR'],
+    stackNote: 'Stack described in the project presentation; jsQR is shown in the admin scanner.',
+    architecture: [
+      { layer: 'Frontend', detail: 'React · Vite · Tailwind CSS', items: ['Student app: discovery, seat map, bookings, QR pass', 'Admin console: overview, filters, SeatSure verification', 'QR scanner (jsQR) with manual code entry'] },
+      { layer: 'Backend', detail: 'Python · Flask REST APIs', items: ['Reservation management', 'QR validation', 'SeatSure workflow and deadline handling'] },
+      { layer: 'Data & auth', detail: 'Supabase · PostgreSQL', items: ['Profiles and authentication', 'Buildings, floors, spaces and seats', 'Reservations, occupancy sessions, verification tasks, usage records'] },
+    ],
     overview: {
       audience: 'Students looking for a library or lab seat, and administrators who manage those spaces.',
       problem: 'Students walk between buildings searching for a free seat, and administrators lack a central view of availability.',
@@ -261,26 +267,28 @@ export const projects: Project[] = [
       items: [
         { status: 'observed', text: 'During troubleshooting, the search showed an empty-results message when backend data was unavailable — making a failure look like “no spaces”.' },
         { status: 'observed', text: 'A campus import file contains building and floor records; counts in earlier notes did not match it, so no totals are shown here until verified.' },
-        { status: 'documented', text: 'The presentation describes the flow: campus map → building → floor → library or lab → seat, with QR check-in and checkout.' },
+        { status: 'screenshot', text: 'Screenshots of the running app show the student flow end to end — building → lab or reading hall → seat map with date, time and duration → booking → QR pass — plus notifications, an admin console and a QR scanner.' },
+        { status: 'documented', text: 'The presentation describes QR check-in and checkout and the SeatSure midpoint verification flow.' },
       ],
       limitations: [
         'No user research or usability testing results are available.',
-        'Implementation status of each interaction is not confirmed — features below are labelled accordingly.',
-        'Seat values in visuals are sample data, not live availability.',
+        'Seat counts and bookings in the screenshots come from a test environment — they are not usage data.',
+        'The interactive campus-map hotspots are not in the current build and remain planned.',
       ],
     },
     features: [
-      { label: 'Buildings, floors and spaces data model', status: 'documented' },
-      { label: 'Library and laboratory discovery', status: 'documented' },
-      { label: 'Seat-availability information', status: 'documented', note: 'Available · Reserved · Occupied' },
-      { label: 'Reservations with QR check-in and checkout', status: 'documented' },
-      { label: 'SeatSure midpoint verification and admin dashboard', status: 'documented' },
-      { label: 'React/Vite frontend, Flask backend, Supabase database', status: 'documented' },
-      { label: 'Clickable building hotspots on the campus map', status: 'planned' },
-      { label: 'Correct library-to-building mapping', status: 'planned' },
-      { label: 'Navigation from hotspot to building details', status: 'planned' },
+      { label: 'Building → floor → space discovery with block search', status: 'implemented' },
+      { label: 'Library and lab cards with live availability counts', status: 'implemented' },
+      { label: 'Interactive seat map (available · selected · reserved · occupied)', status: 'implemented' },
+      { label: 'Booking by date, start time and 1–3 hour duration', status: 'implemented' },
+      { label: 'Digital QR pass for entrance verification', status: 'implemented' },
+      { label: 'My bookings, notifications and SeatSure prompts', status: 'implemented' },
+      { label: 'Admin console with campus metrics and filters', status: 'implemented' },
+      { label: 'Admin QR scanner with manual reservation-code entry', status: 'implemented' },
+      { label: 'SeatSure midpoint verification workflow', status: 'documented', note: 'Described in the presentation; prompts visible in notifications' },
+      { label: 'Clickable building hotspots on a campus map', status: 'planned' },
       { label: 'Map zoom and pan with accessible controls', status: 'planned' },
-      { label: 'Clear loading, error and empty states', status: 'planned', note: 'Proposed improvement' },
+      { label: 'Clearer loading, error and empty states', status: 'planned', note: 'Proposed improvement' },
     ],
     decisions: [
       {
@@ -303,13 +311,59 @@ export const projects: Project[] = [
       },
     ],
     screens: [
-      { mockup: 'sitto-map', title: 'Campus map with hotspots', caption: 'Interactive concept: select a building hotspot, zoom and pan.', annotations: ['Hotspots are real buttons — Tab and Enter work', 'Zoom controls duplicate pinch and wheel gestures', 'Selected building opens its details'] },
-      { mockup: 'sitto-building', title: 'Building details', caption: 'Floors and spaces inside the selected building.', annotations: ['Libraries and labs grouped by floor', 'Availability summary per space'] },
-      { mockup: 'sitto-seats', title: 'Seat availability', caption: 'Seat map using sample values.', annotations: ['Colour plus text label — never colour alone', 'Sample values, not live data'] },
-      { mockup: 'sitto-states', title: 'Loading, error and empty states', caption: 'Proposed improvement: distinguish “couldn’t load” from “nothing found”.', annotations: ['Error state offers retry', 'Empty state suggests widening filters'] },
+      {
+        image: { src: '/images/sitto/home.webp', small: '/images/sitto/home-800.webp', width: 1600, height: 737, alt: 'SITTO student home: welcome banner with campus availability, and cards for available seats, active reservation, QR pass and notifications' },
+        title: 'Student home',
+        caption: 'A welcome banner with campus availability, then the four things a student checks first: free seats, active reservation, QR pass and notifications.',
+        annotations: ['Primary actions: Find a Seat and My Reservations', 'Active reservation and QR pass one tap away', 'Notification count for SeatSure prompts and reminders'],
+        note: 'Counts and bookings come from a test environment, not real usage.',
+      },
+      {
+        image: { src: '/images/sitto/buildings.webp', small: '/images/sitto/buildings-800.webp', width: 1540, height: 861, alt: 'Find Seats step one: a four-step progress bar and searchable cards for CSE Block, Main Library and Old Library Block' },
+        title: 'Step 1 — choose a building',
+        caption: 'A four-step flow (space, seat, time, pass) starts with searchable campus buildings.',
+        annotations: ['Progress bar shows all four steps up front', 'Search blocks by name', 'Each building opens its floors and labs'],
+      },
+      {
+        image: { src: '/images/sitto/spaces.webp', small: '/images/sitto/spaces-800.webp', width: 1540, height: 787, alt: 'Cards for labs and reading halls showing building, floor, live availability bars and a View Seats and Reserve button' },
+        title: 'Labs and reading halls',
+        caption: 'Each space shows its building and floor, free seats and a clear next action.',
+        annotations: ['Type label: lab or library', 'Availability as a number and a bar', 'One primary button per card'],
+      },
+      {
+        image: { src: '/images/sitto/seat-map.webp', small: '/images/sitto/seat-map-800.webp', width: 1540, height: 786, alt: 'Seat map of the Quiet Reading Zone with a legend, alongside a booking summary for date, start time and duration' },
+        title: 'Seat map and booking summary',
+        caption: 'Pick a seat on the room map, then a date, start time and 1–3 hour duration.',
+        annotations: ['Legend uses colour plus labels and counts', 'Room orientation: whiteboard at the front, entrance at the rear', 'Past time slots are disabled'],
+      },
+      {
+        image: { src: '/images/sitto/qr-pass.webp', small: '/images/sitto/qr-pass-800.webp', width: 585, height: 783, alt: 'Digital pass for seat S24 in the Quiet Reading Zone with a QR code and reservation reference' },
+        title: 'Digital QR pass',
+        caption: 'The confirmed seat as a pass: room, assigned seat, QR code and a copyable reference.',
+        annotations: ['Large seat number readable at a glance', 'QR for the entrance scanner', 'Reference code as a manual fallback'],
+      },
+      {
+        image: { src: '/images/sitto/bookings.webp', small: '/images/sitto/bookings-800.webp', width: 1030, height: 680, alt: 'My Bookings cards with session times and Open QR Pass buttons, and booking confirmation notifications' },
+        title: 'Bookings and notifications',
+        caption: 'Active bookings with their session and pass, and SeatSure prompts and confirmations.',
+        annotations: ['Status badge on every booking', 'Open QR Pass from the list', 'Notifications link to a response action'],
+      },
+      {
+        image: { src: '/images/sitto/admin.webp', small: '/images/sitto/admin-800.webp', width: 1600, height: 738, alt: 'Admin console overview with filters, seat status metrics, daily review chart, building occupancy and live activity feed' },
+        title: 'Admin console',
+        caption: 'Campus-wide seat metrics, filters by building, floor, room type and status, and a live activity feed.',
+        annotations: ['Total, occupied, reserved, available and unverified seats', 'Filters to narrow to one building or room type', 'Shown here with no seats configured — the empty state reads clearly'],
+      },
+      {
+        image: { src: '/images/sitto/scanner.webp', small: '/images/sitto/scanner-800.webp', width: 610, height: 830, alt: 'Admin QR scanner with an Activate Camera button and a manual reservation-code entry field' },
+        title: 'Admin QR scanner',
+        caption: 'Camera scanning for entrance passes, with manual code entry when a camera isn’t available.',
+        annotations: ['Camera starts only when activated', 'Manual entry accepts a reservation code or QR token'],
+      },
+      { mockup: 'sitto-map', title: 'Planned: campus map with hotspots', caption: 'Concept for the next step — choose a building from a map instead of a list.', annotations: ['Hotspots are real buttons — Tab and Enter work', 'Zoom controls duplicate pinch and wheel gestures'] },
     ],
     outcomes: [
-      { status: 'documented', text: 'A defined student journey from campus map to seat, with reservation, QR check-in and SeatSure verification flows.' },
+      { status: 'implemented', text: 'A working student journey from building to seat, booking and QR pass, plus an admin console and QR scanner.' },
       { status: 'observed', text: 'Identified that missing backend data was presented as an empty search, prompting the proposed state-handling design.' },
       { status: 'hypothesis', text: 'Map-first navigation with clear hotspots may reduce time spent locating a suitable space. Not yet measured.' },
     ],
@@ -321,7 +375,7 @@ export const projects: Project[] = [
         'Map interactions need keyboard and touch equivalents from the start.',
       ],
       next: [
-        'Implement and verify clickable hotspots with correct library-to-building mapping.',
+        'Add the campus map with clickable building hotspots and correct library-to-building mapping.',
         'Ship explicit loading, error and empty states.',
         'Verify building, floor and space counts against the live database.',
         'Run short usability sessions with students before adding more spaces.',
@@ -333,6 +387,7 @@ export const projects: Project[] = [
 export const getProject = (slug: string | undefined) => projects.find((p) => p.slug === slug)
 
 export const statusLabel: Record<Status, string> = {
+  implemented: 'Implemented',
   documented: 'Documented',
   planned: 'Planned',
   development: 'In development',
