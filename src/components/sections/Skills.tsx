@@ -65,18 +65,74 @@ function SkillCard({ group, index }: { group: SkillGroup; index: number }) {
   )
 }
 
+/** Monospace topology view: each group as a branch, each skill as a leaf with its evidence. */
+function SkillTree() {
+  return (
+    <Reveal className="panel mx-auto max-w-4xl overflow-x-auto rounded-3xl p-6 font-mono text-[13px] leading-7 sm:p-8">
+      <p className="text-accent">aravinth/skills</p>
+      <ul>
+        {skillGroups.map((g, gi) => {
+          const lastG = gi === skillGroups.length - 1
+          return (
+            <li key={g.id}>
+              <span className="text-muted">{lastG ? '└── ' : '├── '}</span>
+              <span className="font-semibold text-leaf">{g.title}/</span>
+              <ul>
+                {g.skills.map((s, si) => (
+                  <li key={s.name} className="whitespace-nowrap">
+                    <span className="text-muted">{lastG ? '    ' : '│   '}{si === g.skills.length - 1 ? '└── ' : '├── '}</span>
+                    <span className="text-cream">{s.name}</span>
+                    <span className="text-muted">  # {s.evidence}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          )
+        })}
+      </ul>
+    </Reveal>
+  )
+}
+
 export function SkillsSection() {
+  const [view, setView] = useState<'cards' | 'tree'>('cards')
   return (
     <section id="skills" aria-labelledby="skills-title" className="relative py-24 md:py-32">
       <div className="container-x">
         <Heading pill="Technical toolkit" title="Skills" id="skills-title">
           Tools I’ve actually used in projects, courses and this site — each linked to where it was used. No made-up percentages.
         </Heading>
-        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {skillGroups.map((g, i) => (
-            <SkillCard key={g.id} group={g} index={i} />
-          ))}
-        </ul>
+        <div role="group" aria-label="Skills view" className="mb-8 flex justify-center">
+          <div className="relative inline-flex rounded-full border border-line bg-ink/70 p-1 text-sm">
+            {(['cards', 'tree'] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => setView(v)}
+                className={`relative rounded-full px-4 py-1.5 font-medium transition-colors cursor-pointer ${view === v ? 'text-ink' : 'text-cream-2 hover:text-cream'}`}
+              >
+                {view === v && <motion.span layoutId="skills-view" className="absolute inset-0 rounded-full bg-accent" transition={spring} aria-hidden="true" />}
+                <span className="relative">{v === 'cards' ? 'Cards' : 'Tree'}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {view === 'cards' ? (
+          <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {skillGroups.map((g, i) => (
+              <SkillCard key={g.id} group={g} index={i} />
+            ))}
+          </ul>
+        ) : (
+          <SkillTree />
+        )}
+        <p className="mx-auto mt-8 flex max-w-3xl items-start gap-3 rounded-2xl border border-leaf/25 bg-leaf/5 px-5 py-4 text-sm leading-relaxed text-cream-2">
+          <span className="mt-0.5 text-leaf" aria-hidden="true">✓</span>
+          <span>
+            <span className="font-semibold text-cream">Truthfulness note:</span> I’m a student, so these are tools I’ve used, not claims of mastery. Every skill points to the project, course or simulation where it was applied — there are no ratings or percentages on purpose.
+          </span>
+        </p>
       </div>
     </section>
   )

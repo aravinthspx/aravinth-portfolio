@@ -18,6 +18,8 @@ npm run lint
 | --- | --- |
 | Name, headline, intro, email, social links, location, portrait | `src/content/profile.ts` → `profile` |
 | About text and the four About cards | `src/content/profile.ts` → `about` |
+| Hero facts strip and the "Where I’m heading" goals | `src/content/profile.ts` → `facts`, `direction` |
+| Live GitHub repositories (Projects section) | Automatic — read from `profile.links.github` via GitHub’s public API, cached per browser session. Shows an honest empty state until public repos exist. |
 | **Resume PDF** | Put it in `public/` (e.g. `public/resume.pdf`) and set `resumeUrl: '/resume.pdf'` in `profile.ts`. While `null`, download buttons are hidden and the Contact section offers "Request my resume" by email. |
 | **Contact form delivery** | `src/content/profile.ts` → `contactForm.endpoint`. `null` = the form opens the visitor's email app with the message pre-filled. Paste a public form-service URL (e.g. Formspree) to send directly. Never put private keys here. |
 | Skills (no percentages; each has `evidence`) | `src/content/skills.ts` |

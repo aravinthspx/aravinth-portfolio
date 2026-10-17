@@ -7,6 +7,7 @@ import { hasWebGL, useFinePointer } from '../lib/hooks'
 import { useMotionPref, spring } from '../lib/motion'
 import { ArrowIcon, StatusTag } from './ui'
 import { ProjectLinks } from './ProjectLinks'
+import { ArchitectureView, QuickView, ViewToggle } from './ProjectExtras'
 
 /** Floating project panel: status header, 3D diorama, key facts and a case-study link. */
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
@@ -21,6 +22,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const glare = useTransform(glareX, (x) => `radial-gradient(500px circle at ${x} 0%, rgba(79,217,234,0.10), transparent 50%)`)
   const tiltOn = fine && !reduced
   const [webgl] = useState(hasWebGL)
+  const [view, setView] = useState<'ui' | 'arch'>('ui')
 
   const onMove = (e: React.PointerEvent) => {
     if (!tiltOn || !ref.current) return
@@ -54,14 +56,23 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
 
         <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
           <span className="font-mono text-[11px] tracking-wider text-muted">{code}</span>
-          <StatusTag status={implemented ? 'implemented' : 'documented'} />
+          <span className="flex items-center gap-2">
+            {project.architecture && <ViewToggle view={view} onChange={setView} name={project.slug} label={project.name} />}
+            <StatusTag status={implemented ? 'implemented' : 'documented'} />
+          </span>
         </div>
 
         <div className="p-3">
-          <ProjectVisual slug={project.slug} />
+          {view === 'arch' && project.architecture ? <ArchitectureView project={project} /> : <ProjectVisual slug={project.slug} />}
           <p className="mt-2 px-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-            {green ? 'Abstract farmland' : 'Abstract campus'}
-            {webgl && <span className="hidden lg:inline"> — {green ? 'hover, then click a tree' : 'hover or click a building'}</span>}
+            {view === 'arch' ? (
+              'System architecture · from the project documentation'
+            ) : (
+              <>
+                {green ? 'Abstract farmland' : 'Abstract campus'}
+                {webgl && <span className="hidden lg:inline"> — {green ? 'hover, then click a tree' : 'hover or click a building'}</span>}
+              </>
+            )}
           </p>
         </div>
 
@@ -102,15 +113,18 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             <ProjectLinks links={project.links} name={project.name} compact />
           </div>
 
-          <motion.div className="mt-auto pt-6" whileHover={{ x: 4 }} whileTap={{ scale: 0.96 }} transition={spring}>
-            <Link
+          <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
+            <motion.span className="inline-flex" whileHover={{ x: 4 }} whileTap={{ scale: 0.96 }} transition={spring}>
+              <Link
               to={`/work/${project.slug}`}
               className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-ink ${green ? 'bg-leaf shadow-[0_0_24px_-6px_rgba(159,220,116,0.8)] hover:bg-leaf-2' : 'bg-accent shadow-[0_0_24px_-6px_rgba(79,217,234,0.8)] hover:bg-accent-2'}`}
             >
               Inspect case study <span className="sr-only">: {project.name}</span>
               <ArrowIcon />
             </Link>
-          </motion.div>
+            </motion.span>
+            <QuickView project={project} />
+          </div>
         </div>
       </motion.div>
     </article>

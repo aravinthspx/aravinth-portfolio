@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { projects, type Project } from '../../content/projects'
 import { Heading } from '../Heading'
 import { ProjectCard } from '../ProjectCard'
+import { ReposStrip } from './Repos'
 import { spring } from '../../lib/motion'
 
 type Filter = 'All' | Project['filters'][number]
@@ -43,12 +44,13 @@ export function ProjectsSection() {
           })}
         </div>
 
-        <motion.ul layout className="grid gap-8 lg:grid-cols-2">
+        <motion.ul layout className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <AnimatePresence mode="popLayout">
             {shown.map((p) => (
               <motion.li
                 key={p.slug}
                 layout
+                className="min-w-0"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -62,6 +64,7 @@ export function ProjectsSection() {
         <p className="mt-8 text-center text-sm text-muted" aria-live="polite">
           Showing {shown.length} of {projects.length} projects{filter !== 'All' ? ` · ${filter}` : ''}. More projects will be added here as they’re completed.
         </p>
+        <ReposStrip />
       </div>
     </section>
   )

@@ -11,6 +11,7 @@ import { ProjectsSection } from '../components/sections/Projects'
 import { HackathonsSection } from '../components/sections/Hackathons'
 import { CertificatesSection } from '../components/sections/Certificates'
 import { ContactSection } from '../components/sections/Contact'
+import { DirectionSection } from '../components/sections/Direction'
 import { EducationSection, ExperienceSection, AchievementsSection, BlogSection } from '../components/sections/Records'
 import { ButtonLink, IconLink, GitHubIcon, LinkedInIcon, ArrowIcon } from '../components/ui'
 
@@ -140,6 +141,7 @@ export default function Home() {
       <HackathonsSection />
       <CertificatesSection />
       <JourneySection />
+      <DirectionSection />
       <ExperienceSection />
       <AchievementsSection />
       <EducationSection />

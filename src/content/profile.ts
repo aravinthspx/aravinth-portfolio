@@ -78,10 +78,27 @@ export const contactForm = {
 // Quick facts shown under the hero. Source: Agri-Yield Pro report title page and certificates.
 export const facts = [
   { label: 'Institution', value: 'SRM IST Ramapuram' },
-  { label: 'Programme', value: 'B.Tech CSE (AI & ML)' },
+  { label: 'Academic CGPA', value: '8.27 / 10' },
   { label: 'Recent work', value: 'Agri-Yield Pro · SITTO' },
-  { label: 'Certificates', value: '4 completed' },
+  { label: 'Home base', value: 'Chennai, India' },
 ]
+
+/** "Where I'm heading" section — your own goals, in your own words. */
+export const direction = {
+  shortTerm: {
+    label: 'Next 12 months',
+    title: 'Evaluate models properly',
+    quote: 'Train and evaluate models on real, held-out data — and ship backends that are production-ready.',
+    detail: 'Moving from synthetic demos to measured results, deeper ML tooling and proper access control.',
+  },
+  vision: {
+    label: 'Career direction',
+    title: 'Machine learning engineer',
+    quote: 'Build intelligent applications that solve real-world problems.',
+    detail: 'Working where machine learning meets full-stack development — models people can actually use.',
+  },
+  conviction: 'I learn best by building real, working systems — every prototype is a step toward engineering intelligent software properly.',
+}
 
 export const interests = [
   {

@@ -82,7 +82,7 @@ export type Milestone = {
   when: string // shown as-is; undated items say so rather than guessing
   title: string
   body: string
-  kind: 'Project' | 'Certificate' | 'Job simulation' | 'Hackathon' | 'Now'
+  kind: 'Project' | 'Certificate' | 'Job simulation' | 'Hackathon' | 'Now' | 'Next'
   href?: string
 }
 
@@ -118,5 +118,17 @@ export const journey: Milestone[] = [
     title: 'Designing this portfolio',
     body: 'Turning the two projects into honest case studies, with interactive 3D and motion that respects reduced-motion settings.',
     kind: 'Now',
+  },
+  {
+    when: 'Up next',
+    title: 'Evaluate on real data',
+    body: 'Retrain and evaluate the Agri-Yield Pro models on verified, held-out agricultural data and report measured error.',
+    kind: 'Next',
+  },
+  {
+    when: 'Up next',
+    title: 'SITTO campus map',
+    body: 'Add the interactive campus map with clickable building hotspots and correct library-to-building mapping.',
+    kind: 'Next',
   },
 ]
