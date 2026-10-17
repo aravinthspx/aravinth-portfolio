@@ -85,14 +85,14 @@ export function AboutSection() {
   ]
 
   return (
-    <section ref={sectionRef} id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-32">
+    <section ref={sectionRef} id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-36">
       {/* soft band of light behind the whole section */}
       <div className="pointer-events-none absolute inset-x-0 top-1/2 h-[70%] -translate-y-1/2 bg-[radial-gradient(60%_60%_at_25%_50%,rgba(79,217,234,0.08),transparent_70%)]" aria-hidden="true" />
 
-      <div className="container-x relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
-        {/* ---------- Portrait stage ---------- */}
+      <div className="container-x relative">
+        {/* ---------- Portrait stage: a large background layer behind the text ---------- */}
         {p && (
-          <div className="relative mx-auto h-[440px] w-full max-w-[520px] sm:h-[540px] lg:h-[660px]">
+          <div className="pointer-events-none absolute left-1/2 top-0 h-[34rem] w-full max-w-[40rem] -translate-x-1/2 sm:h-[40rem] lg:-bottom-36 lg:-top-28 lg:left-[10%] lg:h-auto lg:w-[62%] lg:max-w-none lg:translate-x-0">
             {/* faint grid floor */}
             <div
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(79,217,234,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(79,217,234,0.07)_1px,transparent_1px)] bg-[size:36px_36px]"
@@ -100,12 +100,12 @@ export function AboutSection() {
               aria-hidden="true"
             />
             {/* oversized outline word */}
-            <p className="outline-text pointer-events-none absolute bottom-[14%] left-1/2 -translate-x-1/2 select-none font-display text-[6.5rem] font-bold leading-none tracking-tight sm:text-[8rem]" aria-hidden="true">
+            <p className="outline-text pointer-events-none absolute bottom-[14%] left-1/2 -translate-x-1/2 select-none font-display text-[7rem] font-bold leading-none tracking-tight sm:text-[9rem] lg:text-[12rem]" aria-hidden="true">
               BUILD
             </p>
             {/* rim light and orbit rings around the head */}
-            <div className="pointer-events-none absolute left-1/2 top-[-8%] size-[22rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(79,217,234,0.35),rgba(159,220,116,0.08)_55%,transparent)] blur-2xl sm:size-[26rem]" aria-hidden="true" />
-            <div className="pointer-events-none absolute left-1/2 top-[-10%] size-[19rem] -translate-x-[46%] sm:size-[23rem]" aria-hidden="true">
+            <div className="pointer-events-none absolute left-1/2 top-[-6%] aspect-square w-[80%] max-w-[42rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(79,217,234,0.35),rgba(159,220,116,0.08)_55%,transparent)] blur-2xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute left-1/2 top-[-6%] aspect-square w-[66%] max-w-[36rem] -translate-x-[46%]" aria-hidden="true">
               <div className="orbit-slow absolute inset-0 rounded-full border border-accent/25">
                 <span className="absolute left-1/2 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(79,217,234,1)]" />
               </div>
@@ -116,7 +116,7 @@ export function AboutSection() {
               <img
                 src={p.src}
                 srcSet={p.srcSet}
-                sizes="(min-width: 1024px) 560px, 80vw"
+                sizes="(min-width: 1024px) 801px, 90vw"
                 width={p.width}
                 height={p.height}
                 alt={p.alt}
@@ -131,25 +131,25 @@ export function AboutSection() {
               />
             </JumpingPortrait>
 
-            <Chip className="left-0 top-[18%] sm:-left-4" delay={0.1}>
+            <Chip className="left-0 top-[18%] sm:left-[4%]" delay={0.1}>
               <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
               SRM IST Ramapuram
             </Chip>
-            <Chip className="right-0 top-[38%] sm:-right-2" delay={0.25}>
+            <Chip className="right-0 top-[38%] sm:right-[6%] lg:right-[18%]" delay={0.25}>
               <span className="text-accent">◆</span> CSE · AI &amp; ML
             </Chip>
-            <Chip className="bottom-[26%] left-2 sm:-left-2" delay={0.4}>
+            <Chip className="bottom-[26%] left-2 sm:left-[6%]" delay={0.4}>
               <span className="text-accent">{String(projects.length).padStart(2, '0')}</span> team prototypes
             </Chip>
-            <Chip className="bottom-[12%] right-2" delay={0.55}>
+            <Chip className="bottom-[12%] right-2 sm:right-[8%] lg:right-[22%]" delay={0.55}>
               <span className="text-leaf">{String(certificates.length).padStart(2, '0')}</span> certificates
             </Chip>
           </div>
         )}
 
-        {/* ---------- Content ---------- */}
-        <div>
-          <Reveal>
+        {/* ---------- Content (sits over the portrait) ---------- */}
+        <div className="relative z-10 pt-[24rem] sm:pt-[30rem] lg:ml-auto lg:w-[50%] lg:pt-0">
+          <Reveal className="rounded-3xl border border-white/[0.06] bg-ink/55 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md sm:p-8">
             <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
               <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" aria-hidden="true" />
               Profile &amp; perspective
