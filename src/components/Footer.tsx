@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { gmailUrl } from '../lib/email'
 import { profile } from '../content/profile'
 import { navSections } from '../lib/sections'
 import { useMotionPref, spring } from '../lib/motion'
@@ -27,7 +28,7 @@ export function Footer() {
             {[
               { href: profile.links.github, label: 'GitHub profile (opens in new tab)', icon: <GitHubIcon className="size-4" /> },
               { href: profile.links.linkedin, label: 'LinkedIn profile (opens in new tab)', icon: <LinkedInIcon className="size-4" /> },
-              { href: `mailto:${profile.email}`, label: `Email ${profile.email}`, icon: <MailIcon className="size-4" /> },
+              { href: gmailUrl(), label: `Email ${profile.email} in Gmail (opens in new tab)`, icon: <MailIcon className="size-4" /> },
             ].map((l) => (
               <a
                 key={l.href}

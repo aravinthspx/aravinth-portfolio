@@ -3,10 +3,11 @@ import { motion } from 'motion/react'
 import { profile, contactForm } from '../../content/profile'
 import { CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ExternalIcon } from '../ui'
 import { spring } from '../../lib/motion'
+import { gmailUrl, mailtoUrl } from '../../lib/email'
 
 type Fields = { name: string; email: string; subject: string; message: string; website: string }
 type Errors = Partial<Record<keyof Fields, string>>
-type Status = { kind: 'idle' } | { kind: 'sending' } | { kind: 'sent'; via: 'service' | 'mailto' } | { kind: 'error'; message: string }
+type Status = { kind: 'idle' } | { kind: 'sending' } | { kind: 'sent'; via: 'service' | 'gmail' | 'mailto' } | { kind: 'error'; message: string }
 
 const EMPTY: Fields = { name: '', email: '', subject: '', message: '', website: '' }
 
@@ -21,7 +22,8 @@ function validate(f: Fields): Errors {
 
 /**
  * Contact form. With `contactForm.endpoint` set (e.g. a Formspree URL) it POSTs JSON to that
- * service. Without one it opens the visitor's email app with the message pre-filled — and says
+ * service. Without one it opens Gmail (or, as a fallback, the visitor's email app) with the
+ * message pre-filled — and says
  * so, rather than pretending a message was sent. A hidden "website" field traps simple bots.
  */
 function ContactForm() {
@@ -36,21 +38,29 @@ function ContactForm() {
     if (errors[k]) setErrors((p) => ({ ...p, [k]: undefined }))
   }
 
+  /** Validates; on failure moves focus to the first invalid field and returns false. */
+  const check = (form: HTMLFormElement) => {
+    const errs = validate(f)
+    setErrors(errs)
+    if (!Object.keys(errs).length) return true
+    requestAnimationFrame(() => form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus())
+    return false
+  }
+  const body = () => `${f.message.trim()}\n\n— ${f.name.trim()} (${f.email.trim()})`
+
+  const openMailApp = (form: HTMLFormElement | null) => {
+    if (!form || f.website || !check(form)) return
+    window.location.href = mailtoUrl(f.subject.trim(), body())
+    setStatus({ kind: 'sent', via: 'mailto' })
+  }
+
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (f.website) return // honeypot filled: silently ignore bots
-    const errs = validate(f)
-    setErrors(errs)
-    if (Object.keys(errs).length) {
-      // Move focus to the first invalid field once React has rendered the error state.
-      const form = e.currentTarget
-      requestAnimationFrame(() => form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus())
-      return
-    }
+    if (!check(e.currentTarget)) return
     if (!endpoint) {
-      const body = `${f.message.trim()}\n\n— ${f.name.trim()} (${f.email.trim()})`
-      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(f.subject.trim())}&body=${encodeURIComponent(body)}`
-      setStatus({ kind: 'sent', via: 'mailto' })
+      window.open(gmailUrl(f.subject.trim(), body()), '_blank', 'noopener')
+      setStatus({ kind: 'sent', via: 'gmail' })
       return
     }
     setStatus({ kind: 'sending' })
@@ -124,20 +134,34 @@ function ContactForm() {
             'Send message'
           ) : (
             <>
-              Open in my email app <ExternalIcon className="size-4" />
+              Send via Gmail <ExternalIcon className="size-4" />
             </>
           )}
         </motion.button>
-        <p id={`${id}-note`} className="text-xs text-muted">
-          {endpoint ? 'Sent securely through the form service.' : 'This opens your email app with the message ready — nothing is sent until you press send there.'}
-        </p>
+        {!endpoint && (
+          <button
+            type="button"
+            onClick={(e) => openMailApp(e.currentTarget.form)}
+            className="text-sm text-cream-2 underline decoration-line underline-offset-4 transition-colors hover:text-cream hover:decoration-accent cursor-pointer"
+          >
+            Use another email app
+          </button>
+        )}
       </div>
+      <p id={`${id}-note`} className="mt-3 text-xs text-muted">
+        {endpoint ? 'Sent securely through the form service.' : 'Opens Gmail in a new tab with your message ready — nothing is sent until you press Send there.'}
+      </p>
 
       <div role="status" aria-live="polite" className="mt-4 text-sm">
         {status.kind === 'sent' && status.via === 'service' && <p className="rounded-xl border border-ok/30 bg-ok/10 px-4 py-3 text-ok">Thanks — your message was sent. I’ll reply by email.</p>}
+        {status.kind === 'sent' && status.via === 'gmail' && (
+          <p className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-cream-2">
+            Gmail should now be open in a new tab with your message filled in — press Send there. Not using Gmail? <button type="button" className="text-accent underline cursor-pointer" onClick={(e) => openMailApp(e.currentTarget.closest('form'))}>Use another email app</button> or copy my address: {profile.email}
+          </p>
+        )}
         {status.kind === 'sent' && status.via === 'mailto' && (
           <p className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-cream-2">
-            Your email app should now be open with the message filled in. If nothing opened, email <a className="text-accent underline" href={`mailto:${profile.email}`}>{profile.email}</a> directly.
+            Your email app should now be open with the message filled in. If nothing opened, <a className="text-accent underline" href={gmailUrl()} target="_blank" rel="noreferrer">write in Gmail</a> or email {profile.email} directly.
           </p>
         )}
         {status.kind === 'error' && <p className="rounded-xl border border-bad/30 bg-bad/10 px-4 py-3 text-bad">{status.message}</p>}
@@ -174,7 +198,7 @@ function ResumeCard() {
       ) : (
         <p className="mt-4 text-sm leading-relaxed text-cream-2">
           My resume is being finalised. Email me and I’ll send the latest version directly.
-          <a href={`mailto:${profile.email}?subject=${encodeURIComponent('Resume request')}`} className="mt-3 flex items-center gap-1.5 font-semibold text-leaf hover:text-leaf-2">
+          <a href={gmailUrl('Resume request')} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-1.5 font-semibold text-leaf hover:text-leaf-2">
             Request my resume →
           </a>
         </p>
@@ -198,7 +222,7 @@ export function ContactSection() {
             <p className="mt-5 max-w-md text-lg leading-relaxed text-cream-2">
               Open to internships, collaborations and hackathon teams in AI/ML and full-stack development. I usually reply by email.
             </p>
-            <a href={`mailto:${profile.email}`} className="group mt-8 inline-flex max-w-full items-center gap-3 break-all font-display text-lg font-semibold text-cream sm:text-xl">
+            <a href={gmailUrl()} target="_blank" rel="noreferrer" className="group mt-8 inline-flex max-w-full items-center gap-3 break-all font-display text-lg font-semibold text-cream sm:text-xl">
               <MailIcon className="size-6 shrink-0 text-accent" />
               <span className="underline decoration-line decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent">{profile.email}</span>
             </a>
@@ -207,7 +231,7 @@ export function ContactSection() {
               <CopyEmail />
             </div>
             <div className="mt-6 flex items-center gap-3">
-              <IconLink href={`mailto:${profile.email}`} label="Send an email">
+              <IconLink href={gmailUrl()} label="Email me in Gmail (opens in new tab)">
                 <MailIcon />
               </IconLink>
               <IconLink href={profile.links.linkedin} label="LinkedIn profile (opens in new tab)">
