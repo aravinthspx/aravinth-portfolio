@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 import { motion } from 'motion/react'
 import { profile, facts } from '../content/profile'
 import { projects } from '../content/projects'
@@ -8,6 +8,7 @@ import { CertificateCard } from '../components/CertificateCard'
 import { FocusCards } from '../components/FocusCards'
 import { Terminal } from '../components/Terminal'
 import { Journey } from '../components/Journey'
+import { HeroStage, Tilt3D } from '../components/HeroStage'
 import { ButtonLink, CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ArrowIcon } from '../components/ui'
 
 /** Centred section heading: glowing pill eyebrow, big title, accent bar. */
@@ -29,18 +30,14 @@ function Heading({ pill, title, id, children }: { pill: string; title: ReactNode
 
 function Hero() {
   const words = profile.headline.split(' ')
+  const [live, setLive] = useState(false)
   return (
     <section aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
-      {/* slow orbit rings behind the name */}
-      <div className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2" aria-hidden="true">
-        <div className="orbit-slow relative size-[44rem] max-w-[160vw] rounded-full border border-accent/10">
-          <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(79,217,234,0.9)]" />
-        </div>
-        <div className="absolute inset-[18%] rounded-full border border-leaf/10" />
-        <div className="glow-accent absolute inset-[25%] rounded-full blur-2xl" />
-      </div>
+      {/* Interactive 3D layer: particle globe with orbiting project moons */}
+      <HeroStage onLive={setLive} />
 
-      <div className="container-x relative text-center">
+      {/* Text sits above the 3D layer; it lets pointer events through except on real controls. */}
+      <div className="container-x pointer-events-none relative text-center [text-shadow:0_2px_16px_rgba(6,10,19,0.95)]">
         <motion.div className="flex flex-wrap items-center justify-center gap-2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <span className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2/70 px-3 py-1.5 font-mono text-[11px] text-cream-2 backdrop-blur">
             <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
@@ -54,9 +51,10 @@ function Hero() {
         <motion.p className="mt-8 font-mono text-xs uppercase tracking-[0.35em] text-muted" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
           Portfolio &amp; work
         </motion.p>
+        <Tilt3D className="mt-4">
         <motion.h1
           id="hero-title"
-          className="mt-4 whitespace-nowrap font-display text-[clamp(2.4rem,11.5vw,8.5rem)] font-extrabold leading-[0.95] tracking-tight"
+          className="whitespace-nowrap font-display [text-shadow:none] text-[clamp(2.2rem,10vw,8.5rem)] font-extrabold leading-[0.95] tracking-tight"
           initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.2, 0.8, 0.2, 1] }}
@@ -64,6 +62,7 @@ function Hero() {
           <span className="bg-gradient-to-r from-accent-2 via-accent to-leaf bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(79,217,234,0.25)]">{profile.shortName}</span>{' '}
           <span className="text-cream">M</span>
         </motion.h1>
+        </Tilt3D>
         <motion.p className="mt-4 font-mono text-xs uppercase tracking-[0.25em] text-cream-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
           AI/ML student · product builder
         </motion.p>
@@ -91,7 +90,7 @@ function Hero() {
           {profile.intro}
         </motion.p>
 
-        <motion.div className="mt-9 flex flex-wrap items-center justify-center gap-3" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+        <motion.div className="pointer-events-auto mt-9 flex flex-wrap items-center justify-center gap-3" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
           <ButtonLink to="#work" variant="accent">
             Explore my work <ArrowIcon />
           </ButtonLink>
@@ -105,6 +104,12 @@ function Hero() {
             <LinkedInIcon />
           </IconLink>
         </motion.div>
+
+        {live && (
+          <motion.p className="mt-6 hidden font-mono text-[11px] uppercase tracking-[0.2em] text-muted md:block" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+            Drag the globe · hover the orbiting projects · click to open
+          </motion.p>
+        )}
 
         <motion.dl
           className="panel mx-auto mt-14 grid max-w-4xl grid-cols-2 overflow-hidden rounded-2xl text-left md:grid-cols-4"
