@@ -4,7 +4,8 @@ import { useMotionPref } from '../lib/motion'
 import { profile, facts } from '../content/profile'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
-import { HeroStage, Tilt3D } from '../components/HeroStage'
+import { Tilt3D } from '../components/HeroStage'
+import { NeuralPanel } from '../components/NeuralPanel'
 import { AboutSection } from '../components/AboutSection'
 import { Heading } from '../components/Heading'
 import { SkillsSection } from '../components/sections/Skills'
@@ -46,22 +47,10 @@ function RoleRotator() {
   )
 }
 
-// Keyboard/touch-friendly mirror of the three orbiting objects in the 3D scene.
-const orbitLegend = [
-  { label: 'Agri-Yield Pro', to: '/work/agri-yield-pro', dot: 'bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]' },
-  { label: 'SITTO', to: '/work/sitto', dot: 'bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]' },
-  { label: 'Certificates', to: '#certificates', dot: 'bg-warm shadow-[0_0_8px_rgba(229,180,95,0.9)]' },
-]
-
-function Corner({ className }: { className: string }) {
-  return <span className={`pointer-events-none absolute size-5 border-accent/60 ${className}`} aria-hidden="true" />
-}
-
 const ease = [0.2, 0.8, 0.2, 1] as const
 const rise = (delay: number) => ({ initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay, ease } })
 
 function Hero() {
-  const [live, setLive] = useState(false)
   return (
     <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
       <div className="glow-accent pointer-events-none absolute -left-40 top-1/4 size-[32rem] rounded-full opacity-60 blur-3xl" aria-hidden="true" />
@@ -119,40 +108,14 @@ function Hero() {
           </motion.div>
         </div>
 
-        {/* Right: the 3D orbit, framed like an instrument panel */}
+        {/* Right: interactive network from tools to work */}
         <motion.div
           className="relative mx-auto w-full max-w-[34rem]"
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.2, ease }}
         >
-          <div className="relative aspect-square overflow-hidden rounded-[2rem] border border-line bg-[radial-gradient(70%_70%_at_50%_50%,rgba(79,217,234,0.09),rgba(6,10,19,0.2)_70%)]">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(79,217,234,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(79,217,234,0.04)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(circle,black_40%,transparent_75%)]" aria-hidden="true" />
-            <HeroStage framed onLive={setLive} />
-            <Corner className="left-4 top-4 rounded-tl-lg border-l border-t" />
-            <Corner className="right-4 top-4 rounded-tr-lg border-r border-t" />
-            <Corner className="bottom-4 left-4 rounded-bl-lg border-b border-l" />
-            <Corner className="bottom-4 right-4 rounded-br-lg border-b border-r" />
-            <p className="pointer-events-none absolute left-8 top-7 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-              <span className="text-accent">●</span> Orbit view
-            </p>
-            <p className="pointer-events-none absolute right-8 top-7 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{live ? 'Live · 3D' : 'Loading'}</p>
-            {live && (
-              <p className="pointer-events-none absolute inset-x-0 bottom-7 hidden text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted md:block">
-                Drag · hover · click a moon
-              </p>
-            )}
-          </div>
-          <ul className="mt-4 flex flex-wrap justify-center gap-2" aria-label="Orbiting projects">
-            {orbitLegend.map((o) => (
-              <li key={o.label}>
-                <ButtonLink to={o.to} variant="ghost" className="!px-3.5 !py-1.5 !text-xs">
-                  <span className={`size-2 rounded-full ${o.dot}`} aria-hidden="true" />
-                  {o.label}
-                </ButtonLink>
-              </li>
-            ))}
-          </ul>
+          <NeuralPanel />
         </motion.div>
       </div>
 
