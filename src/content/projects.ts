@@ -37,6 +37,8 @@ export type Project = {
   name: string
   fullName?: string
   categories?: string[]
+  featured?: boolean
+  filters: ('AI/ML' | 'Web Development' | 'Full Stack')[] // used by the Projects filter chips
   links: ProjectLinks
   architecture?: ArchitectureLayer[]
   caseTitle: string
@@ -71,6 +73,8 @@ export const projects: Project[] = [
     slug: 'agri-yield-pro',
     name: 'Agri-Yield Pro',
     fullName: 'AI-Powered Crop Yield Prediction & Optimization System',
+    featured: true,
+    filters: ['AI/ML', 'Full Stack', 'Web Development'],
     categories: ['Artificial Intelligence', 'Machine Learning', 'Full-Stack Development', 'Smart Agriculture'],
     // ▼ Paste your real URLs here (keep null to show "Coming soon")
     links: { liveDemo: null, github: null, video: null },
@@ -219,6 +223,7 @@ export const projects: Project[] = [
   {
     slug: 'sitto',
     name: 'SITTO',
+    filters: ['Full Stack', 'Web Development'],
     // ▼ Paste your real URLs here (keep null to show "Coming soon")
     links: { liveDemo: null, github: null, video: null },
     caseTitle: 'Helping students find campus spaces through interactive navigation',

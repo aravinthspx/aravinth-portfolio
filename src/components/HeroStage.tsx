@@ -36,7 +36,7 @@ export function HeroStage({ onLive }: { onLive?: (live: boolean) => void }) {
     () => [
       { id: 'agri', label: 'Agri-Yield Pro', sub: 'Case study · click to open', onSelect: () => navigate('/work/agri-yield-pro') },
       { id: 'sitto', label: 'SITTO', sub: 'Case study · click to open', onSelect: () => navigate('/work/sitto') },
-      { id: 'learning', label: 'Certificates', sub: '4 completed · click to view', onSelect: () => document.getElementById('learning')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) },
+      { id: 'learning', label: 'Certificates', sub: '4 completed · click to view', onSelect: () => document.getElementById('certificates')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) },
     ],
     [navigate, reduced],
   )

@@ -6,9 +6,10 @@ import { useMotionPref, spring } from '../lib/motion'
 import { GitHubIcon, LinkedInIcon } from './ui'
 
 const links = [
-  { hash: '#work', label: 'Work' },
+  { hash: '#projects', label: 'Projects' },
   { hash: '#about', label: 'About' },
-  { hash: '#learning', label: 'Learning' },
+  { hash: '#skills', label: 'Skills' },
+  { hash: '#certificates', label: 'Certificates' },
   { hash: '#contact', label: 'Contact' },
 ]
 

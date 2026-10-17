@@ -1,38 +1,22 @@
-import { Fragment, useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { motion } from 'motion/react'
 import { profile, facts } from '../content/profile'
-import { projects } from '../content/projects'
-import { certificates } from '../content/certificates'
-import { ProjectCard } from '../components/ProjectCard'
-import { CertificateCard } from '../components/CertificateCard'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
 import { HeroStage, Tilt3D } from '../components/HeroStage'
 import { AboutSection } from '../components/AboutSection'
+import { Heading } from '../components/Heading'
+import { SkillsSection } from '../components/sections/Skills'
+import { ProjectsSection } from '../components/sections/Projects'
+import { HackathonsSection } from '../components/sections/Hackathons'
+import { CertificatesSection } from '../components/sections/Certificates'
+import { EducationSection, ExperienceSection, AchievementsSection, BlogSection } from '../components/sections/Records'
 import { ButtonLink, CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ArrowIcon } from '../components/ui'
 
-/** Centred section heading: glowing pill eyebrow, big title, accent bar. */
-function Heading({ pill, title, id, children }: { pill: string; title: ReactNode; id: string; children?: ReactNode }) {
-  return (
-    <Reveal className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
-      <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-        <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" aria-hidden="true" />
-        {pill}
-      </p>
-      <h2 id={id} className="mt-5 font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl md:text-5xl">
-        {title}
-      </h2>
-      <span className="mx-auto mt-5 block h-1 w-16 rounded-full bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
-      {children && <div className="mt-5 text-lg leading-relaxed text-cream-2">{children}</div>}
-    </Reveal>
-  )
-}
-
 function Hero() {
-  const words = profile.headline.split(' ')
   const [live, setLive] = useState(false)
   return (
-    <section aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
+    <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
       {/* Interactive 3D layer: particle globe with orbiting project moons */}
       <HeroStage onLive={setLive} />
 
@@ -64,39 +48,28 @@ function Hero() {
         </motion.h1>
         </Tilt3D>
         <motion.p className="mt-4 font-mono text-xs uppercase tracking-[0.25em] text-cream-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
-          AI/ML student · product builder
+          Machine learning · full-stack development
         </motion.p>
 
-        <p className="mx-auto mt-8 max-w-3xl font-display text-xl font-medium leading-snug text-cream sm:text-2xl" aria-label={`“${profile.headline}”`}>
-          <span aria-hidden="true">
-            “
-            {words.map((w, i) => (
-              <Fragment key={i}>
-                <motion.span
-                  className={`inline-block ${w.startsWith('interactive') ? 'text-accent' : ''}`}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.45 + i * 0.05 }}
-                >
-                  {w}
-                </motion.span>
-                {i < words.length - 1 && ' '}
-              </Fragment>
-            ))}
-            ”
-          </span>
-        </p>
+        <motion.p className="mx-auto mt-8 max-w-3xl font-display text-xl font-medium leading-snug text-cream sm:text-2xl" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+          {profile.title}
+        </motion.p>
         <motion.p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-cream-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           {profile.intro}
         </motion.p>
 
         <motion.div className="pointer-events-auto mt-9 flex flex-wrap items-center justify-center gap-3" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-          <ButtonLink to="#work" variant="accent">
-            Explore my work <ArrowIcon />
+          <ButtonLink to="#projects" variant="accent">
+            View Projects <ArrowIcon />
           </ButtonLink>
           <ButtonLink to="#contact" variant="ghost">
-            Get in touch
+            Contact Me
           </ButtonLink>
+          {profile.resumeUrl && (
+            <ButtonLink to={profile.resumeUrl} variant="ghost">
+              Download Resume
+            </ButtonLink>
+          )}
           <IconLink href={profile.links.github} label="GitHub profile (opens in new tab)">
             <GitHubIcon />
           </IconLink>
@@ -142,25 +115,6 @@ function Focus() {
   )
 }
 
-function Work() {
-  return (
-    <section id="work" aria-labelledby="work-title" className="relative py-24 md:py-32">
-      <div className="container-x">
-        <Heading pill="Projects showcase" title="Selected work" id="work-title">
-          Team prototypes where I explored how data, interfaces and backend services come together.
-        </Heading>
-        <ul className="grid gap-8 lg:grid-cols-2">
-          {projects.map((p, i) => (
-            <Reveal as="li" key={p.slug} delay={0.08 * i}>
-              <ProjectCard project={p} index={i} />
-            </Reveal>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )
-}
-
 function JourneySection() {
   return (
     <section id="journey" aria-labelledby="journey-title" className="relative py-24 md:py-32">
@@ -169,25 +123,6 @@ function JourneySection() {
           Each star is a project or a completed programme. Undated project milestones say so.
         </Heading>
         <Journey />
-      </div>
-    </section>
-  )
-}
-
-function Learning() {
-  return (
-    <section id="learning" aria-labelledby="learning-title" className="relative py-24 md:py-32">
-      <div className="container-x">
-        <Heading pill="Certifications & applied learning" title="Short courses & job simulations" id="learning-title">
-          Job simulations are practical task-based programmes — not employment or internships.
-        </Heading>
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {certificates.map((c, i) => (
-            <Reveal as="li" key={c.id} delay={0.06 * i}>
-              <CertificateCard cert={c} />
-            </Reveal>
-          ))}
-        </ul>
       </div>
     </section>
   )
@@ -235,9 +170,15 @@ export default function Home() {
       <Hero />
       <AboutSection />
       <Focus />
-      <Work />
+      <SkillsSection />
+      <ProjectsSection />
+      <HackathonsSection />
+      <CertificatesSection />
       <JourneySection />
-      <Learning />
+      <ExperienceSection />
+      <AchievementsSection />
+      <EducationSection />
+      <BlogSection />
       <Contact />
     </>
   )

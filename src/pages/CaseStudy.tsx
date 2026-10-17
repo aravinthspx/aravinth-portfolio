@@ -77,7 +77,7 @@ export default function CaseStudy() {
       <header className="container-x relative">
         <div className={`pointer-events-none absolute -top-20 right-0 size-[30rem] rounded-full blur-3xl ${green ? 'glow-warm' : 'glow-accent'}`} aria-hidden="true" />
         <nav aria-label="Breadcrumb" className="relative mb-8 text-sm text-muted">
-          <Link to={{ pathname: '/', hash: '#work' }} className="hover:text-cream">← All work</Link>
+          <Link to={{ pathname: '/', hash: '#projects' }} className="hover:text-cream">← All projects</Link>
         </nav>
         <motion.p className="eyebrow relative" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           Case study · {p.name}

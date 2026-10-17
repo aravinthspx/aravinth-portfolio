@@ -32,12 +32,16 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
         <p className="mt-1 font-mono text-xs text-muted">
           Completed <time dateTime={cert.completed}>{formatDate(cert.completed)}</time>
         </p>
-        {cert.topics && (
-          <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Topics">
-            {cert.topics.map((t) => (
-              <li key={t} className="rounded-full bg-ink-3 px-2.5 py-1 text-[11px] text-cream-2">{t}</li>
-            ))}
-          </ul>
+        <p className="mt-3 text-sm leading-relaxed text-cream-2">{cert.description}</p>
+        <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Related skills">
+          {cert.skills.map((t) => (
+            <li key={t} className="rounded-full bg-ink-3 px-2.5 py-1 text-[11px] text-cream-2">{t}</li>
+          ))}
+        </ul>
+        {cert.credentialId && (
+          <p className="mt-4 break-all font-mono text-[10px] text-muted">
+            Credential ID · <span className="text-cream-2">{cert.credentialId}</span>
+          </p>
         )}
         <div className="mt-auto flex flex-wrap gap-2 pt-5">
           {cert.file && (
