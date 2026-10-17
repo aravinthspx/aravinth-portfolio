@@ -54,7 +54,7 @@ export default function CaseStudy() {
 
   const Hero = mockups[p.screens[0].mockup]
   const next = projects[(projects.indexOf(p) + 1) % projects.length]
-  const violet = p.accent === 'violet'
+  const green = p.accent === 'green'
   const o = p.overview
   const facts: [string, string | null][] = [
     ['Project type', p.type],
@@ -69,7 +69,7 @@ export default function CaseStudy() {
     <article className="pt-24 md:pt-32">
       {/* Intro + final experience shown early */}
       <header className="container-x relative">
-        <div className={`pointer-events-none absolute -top-20 right-0 size-[30rem] rounded-full blur-3xl ${violet ? 'glow-violet' : 'glow-cyan'}`} aria-hidden="true" />
+        <div className={`pointer-events-none absolute -top-20 right-0 size-[30rem] rounded-full blur-3xl ${green ? 'glow-accent' : 'glow-warm'}`} aria-hidden="true" />
         <nav aria-label="Breadcrumb" className="relative mb-8 text-sm text-muted">
           <Link to={{ pathname: '/', hash: '#work' }} className="hover:text-cream">← All work</Link>
         </nav>
@@ -88,7 +88,7 @@ export default function CaseStudy() {
           {p.summary}
         </motion.p>
         <motion.div
-          className={`relative mt-12 rounded-[2rem] border border-line p-4 sm:p-8 ${violet ? 'bg-[linear-gradient(140deg,#2a1b52_0%,#18161d_70%)]' : 'bg-[linear-gradient(140deg,#0d3440_0%,#18161d_70%)]'}`}
+          className={`relative mt-12 rounded-[2rem] border border-line p-4 sm:p-8 ${green ? 'bg-[linear-gradient(160deg,#1f241b_0%,#151513_70%)]' : 'bg-[linear-gradient(160deg,#28221a_0%,#151513_70%)]'}`}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
@@ -106,7 +106,7 @@ export default function CaseStudy() {
             <ul className="space-y-1 border-l border-line">
               {sections.map(([id, label]) => (
                 <li key={id}>
-                  <a href={`#${id}`} className="-ml-px block border-l border-transparent py-1.5 pl-4 text-sm text-muted hover:border-violet-2 hover:text-cream">
+                  <a href={`#${id}`} className="-ml-px block border-l border-transparent py-1.5 pl-4 text-sm text-muted hover:border-accent-2 hover:text-cream">
                     {label}
                   </a>
                 </li>
@@ -134,7 +134,7 @@ export default function CaseStudy() {
                 <h3 className="font-display text-lg font-semibold">Constraints</h3>
                 <ul className="mt-3 space-y-2 text-cream-2">
                   {o.constraints.map((c) => (
-                    <li key={c} className="flex gap-3"><span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-violet-2" aria-hidden="true" />{c}</li>
+                    <li key={c} className="flex gap-3"><span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent-2" aria-hidden="true" />{c}</li>
                   ))}
                 </ul>
               </div>
@@ -143,7 +143,7 @@ export default function CaseStudy() {
                 <ol className="mt-3 space-y-2">
                   {p.journey.map((j, i) => (
                     <li key={j} className="flex items-center gap-3 text-cream-2">
-                      <span className={`grid size-7 shrink-0 place-items-center rounded-full font-mono text-xs ${violet ? 'bg-violet/20 text-violet-2' : 'bg-cyan/15 text-cyan'}`}>{i + 1}</span>
+                      <span className={`grid size-7 shrink-0 place-items-center rounded-full font-mono text-xs ${green ? 'bg-accent/20 text-accent-2' : 'bg-warm/15 text-warm'}`}>{i + 1}</span>
                       {j}
                     </li>
                   ))}
@@ -194,7 +194,7 @@ export default function CaseStudy() {
             <ol className="space-y-6">
               {p.decisions.map((d, i) => (
                 <Reveal as="li" key={d.title} delay={0.05 * i} className="rounded-3xl border border-line bg-ink-2/60 p-6 md:p-8">
-                  <p className="font-mono text-xs text-violet-2">Decision {i + 1}</p>
+                  <p className="font-mono text-xs text-accent-2">Decision {i + 1}</p>
                   <h3 className="mt-2 font-display text-2xl font-bold">{d.title}</h3>
                   <dl className="mt-5 grid gap-5 md:grid-cols-3">
                     <div><dt className="font-mono text-[11px] uppercase tracking-wider text-ok">Chosen</dt><dd className="mt-1.5 text-cream-2">{d.chosen}</dd></div>
@@ -239,7 +239,7 @@ export default function CaseStudy() {
                       <ol className="mt-5 space-y-3">
                         {s.annotations.map((a, j) => (
                           <li key={a} className="flex gap-3 text-sm text-cream-2">
-                            <span className={`grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] ${violet ? 'bg-violet text-white' : 'bg-cyan text-ink'}`}>{j + 1}</span>
+                            <span className={`grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] ${green ? 'bg-accent text-ink' : 'bg-warm text-ink'}`}>{j + 1}</span>
                             {a}
                           </li>
                         ))}
@@ -266,13 +266,13 @@ export default function CaseStudy() {
               <div className="rounded-3xl border border-line bg-ink-2/60 p-6">
                 <h3 className="font-display text-xl font-bold">What I learned</h3>
                 <ul className="mt-4 space-y-3 text-cream-2">
-                  {p.reflection.learned.map((l) => <li key={l} className="flex gap-3"><span className="text-violet-2" aria-hidden="true">✦</span>{l}</li>)}
+                  {p.reflection.learned.map((l) => <li key={l} className="flex gap-3"><span className="text-accent-2" aria-hidden="true">✦</span>{l}</li>)}
                 </ul>
               </div>
               <div className="rounded-3xl border border-line bg-ink-2/60 p-6">
                 <h3 className="font-display text-xl font-bold">Next steps</h3>
                 <ul className="mt-4 space-y-3 text-cream-2">
-                  {p.reflection.next.map((l) => <li key={l} className="flex gap-3"><span className="text-cyan" aria-hidden="true">→</span>{l}</li>)}
+                  {p.reflection.next.map((l) => <li key={l} className="flex gap-3"><span className="text-warm" aria-hidden="true">→</span>{l}</li>)}
                 </ul>
               </div>
             </div>
@@ -284,10 +284,10 @@ export default function CaseStudy() {
         <Link to={`/work/${next.slug}`} className="group container-x flex flex-col gap-4 py-16 md:flex-row md:items-end md:justify-between md:py-24">
           <span>
             <span className="eyebrow">Next case study</span>
-            <span className="mt-4 block font-display text-5xl font-extrabold tracking-tight transition-colors group-hover:text-violet-2 md:text-7xl">{next.name}</span>
+            <span className="mt-4 block font-display text-5xl font-extrabold tracking-tight transition-colors group-hover:text-accent-2 md:text-7xl">{next.name}</span>
             <span className="mt-2 block text-cream-2">{next.caseTitle}</span>
           </span>
-          <span className="grid size-16 shrink-0 place-items-center rounded-full border border-line transition-all group-hover:translate-x-2 group-hover:border-violet-2 group-hover:bg-violet group-hover:text-white">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full border border-line transition-all group-hover:translate-x-2 group-hover:border-accent-2 group-hover:bg-accent group-hover:text-ink">
             <ArrowIcon className="size-6" />
           </span>
         </Link>

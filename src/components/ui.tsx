@@ -38,9 +38,9 @@ export const ExternalIcon = ({ className = 'size-4' }: IconProps) => (
 const btnBase =
   'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide select-none cursor-pointer'
 const variants = {
-  primary: 'bg-cream text-ink shadow-[0_10px_40px_-10px_rgba(139,92,246,0.7)] hover:bg-white',
-  ghost: 'border border-line text-cream hover:border-violet-2 hover:text-white bg-ink-2/60 backdrop-blur',
-  violet: 'bg-violet text-white shadow-[0_10px_40px_-12px_rgba(139,92,246,0.9)] hover:bg-violet-2',
+  primary: 'bg-cream text-ink shadow-[0_12px_40px_-14px_rgba(242,239,232,0.45)] hover:bg-white',
+  ghost: 'border border-line text-cream hover:border-accent-2 hover:text-white bg-ink-2/60 backdrop-blur',
+  accent: 'bg-accent text-ink shadow-[0_12px_40px_-14px_rgba(185,215,122,0.6)] hover:bg-accent-2',
 }
 type Variant = keyof typeof variants
 const press = { whileHover: { y: -2, scale: 1.03 }, whileTap: { scale: 0.95, y: 0 }, transition: spring }
@@ -80,7 +80,7 @@ export function IconLink({ href, label, children }: { href: string; label: strin
       aria-label={label}
       title={label}
       {...(ext ? { target: '_blank', rel: 'noreferrer' } : {})}
-      className="grid size-11 place-items-center rounded-full border border-line text-cream-2 hover:text-white hover:border-violet-2"
+      className="grid size-11 place-items-center rounded-full border border-line text-cream-2 hover:text-white hover:border-accent-2"
       whileHover={{ y: -3, rotate: -6 }}
       whileTap={{ scale: 0.9 }}
       transition={spring}
@@ -110,8 +110,8 @@ export function Reveal({ children, delay = 0, className = '', as = 'div' }: { ch
 const statusStyle: Record<Status, string> = {
   documented: 'text-ok border-ok/30 bg-ok/10',
   planned: 'text-warn border-warn/30 bg-warn/10',
-  illustrative: 'text-violet-2 border-violet/40 bg-violet/10',
-  observed: 'text-cyan border-cyan/30 bg-cyan/10',
+  illustrative: 'text-accent-2 border-accent/40 bg-accent/10',
+  observed: 'text-warm border-warm/30 bg-warm/10',
   hypothesis: 'text-cream-2 border-line bg-ink-3',
 }
 export function StatusTag({ status, className = '' }: { status: Status; className?: string }) {

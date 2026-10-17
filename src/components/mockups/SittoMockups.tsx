@@ -20,10 +20,10 @@ export function SittoMap({ compact }: { compact?: boolean }) {
   const current = buildings.find((b) => b.id === sel)
 
   return (
-    <MockFrame title="sitto / campus map — concept" tone="cyan" compact={compact}>
+    <MockFrame title="sitto / campus map — concept" tone="warm" compact={compact}>
       <div className="grid gap-3 md:grid-cols-[1fr_12rem]">
         <div
-          className="relative aspect-[4/3] touch-none overflow-hidden rounded-xl bg-[radial-gradient(circle_at_30%_20%,rgba(34,211,238,0.12),transparent_60%),#121117]"
+          className="relative aspect-[4/3] touch-none overflow-hidden rounded-xl bg-[radial-gradient(circle_at_30%_20%,rgba(217,169,91,0.10),transparent_60%),#121210]"
           onPointerDown={(e) => {
             if ((e.target as HTMLElement).closest('button')) return
             drag.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y }
@@ -38,7 +38,7 @@ export function SittoMap({ compact }: { compact?: boolean }) {
           <div className="absolute inset-0 origin-center transition-transform duration-200" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden="true">
               <path d="M0 50 H100 M45 0 V100" stroke="rgba(244,239,230,0.08)" strokeWidth="3" />
-              <circle cx="45" cy="50" r="6" fill="rgba(52,211,153,0.15)" />
+              <circle cx="45" cy="50" r="6" fill="rgba(185,215,122,0.15)" />
             </svg>
             {buildings.map((b) => (
               <button
@@ -46,12 +46,12 @@ export function SittoMap({ compact }: { compact?: boolean }) {
                 type="button"
                 onClick={() => setSel(b.id)}
                 aria-pressed={sel === b.id}
-                className={`absolute rounded-lg border text-[9px] font-semibold leading-tight transition-colors cursor-pointer sm:text-[10px] ${sel === b.id ? 'border-cyan bg-cyan/25 text-white' : 'border-white/15 bg-white/[0.06] text-cream-2 hover:border-cyan/60 hover:bg-cyan/10'}`}
+                className={`absolute rounded-lg border text-[9px] font-semibold leading-tight transition-colors cursor-pointer sm:text-[10px] ${sel === b.id ? 'border-warm bg-warm/25 text-cream' : 'border-white/15 bg-white/[0.06] text-cream-2 hover:border-warm/60 hover:bg-warm/10'}`}
                 style={{ left: `${b.x}%`, top: `${b.y}%`, width: `${b.w}%`, height: `${b.h}%` }}
               >
                 <span className="absolute -right-1.5 -top-1.5 flex size-3" aria-hidden="true">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-cyan opacity-60" />
-                  <span className="relative inline-flex size-3 rounded-full bg-cyan" />
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-warm opacity-60" />
+                  <span className="relative inline-flex size-3 rounded-full bg-warm" />
                 </span>
                 {b.name}
               </button>
@@ -63,7 +63,7 @@ export function SittoMap({ compact }: { compact?: boolean }) {
               ['−', 'Zoom out', () => setZoom((z) => clampZoom(z - 0.25))],
               ['⟲', 'Reset view', () => { setZoom(1); setPan({ x: 0, y: 0 }) }],
             ].map(([s, l, fn]) => (
-              <button key={l as string} type="button" onClick={fn as () => void} aria-label={l as string} className="grid size-8 place-items-center rounded-lg border border-white/15 bg-ink/80 text-sm text-cream hover:border-cyan cursor-pointer">
+              <button key={l as string} type="button" onClick={fn as () => void} aria-label={l as string} className="grid size-8 place-items-center rounded-lg border border-white/15 bg-ink/80 text-sm text-cream hover:border-warm cursor-pointer">
                 {s as string}
               </button>
             ))}
@@ -75,7 +75,7 @@ export function SittoMap({ compact }: { compact?: boolean }) {
               ['↓', 'Pan down', 0, -30],
               ['→', 'Pan right', -30, 0],
             ].map(([s, l, dx, dy]) => (
-              <button key={l as string} type="button" onClick={() => nudge(dx as number, dy as number)} aria-label={l as string} className="grid size-7 place-items-center rounded-md border border-white/15 bg-ink/80 text-xs text-cream hover:border-cyan cursor-pointer">
+              <button key={l as string} type="button" onClick={() => nudge(dx as number, dy as number)} aria-label={l as string} className="grid size-7 place-items-center rounded-md border border-white/15 bg-ink/80 text-xs text-cream hover:border-warm cursor-pointer">
                 {s as string}
               </button>
             ))}
@@ -89,7 +89,7 @@ export function SittoMap({ compact }: { compact?: boolean }) {
                 <p className="mt-1 text-sm font-semibold text-cream">{current.name}</p>
                 <p className="mt-1 text-xs text-cream-2">{current.spaces}</p>
                 <p className={`mt-3 text-xs ${current.free ? 'text-ok' : 'text-bad'}`}>{current.free ? `${current.free} seats free` : 'No seats free'} <span className="text-muted">(sample)</span></p>
-                <p className="mt-3 text-xs text-cyan">View building details →</p>
+                <p className="mt-3 text-xs text-warm">View building details →</p>
               </>
             ) : (
               <p className="mt-1 text-xs text-cream-2">Select a building hotspot, or Tab to one and press Enter.</p>
@@ -108,7 +108,7 @@ export function SittoBuilding() {
     { f: 'Ground', items: [['Periodicals', 'Library', 0, 0]] },
   ] as const
   return (
-    <MockFrame title="sitto / building details" tone="cyan">
+    <MockFrame title="sitto / building details" tone="warm">
       <div className="mb-3 flex items-center justify-between">
         <p className="font-display text-lg font-semibold text-cream">Library Block</p>
         <DemoBadge>Sample values</DemoBadge>
@@ -137,7 +137,7 @@ export function SittoSeats() {
   const style = { A: 'bg-ok/25 border-ok/50 text-ok', R: 'bg-warn/20 border-warn/50 text-warn', O: 'bg-bad/20 border-bad/50 text-bad' } as const
   const name = { A: 'Available', R: 'Reserved', O: 'Occupied' } as const
   return (
-    <MockFrame title="sitto / reading hall seats" tone="cyan">
+    <MockFrame title="sitto / reading hall seats" tone="warm">
       <div className="mb-3 flex flex-wrap items-center gap-3 text-[11px] text-cream-2">
         {(['A', 'R', 'O'] as const).map((k) => (
           <span key={k} className="inline-flex items-center gap-1.5"><span className={`size-2.5 rounded-sm border ${style[k]}`} />{name[k]}</span>
@@ -162,10 +162,10 @@ export function SittoSeats() {
 export function SittoStates() {
   const [s, setS] = useState<'loading' | 'error' | 'empty'>('error')
   return (
-    <MockFrame title="sitto / search states — proposed" tone="cyan">
+    <MockFrame title="sitto / search states — proposed" tone="warm">
       <div role="tablist" aria-label="Interface state" className="mb-3 inline-flex rounded-full border border-white/10 p-0.5">
         {(['loading', 'error', 'empty'] as const).map((k) => (
-          <button key={k} role="tab" type="button" aria-selected={s === k} onClick={() => setS(k)} className={`rounded-full px-3 py-1 text-[11px] capitalize cursor-pointer ${s === k ? 'bg-cyan/20 text-cream' : 'text-cream-2 hover:text-cream'}`}>
+          <button key={k} role="tab" type="button" aria-selected={s === k} onClick={() => setS(k)} className={`rounded-full px-3 py-1 text-[11px] capitalize cursor-pointer ${s === k ? 'bg-warm/20 text-cream' : 'text-cream-2 hover:text-cream'}`}>
             {k}
           </button>
         ))}
@@ -182,7 +182,7 @@ export function SittoStates() {
           <div className="text-center">
             <p className="text-sm font-semibold text-cream">Couldn’t load campus spaces</p>
             <p className="mx-auto mt-1 max-w-xs text-xs text-cream-2">This is a connection problem, not an empty campus. Your filters are kept.</p>
-            <span className="mt-3 inline-block rounded-full bg-cyan px-4 py-1.5 text-xs font-semibold text-ink">Try again</span>
+            <span className="mt-3 inline-block rounded-full bg-warm px-4 py-1.5 text-xs font-semibold text-ink">Try again</span>
           </div>
         )}
         {s === 'empty' && (

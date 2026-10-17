@@ -1,13 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 import type { Project } from '../content/projects'
-import { mockups } from './mockups'
-import { useFinePointer } from '../lib/hooks'
+import { ProjectVisual } from './ProjectVisual'
+import { hasWebGL, useFinePointer } from '../lib/hooks'
 import { useMotionPref, spring } from '../lib/motion'
 import { ArrowIcon } from './ui'
-
-const previewKey: Record<string, string> = { 'agri-yield-pro': 'agri-dashboard', sitto: 'sitto-map' }
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
   const fine = useFinePointer()
@@ -18,8 +16,9 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const srx = useSpring(rx, { stiffness: 200, damping: 20 })
   const sry = useSpring(ry, { stiffness: 200, damping: 20 })
   const glareX = useTransform(sry, [-6, 6], ['20%', '80%'])
-  const glare = useTransform(glareX, (x) => `radial-gradient(600px circle at ${x} 0%, rgba(255,255,255,0.08), transparent 50%)`)
+  const glare = useTransform(glareX, (x) => `radial-gradient(600px circle at ${x} 0%, rgba(255,255,255,0.06), transparent 50%)`)
   const tiltOn = fine && !reduced
+  const [webgl] = useState(hasWebGL)
 
   const onMove = (e: React.PointerEvent) => {
     if (!tiltOn || !ref.current) return
@@ -34,8 +33,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
     ry.set(0)
   }
 
-  const Preview = mockups[previewKey[project.slug]]
-  const violet = project.accent === 'violet'
+  const green = project.accent === 'green'
   const flip = index % 2 === 1
 
   return (
@@ -47,9 +45,8 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             onPointerMove={onMove}
             onPointerLeave={reset}
             style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
-            className={`relative overflow-hidden rounded-[2rem] border border-line p-5 sm:p-8 ${violet ? 'bg-[linear-gradient(140deg,#2a1b52_0%,#18161d_60%)]' : 'bg-[linear-gradient(140deg,#0d3440_0%,#18161d_60%)]'}`}
+            className="relative overflow-hidden rounded-[2rem] border border-line bg-ink-2/80 p-3 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)] sm:p-4"
           >
-            <div className={`absolute -right-20 -top-20 size-72 rounded-full blur-3xl ${violet ? 'bg-violet/30' : 'bg-cyan/20'}`} aria-hidden="true" />
             {tiltOn && (
               <motion.div
                 aria-hidden="true"
@@ -57,9 +54,11 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
                 style={{ background: glare }}
               />
             )}
-            <div inert aria-hidden="true" className="relative" style={{ transform: 'translateZ(40px)' }}>
-              <Preview compact />
-            </div>
+            <ProjectVisual slug={project.slug} />
+            <p className="mt-3 px-2 pb-1 font-mono text-[11px] uppercase tracking-wider text-muted">
+              {green ? 'Abstract farmland' : 'Abstract campus'}
+              {webgl && <span className="hidden lg:inline"> — {green ? 'hover, then click a tree' : 'hover or click a building'}</span>}
+            </p>
           </motion.div>
         </div>
 
@@ -82,7 +81,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           <motion.div className="mt-8 inline-block" whileHover={{ x: 4 }} whileTap={{ scale: 0.96 }} transition={spring}>
             <Link
               to={`/work/${project.slug}`}
-              className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold ${violet ? 'bg-violet text-white hover:bg-violet-2' : 'bg-cyan text-ink hover:bg-cyan/80'} after:absolute after:inset-0 after:content-[''] lg:after:hidden`}
+              className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold ${green ? 'bg-accent text-ink hover:bg-accent-2' : 'bg-warm text-ink hover:bg-warm/85'} after:absolute after:inset-0 after:content-[''] lg:after:hidden`}
             >
               Read case study <span className="sr-only">: {project.name}</span>
               <ArrowIcon />

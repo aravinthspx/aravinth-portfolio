@@ -12,20 +12,18 @@ function Hero() {
   const words = profile.headline.split(' ')
   return (
     <section aria-labelledby="hero-title" className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24">
-      <p aria-hidden="true" className="outline-text pointer-events-none absolute left-1/2 top-16 -translate-x-1/2 select-none whitespace-nowrap font-display text-[26vw] font-extrabold leading-none tracking-tighter md:top-10">
-        BUILD
-      </p>
       <div className="container-x relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
         <div className="min-w-0 lg:col-span-7">
-          <motion.p className="eyebrow" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            {profile.name} — {profile.title}
+          <motion.p className="flex flex-wrap items-baseline gap-x-3 gap-y-1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <span className="font-display text-xl font-bold tracking-wide text-cream">{profile.name}</span>
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">{profile.title}</span>
           </motion.p>
-          <h1 id="hero-title" className="mt-6 font-display text-[clamp(2rem,9.5vw,2.6rem)] font-extrabold leading-[0.98] tracking-tight text-cream sm:text-6xl lg:text-[4.1rem] xl:text-[5rem]">
+          <h1 id="hero-title" className="mt-6 font-display text-[clamp(2rem,9.5vw,2.6rem)] font-extrabold leading-[0.98] tracking-tight text-cream sm:text-6xl lg:text-[3.9rem] xl:text-[4.6rem]">
             {words.map((w, i) => (
               <Fragment key={i}>
               <span className="inline-block overflow-hidden pb-1 align-bottom">
                 <motion.span
-                  className={`inline-block ${w.startsWith('interactive') ? 'bg-gradient-to-r from-violet-2 to-cyan bg-clip-text text-transparent' : ''}`}
+                  className={`inline-block ${w.startsWith('interactive') ? 'text-accent-2' : ''}`}
                   initial={{ y: '110%' }}
                   animate={{ y: 0 }}
                   transition={{ duration: 0.8, delay: 0.1 + i * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
@@ -61,12 +59,12 @@ function Marquee() {
   const items = ['AI / ML', 'Product Design', 'Full-Stack', 'Prototyping', 'Interaction']
   const row = [...items, ...items]
   return (
-    <div className="relative border-y border-line bg-ink-2/60 py-5" aria-hidden="true">
+    <div className="relative border-y border-line bg-ink-2/70 py-5 backdrop-blur-sm" aria-hidden="true">
       <div className="flex overflow-hidden">
-        <div className="marquee flex shrink-0 gap-10 pr-10 font-display text-3xl font-bold uppercase tracking-tight text-cream/80 md:text-5xl">
+        <div className="marquee flex shrink-0 gap-10 pr-10 font-display text-3xl font-bold uppercase tracking-tight text-cream/70 md:text-5xl">
           {[...row, ...row].map((t, i) => (
             <span key={i} className="flex items-center gap-10 whitespace-nowrap">
-              {t} <span className="text-violet">✦</span>
+              {t} <span className="text-accent">✦</span>
             </span>
           ))}
         </div>
@@ -97,13 +95,13 @@ function Work() {
 function About() {
   return (
     <section id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-36">
-      <div className="glow-violet pointer-events-none absolute -left-40 top-20 size-[36rem] rounded-full blur-3xl" aria-hidden="true" />
+      <div className="glow-accent pointer-events-none absolute -left-40 top-20 size-[36rem] rounded-full blur-3xl" aria-hidden="true" />
       <div className="container-x relative grid grid-cols-1 gap-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Reveal>
             <p className="eyebrow mb-4">About</p>
             <h2 id="about-title" className="font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl md:text-7xl">
-              Learning <span className="italic text-violet-2">by</span> building.
+              Learning <span className="italic text-accent-2">by</span> building.
             </h2>
           </Reveal>
         </div>
@@ -120,7 +118,7 @@ function About() {
           <ul className="mt-12 grid gap-4 sm:grid-cols-3">
             {interests.map((it, i) => (
               <Reveal as="li" key={it.title} delay={0.08 * i} className="rounded-3xl border border-line bg-ink-2/70 p-5 backdrop-blur">
-                <span className="font-mono text-xs text-violet-2">0{i + 1}</span>
+                <span className="font-mono text-xs text-accent-2">0{i + 1}</span>
                 <h3 className="mt-3 font-display text-lg font-bold">{it.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-cream-2">{it.body}</p>
               </Reveal>
@@ -154,18 +152,18 @@ function Learning() {
 function Contact() {
   return (
     <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden py-28 md:py-40">
-      <div className="glow-cyan pointer-events-none absolute right-[-10%] top-0 size-[40rem] rounded-full blur-3xl" aria-hidden="true" />
+      <div className="glow-warm pointer-events-none absolute right-[-10%] top-0 size-[40rem] rounded-full blur-3xl" aria-hidden="true" />
       <div className="container-x relative">
         <Reveal>
           <p className="eyebrow mb-6">Contact</p>
           <h2 id="contact-title" className="max-w-4xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
-            Let’s build something <span className="bg-gradient-to-r from-violet-2 to-cyan bg-clip-text text-transparent">useful.</span>
+            Let’s build something <span className="text-accent-2">useful.</span>
           </h2>
         </Reveal>
         <Reveal delay={0.1} className="mt-12 flex flex-col gap-8">
           <a href={`mailto:${profile.email}`} className="group inline-flex w-fit max-w-full items-center gap-3 break-all font-display text-xl font-semibold text-cream sm:text-3xl">
-            <MailIcon className="size-7 shrink-0 text-violet-2" />
-            <span className="underline decoration-line decoration-2 underline-offset-8 transition-colors group-hover:decoration-violet-2">{profile.email}</span>
+            <MailIcon className="size-7 shrink-0 text-accent-2" />
+            <span className="underline decoration-line decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent-2">{profile.email}</span>
           </a>
           <div className="flex flex-wrap items-center gap-3">
             <CopyEmail />

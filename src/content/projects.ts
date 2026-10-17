@@ -29,7 +29,7 @@ export type Project = {
   caseTitle: string
   type: string
   summary: string
-  accent: 'violet' | 'cyan'
+  accent: 'green' | 'amber'
   logo?: string
   journey: string[]
   stack: string[]
@@ -61,7 +61,7 @@ export const projects: Project[] = [
     type: 'Agricultural decision-support prototype',
     summary:
       'A prototype connecting farm conditions, illustrative yield estimates, and crop lifecycle planning in one web application.',
-    accent: 'violet',
+    accent: 'green',
     journey: ['Choose crop', 'Enter conditions', 'Understand estimates', 'Create plan', 'Manage tasks'],
     stack: [
       'React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Recharts', 'Framer Motion', 'Python', 'FastAPI',
@@ -173,7 +173,7 @@ export const projects: Project[] = [
     type: 'Campus-space discovery prototype',
     summary:
       'A campus platform exploring how students can find buildings, libraries, laboratories, and suitable spaces through filters and map navigation.',
-    accent: 'cyan',
+    accent: 'amber',
     logo: '/images/sitto-logo.webp',
     journey: ['Explore campus', 'Select building', 'Inspect spaces', 'Check availability'],
     stack: ['React', 'Vite', 'Tailwind CSS', 'Python', 'Flask', 'Supabase', 'PostgreSQL'],

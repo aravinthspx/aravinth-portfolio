@@ -18,7 +18,7 @@ export function AgriDashboard({ compact }: { compact?: boolean }) {
           </p>
           <div className="mt-4 flex h-20 items-end gap-1.5" aria-hidden="true">
             {bars.map((h, i) => (
-              <div key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-violet/30 to-violet" style={{ height: `${h}%` }} />
+              <div key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-accent/30 to-accent" style={{ height: `${h}%` }} />
             ))}
           </div>
         </Card>
@@ -26,8 +26,8 @@ export function AgriDashboard({ compact }: { compact?: boolean }) {
           <Label>Soil score</Label>
           <div className="relative mx-auto mt-2 size-24">
             <svg viewBox="0 0 36 36" className="size-full -rotate-90" aria-hidden="true">
-              <circle cx="18" cy="18" r="15" fill="none" stroke="#2a2731" strokeWidth="4" />
-              <circle cx="18" cy="18" r="15" fill="none" stroke="#22d3ee" strokeWidth="4" strokeDasharray="72 100" strokeLinecap="round" />
+              <circle cx="18" cy="18" r="15" fill="none" stroke="#2a2a26" strokeWidth="4" />
+              <circle cx="18" cy="18" r="15" fill="none" stroke="#d9a95b" strokeWidth="4" strokeDasharray="72 100" strokeLinecap="round" />
             </svg>
             <span className="absolute inset-0 grid place-items-center font-display text-xl font-bold">72</span>
           </div>
@@ -66,7 +66,7 @@ export function AgriInputs() {
           </div>
         ))}
       </div>
-      <div className="mt-3 rounded-full bg-violet py-2 text-center text-xs font-semibold text-white">Estimate yield</div>
+      <div className="mt-3 rounded-full bg-accent py-2 text-center text-xs font-semibold text-ink">Estimate yield</div>
     </MockFrame>
   )
 }
@@ -115,7 +115,7 @@ export function AgriTimeline() {
       <ol className="mb-4 flex items-center gap-1" aria-label="Growth stages">
         {stages.map((s, i) => (
           <li key={s} className="flex flex-1 flex-col items-center gap-1.5">
-            <span className={`h-1.5 w-full rounded-full ${i < 2 ? 'bg-violet' : 'bg-white/10'}`} />
+            <span className={`h-1.5 w-full rounded-full ${i < 2 ? 'bg-accent' : 'bg-white/10'}`} />
             <span className={`text-[10px] ${i === 1 ? 'text-cream font-semibold' : 'text-muted'}`}>{s}</span>
           </li>
         ))}
@@ -125,7 +125,7 @@ export function AgriTimeline() {
           <li key={x.t} className="flex flex-wrap items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2">
             <span className={`flex-1 text-xs ${x.s === 'done' ? 'text-muted line-through' : x.s === 'skipped' ? 'text-muted' : 'text-cream'}`}>
               {x.t}
-              {x.s === 'later' && <span className="ml-2 text-cyan">· moved +2 days</span>}
+              {x.s === 'later' && <span className="ml-2 text-warm">· moved +2 days</span>}
               {x.s === 'skipped' && <span className="ml-2">· skipped</span>}
             </span>
             <span className="flex gap-1">
@@ -134,7 +134,7 @@ export function AgriTimeline() {
                 ['skipped', 'Skip'],
                 ['later', 'Later'],
               ].map(([k, l]) => (
-                <button key={k} type="button" onClick={() => set(i, x.s === k ? 'todo' : k)} aria-pressed={x.s === k} className={`rounded-full border px-2 py-0.5 text-[10px] cursor-pointer ${x.s === k ? 'border-violet bg-violet/20 text-cream' : 'border-white/10 text-cream-2 hover:border-violet-2'}`}>
+                <button key={k} type="button" onClick={() => set(i, x.s === k ? 'todo' : k)} aria-pressed={x.s === k} className={`rounded-full border px-2 py-0.5 text-[10px] cursor-pointer ${x.s === k ? 'border-accent bg-accent/20 text-cream' : 'border-white/10 text-cream-2 hover:border-accent-2'}`}>
                   {l}
                   <span className="sr-only"> — {x.t}</span>
                 </button>
@@ -150,8 +150,8 @@ export function AgriTimeline() {
 export function AgriWeather() {
   return (
     <MockFrame title="agri-yield-pro / weather update">
-      <div className="flex items-start gap-3 rounded-xl border border-cyan/30 bg-cyan/5 p-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-cyan/15 text-cyan" aria-hidden="true">☂</span>
+      <div className="flex items-start gap-3 rounded-xl border border-warm/30 bg-warm/5 p-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-warm/15 text-warm" aria-hidden="true">☂</span>
         <div>
           <p className="text-sm font-semibold text-cream">Heavy rain scenario applied</p>
           <p className="text-xs text-cream-2">Simulated weather — not a live forecast.</p>
@@ -159,7 +159,7 @@ export function AgriWeather() {
       </div>
       <ul className="mt-3 space-y-2 text-xs">
         <li className="flex justify-between rounded-lg bg-white/[0.03] px-3 py-2"><span className="text-cream-2 line-through">Irrigate field · Tue</span><span className="text-warn">Paused</span></li>
-        <li className="flex justify-between rounded-lg bg-white/[0.03] px-3 py-2"><span className="text-cream">Check drainage channels</span><span className="text-cyan">Added</span></li>
+        <li className="flex justify-between rounded-lg bg-white/[0.03] px-3 py-2"><span className="text-cream">Check drainage channels</span><span className="text-warm">Added</span></li>
         <li className="flex justify-between rounded-lg bg-white/[0.03] px-3 py-2"><span className="text-cream">Fertiliser dose</span><span className="text-cream-2">Moved to Fri</span></li>
       </ul>
     </MockFrame>
@@ -179,9 +179,9 @@ export function AgriMap() {
   return (
     <MockFrame title="agri-yield-pro / india explorer">
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-        <div className="relative aspect-[4/5] max-h-64 w-full rounded-xl bg-gradient-to-b from-violet/10 to-cyan/5">
+        <div className="relative aspect-[4/5] max-h-64 w-full rounded-xl bg-gradient-to-b from-accent/10 to-warm/5">
           <svg viewBox="0 0 100 100" className="absolute inset-0 size-full" aria-hidden="true" preserveAspectRatio="none">
-            <path d="M30 6 L52 10 L60 22 L78 30 L84 42 L70 50 L62 62 L56 78 L48 96 L40 82 L32 66 L22 56 L18 44 L26 32 Z" fill="rgba(244,239,230,0.05)" stroke="rgba(244,239,230,0.25)" strokeWidth="0.6" />
+            <path d="M30 6 L52 10 L60 22 L78 30 L84 42 L70 50 L62 62 L56 78 L48 96 L40 82 L32 66 L22 56 L18 44 L26 32 Z" fill="rgba(242,239,232,0.05)" stroke="rgba(244,239,230,0.25)" strokeWidth="0.6" />
           </svg>
           {states.map((s, i) => (
             <button
@@ -193,7 +193,7 @@ export function AgriMap() {
               className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer"
               style={{ left: `${s.x}%`, top: `${s.y}%` }}
             >
-              <span className={`block rounded-full transition-all ${sel === i ? 'size-4 bg-cyan ring-4 ring-cyan/25' : 'size-3 bg-violet-2 hover:scale-125'}`} />
+              <span className={`block rounded-full transition-all ${sel === i ? 'size-4 bg-warm ring-4 ring-warm/25' : 'size-3 bg-accent-2 hover:scale-125'}`} />
             </button>
           ))}
         </div>
@@ -201,7 +201,7 @@ export function AgriMap() {
           <Label>Selected state</Label>
           <p className="mt-1 text-sm font-semibold text-cream">{states[sel].n}</p>
           <div className="mt-3 h-2 rounded-full bg-white/5">
-            <div className="h-full rounded-full bg-cyan" style={{ width: `${states[sel].v * 100}%` }} />
+            <div className="h-full rounded-full bg-warm" style={{ width: `${states[sel].v * 100}%` }} />
           </div>
           <p className="mt-2"><DemoBadge>Generated data</DemoBadge></p>
         </Card>

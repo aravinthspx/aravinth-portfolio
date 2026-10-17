@@ -1,19 +1,22 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ink: #141317;
-  --color-ink-2: #1b1a20;
-  --color-ink-3: #24222b;
-  --color-line: #34313d;
-  --color-cream: #f4efe6;
-  --color-cream-2: #cfc8bc;
-  --color-muted: #9a94a6;
-  --color-violet: #8b5cf6;
-  --color-violet-2: #a78bfa;
-  --color-cyan: #22d3ee;
-  --color-ok: #34d399;
-  --color-warn: #fbbf24;
-  --color-bad: #f87171;
+  /* Warm graphite neutrals */
+  --color-ink: #11110f;
+  --color-ink-2: #181816;
+  --color-ink-3: #22221f;
+  --color-line: #302f2b;
+  /* Off-white, soft gray, muted stone */
+  --color-cream: #f1eee7;
+  --color-cream-2: #c6c2b8;
+  --color-muted: #8f8a80;
+  /* Sparing accents: muted lime, warm amber */
+  --color-accent: #b9d77a;
+  --color-accent-2: #cfe3a0;
+  --color-warm: #d9a95b;
+  --color-ok: #a3c98a;
+  --color-warn: #dfb066;
+  --color-bad: #e2907f;
 
   --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
@@ -39,11 +42,11 @@
     overflow-x: hidden;
   }
   ::selection {
-    background: var(--color-violet);
-    color: white;
+    background: var(--color-accent);
+    color: var(--color-ink);
   }
   :focus-visible {
-    outline: 2px solid var(--color-cyan);
+    outline: 2px solid var(--color-warm);
     outline-offset: 3px;
     border-radius: 6px;
   }
@@ -81,7 +84,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-violet-2);
+    color: var(--color-accent-2);
   }
   .grain {
     position: fixed;
@@ -93,13 +96,13 @@
   }
   .outline-text {
     color: transparent;
-    -webkit-text-stroke: 1px rgb(244 239 230 / 0.16);
+    -webkit-text-stroke: 1px rgb(241 238 231 / 0.09);
   }
-  .glow-violet {
-    background: radial-gradient(closest-side, rgb(139 92 246 / 0.35), transparent);
+  .glow-accent {
+    background: radial-gradient(closest-side, rgb(185 215 122 / 0.08), transparent);
   }
-  .glow-cyan {
-    background: radial-gradient(closest-side, rgb(34 211 238 / 0.22), transparent);
+  .glow-warm {
+    background: radial-gradient(closest-side, rgb(217 169 91 / 0.08), transparent);
   }
 }
 
@@ -114,5 +117,8 @@
   to { transform: translateX(-50%); }
 }
 .marquee {
-  animation: marquee 40s linear infinite;
+  animation: marquee 70s linear infinite;
+}
+.marquee:hover {
+  animation-play-state: paused;
 }

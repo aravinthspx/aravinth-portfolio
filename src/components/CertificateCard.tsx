@@ -28,7 +28,7 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
           {cert.title}
           {cert.kind === 'Job simulation' && <span className="text-cream-2"> — Job Simulation</span>}
         </h3>
-        <p className="mt-1 text-sm text-violet-2">{by}</p>
+        <p className="mt-1 text-sm text-accent-2">{by}</p>
         <p className="mt-1 font-mono text-xs text-muted">
           Completed <time dateTime={cert.completed}>{formatDate(cert.completed)}</time>
         </p>
@@ -53,7 +53,7 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
             </motion.button>
           )}
           {cert.verifyUrl && (
-            <a href={cert.verifyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-xs font-semibold text-cream hover:border-violet-2">
+            <a href={cert.verifyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-xs font-semibold text-cream hover:border-accent-2">
               Verify<span className="sr-only"> {cert.title} on {cert.provider} (opens in new tab)</span>
               <ExternalIcon className="size-3.5" />
             </a>
@@ -73,7 +73,7 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
               </object>
             ))}
           <p className="mt-4 text-sm">
-            <a href={cert.file} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-violet-2 underline underline-offset-4 hover:text-cream">
+            <a href={cert.file} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-accent-2 underline underline-offset-4 hover:text-cream">
               Open the original file <ExternalIcon className="size-3.5" />
             </a>
           </p>

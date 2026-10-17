@@ -34,3 +34,20 @@ export function useFinePointer() {
   }, [])
   return fine
 }
+
+/** Becomes true the first time the element nears the viewport, then stays true (for lazy mounting). */
+export function useSeenOnce(ref: RefObject<Element | null>, rootMargin = '300px') {
+  const [seen, setSeen] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || seen) return
+    if (!('IntersectionObserver' in window)) {
+      setSeen(true)
+      return
+    }
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setSeen(true), { rootMargin })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ref, rootMargin, seen])
+  return seen
+}

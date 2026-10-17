@@ -1,95 +1,131 @@
-import { useRef } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Float, MeshDistortMaterial, RoundedBox, Sparkles, Torus, Icosahedron, Octahedron } from '@react-three/drei'
-import type { Group } from 'three'
+import { RoundedBox } from '@react-three/drei'
+import type { Group, Mesh } from 'three'
+import { pointer } from '../lib/pointer'
+import { Spring1, Spring3 } from '../three/spring'
+import { makeFinishes, palette } from '../three/materials'
+import { StudioLights } from '../three/StudioLights'
 
-function Rig({ animate, children }: { animate: boolean; children: React.ReactNode }) {
+/** Each layer follows the cursor on its own spring, so nearer pieces lag and overshoot more. */
+function Layer({ depth, animate, children, position }: { depth: number; animate: boolean; children: ReactNode; position: [number, number, number] }) {
   const g = useRef<Group>(null)
-  useFrame((state, dt) => {
-    if (!g.current || !animate) return
-    // Subtle pointer parallax: ease toward the pointer, capped to a few degrees.
-    const tx = state.pointer.y * -0.18
-    const ty = state.pointer.x * 0.28
-    g.current.rotation.x += (tx - g.current.rotation.x) * Math.min(1, dt * 3)
-    g.current.rotation.y += (ty - g.current.rotation.y) * Math.min(1, dt * 3)
-  })
-  return <group ref={g}>{children}</group>
-}
-
-function Spinner({ speed, animate, children }: { speed: number; animate: boolean; children: React.ReactNode }) {
-  const g = useRef<Group>(null)
+  const s = useMemo(() => new Spring3(32 - depth * 6, 6.5), [depth])
   useFrame((_, dt) => {
-    if (g.current && animate) {
-      g.current.rotation.y += dt * speed
-      g.current.rotation.z += dt * speed * 0.35
-    }
+    if (!g.current || !animate) return
+    const on = pointer.inside && pointer.type === 'mouse'
+    s.target.set(on ? pointer.x * 0.35 * depth : 0, on ? pointer.y * 0.25 * depth : 0, 0)
+    s.step(dt)
+    g.current.position.set(position[0] + s.pos.x, position[1] + s.pos.y, position[2])
+    g.current.rotation.set(-s.pos.y * 0.5, s.pos.x * 0.6, 0)
   })
-  return <group ref={g}>{children}</group>
+  return (
+    <group ref={g} position={position}>
+      {children}
+    </group>
+  )
 }
 
-export default function HeroScene({ active, reduced }: { active: boolean; reduced: boolean }) {
+/** The one playful piece: hover makes it hop, click makes it squash and bounce. */
+function Bouncer({ animate }: { animate: boolean }) {
+  const mesh = useRef<Mesh>(null)
+  const hop = useMemo(() => new Spring1(70, 4.2, 0), [])
+  const squash = useMemo(() => new Spring1(220, 9, 1), [])
+  const [hover, setHover] = useState(false)
+
+  useFrame((_, dt) => {
+    if (!mesh.current) return
+    if (animate) {
+      hop.step(dt)
+      squash.step(dt)
+    }
+    const sq = Math.max(0.6, squash.value)
+    mesh.current.position.y = hop.value
+    mesh.current.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq))
+  })
+
+  const bump = (strength: number) => {
+    if (!animate) return
+    hop.kick(strength)
+    squash.kick(strength * 1.2)
+  }
+
+  return (
+    <group position={[-0.3, -1.6, 1.4]}>
+      <mesh
+        ref={mesh}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          setHover(true)
+          document.body.style.cursor = 'pointer'
+          bump(3.2)
+        }}
+        onPointerOut={() => {
+          setHover(false)
+          document.body.style.cursor = ''
+        }}
+        onClick={(e) => {
+          e.stopPropagation()
+          squash.kick(-4)
+          bump(5.5)
+        }}
+      >
+        <sphereGeometry args={[0.36, 48, 48]} />
+        <meshStandardMaterial color={hover ? palette.lime : palette.green} roughness={0.32} metalness={0.05} />
+      </mesh>
+    </group>
+  )
+}
+
+export default function HeroScene({ active, reduced, onReady }: { active: boolean; reduced: boolean; onReady?: () => void }) {
   const animate = active && !reduced
-  const f = reduced ? 0 : 1
+  const m = useMemo(() => makeFinishes(false), [])
+  const spin = useRef<Group>(null)
+
   return (
     <Canvas
       dpr={[1, 1.75]}
-      camera={{ position: [0, 0, 7.5], fov: 40 }}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      camera={{ position: [0, 0, 7.5], fov: 38 }}
+      gl={{ antialias: true, alpha: true }}
       frameloop={animate ? 'always' : 'demand'}
-      aria-hidden="true"
+      onCreated={() => requestAnimationFrame(() => onReady?.())}
+      data-interactive
     >
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[4, 5, 6]} intensity={1.6} color="#fff4e6" />
-      <pointLight position={[-4, -1, 3]} intensity={40} color="#8b5cf6" />
-      <pointLight position={[4, -3, 2]} intensity={22} color="#22d3ee" />
-
-      <Rig animate={animate}>
-        {/* Core: a soft, slowly morphing form */}
-        <Float speed={1.4 * f} rotationIntensity={0.4 * f} floatIntensity={0.8 * f}>
-          <Icosahedron args={[1.35, 24]}>
-            <MeshDistortMaterial color="#7c4dff" roughness={0.18} metalness={0.25} distort={reduced ? 0.2 : 0.32} speed={reduced ? 0 : 1.6} />
-          </Icosahedron>
-        </Float>
-
-        {/* Orbit ring */}
-        <Spinner speed={0.18} animate={animate}>
-          <Torus args={[2.25, 0.025, 16, 160]} rotation={[Math.PI / 2.4, 0, 0]}>
-            <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={1.2} />
-          </Torus>
-        </Spinner>
-
-        {/* Cream blocks — campus buildings, abstracted */}
-        <Float speed={2 * f} rotationIntensity={0.8 * f} floatIntensity={1.2 * f} position={[2.3, 1.25, 0.4]}>
-          <RoundedBox args={[0.55, 0.9, 0.55]} radius={0.1} smoothness={4} rotation={[0.3, 0.6, 0.1]}>
-            <meshPhysicalMaterial color="#f4efe6" roughness={0.35} clearcoat={1} />
-          </RoundedBox>
-        </Float>
-        <Float speed={1.7 * f} rotationIntensity={0.6 * f} floatIntensity={1 * f} position={[2.85, 0.35, -0.6]}>
-          <RoundedBox args={[0.38, 0.55, 0.38]} radius={0.08} smoothness={4} rotation={[0.2, 0.4, 0]}>
-            <meshPhysicalMaterial color="#cfc8bc" roughness={0.4} clearcoat={0.6} />
-          </RoundedBox>
-        </Float>
-
-        {/* Seeds / data points */}
-        <Float speed={2.4 * f} rotationIntensity={1.2 * f} floatIntensity={1.4 * f} position={[-2.4, -1.1, 0.6]}>
-          <Octahedron args={[0.42]}>
-            <meshPhysicalMaterial color="#a78bfa" roughness={0.1} metalness={0.4} clearcoat={1} />
-          </Octahedron>
-        </Float>
-        <Float speed={1.8 * f} floatIntensity={1.6 * f} position={[-2.1, 1.5, -0.4]}>
-          <mesh>
-            <sphereGeometry args={[0.2, 32, 32]} />
-            <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={0.8} />
+      <StudioLights />
+      {/* Matte black block anchors the composition */}
+      <Layer depth={0.6} animate={animate} position={[-0.2, 0.25, -0.8]}>
+        <RoundedBox args={[1.9, 1.9, 1.9]} radius={0.32} smoothness={6} rotation={[0.45, 0.65, 0.1]} material={m.matte} />
+      </Layer>
+      {/* Chrome ring orbiting it */}
+      <Layer depth={1} animate={animate} position={[0.15, 0.1, 0]}>
+        <Spinner animate={animate} groupRef={spin}>
+          <mesh material={m.chrome} rotation={[1.15, 0.2, 0]}>
+            <torusGeometry args={[1.75, 0.07, 32, 160]} />
           </mesh>
-        </Float>
-        <Float speed={2.2 * f} floatIntensity={1.2 * f} position={[1.4, -1.8, 0.8]}>
-          <Torus args={[0.28, 0.09, 16, 48]} rotation={[0.8, 0.3, 0]}>
-            <meshPhysicalMaterial color="#f4efe6" roughness={0.25} clearcoat={1} />
-          </Torus>
-        </Float>
-
-        <Sparkles count={reduced ? 0 : 40} scale={[7, 5, 3]} size={2} speed={0.3} color="#c4b5fd" opacity={0.6} />
-      </Rig>
+        </Spinner>
+      </Layer>
+      {/* Glass sphere refracting the block behind */}
+      <Layer depth={1.6} animate={animate} position={[1.05, -0.55, 1.2]}>
+        <mesh material={m.glass}>
+          <sphereGeometry args={[0.8, 64, 64]} />
+        </mesh>
+      </Layer>
+      {/* Small ivory capsule for warmth */}
+      <Layer depth={1.3} animate={animate} position={[1.35, 1.45, 0.4]}>
+        <mesh material={m.ivory} rotation={[0, 0, -0.7]}>
+          <capsuleGeometry args={[0.2, 0.55, 12, 24]} />
+        </mesh>
+      </Layer>
+      <Layer depth={2} animate={animate} position={[0, 0, 0]}>
+        <Bouncer animate={animate} />
+      </Layer>
     </Canvas>
   )
+}
+
+function Spinner({ animate, children, groupRef }: { animate: boolean; children: ReactNode; groupRef: React.RefObject<Group | null> }) {
+  useFrame((_, dt) => {
+    if (groupRef.current && animate) groupRef.current.rotation.y += dt * 0.12
+  })
+  return <group ref={groupRef}>{children}</group>
 }

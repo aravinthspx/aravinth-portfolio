@@ -21,9 +21,9 @@ export function MotionToggle({ className = '' }: { className?: string }) {
       disabled={systemReduced}
       aria-pressed={!reduced}
       title={systemReduced ? 'Reduced motion is set by your system' : reduced ? 'Turn animations on' : 'Turn animations off'}
-      className={`group inline-flex items-center gap-2 rounded-full border border-line px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-cream-2 hover:border-violet-2 hover:text-cream disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer ${className}`}
+      className={`group inline-flex items-center gap-2 rounded-full border border-line px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-cream-2 hover:border-accent-2 hover:text-cream disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer ${className}`}
     >
-      <span className={`relative h-4 w-7 rounded-full transition-colors ${reduced ? 'bg-ink-3' : 'bg-violet'}`} aria-hidden="true">
+      <span className={`relative h-4 w-7 rounded-full transition-colors ${reduced ? 'bg-ink-3' : 'bg-accent'}`} aria-hidden="true">
         <span className={`absolute top-0.5 size-3 rounded-full bg-cream transition-all ${reduced ? 'left-0.5' : 'left-3.5'}`} />
       </span>
       Motion
@@ -66,16 +66,16 @@ export function Nav() {
       <nav aria-label="Primary" className="container-x flex h-16 items-center justify-between gap-4 md:h-20">
         <Link to="/" className="font-display text-lg font-extrabold tracking-[0.2em] text-cream hover:text-white" aria-label={`${profile.name} — home`}>
           {profile.wordmark}
-          <span className="text-violet">.</span>
+          <span className="text-accent">.</span>
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
-            <li key={l.hash}>
+            <motion.li key={l.hash} whileHover={{ y: -2 }} whileTap={{ scale: 0.94 }} transition={spring}>
               <Link to={{ pathname: '/', hash: l.hash }} className="rounded-full px-4 py-2 text-sm font-medium text-cream-2 transition-colors hover:bg-ink-3 hover:text-cream">
                 {l.label}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
 

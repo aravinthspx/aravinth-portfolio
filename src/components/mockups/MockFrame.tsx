@@ -1,17 +1,17 @@
 import type { ReactNode } from 'react'
 
 /** Browser-style frame that always carries an "Illustrative mockup" label. */
-export function MockFrame({ title, children, tone = 'violet', compact = false }: { title: string; children: ReactNode; tone?: 'violet' | 'cyan'; compact?: boolean }) {
+export function MockFrame({ title, children, tone = 'accent', compact = false }: { title: string; children: ReactNode; tone?: 'accent' | 'warm'; compact?: boolean }) {
   return (
-    <figure className="overflow-hidden rounded-2xl border border-line bg-[#0f0e12] shadow-2xl shadow-black/40" aria-label={`Illustrative mockup: ${title}`}>
+    <figure className="overflow-hidden rounded-2xl border border-line bg-[#0e0e0d] shadow-2xl shadow-black/40" aria-label={`Illustrative mockup: ${title}`}>
       <div className="flex items-center gap-2 border-b border-line/70 bg-ink-2 px-3 py-2">
         <span className="flex gap-1.5" aria-hidden="true">
-          <span className="size-2.5 rounded-full bg-[#3a3742]" />
-          <span className="size-2.5 rounded-full bg-[#3a3742]" />
-          <span className="size-2.5 rounded-full bg-[#3a3742]" />
+          <span className="size-2.5 rounded-full bg-[#35342f]" />
+          <span className="size-2.5 rounded-full bg-[#35342f]" />
+          <span className="size-2.5 rounded-full bg-[#35342f]" />
         </span>
         <span className="ml-1 truncate font-mono text-[10px] text-muted">{title}</span>
-        <span className={`ml-auto shrink-0 rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider ${tone === 'violet' ? 'border-violet/40 text-violet-2' : 'border-cyan/40 text-cyan'}`}>
+        <span className={`ml-auto shrink-0 rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider ${tone === 'accent' ? 'border-accent/40 text-accent-2' : 'border-warm/40 text-warm'}`}>
           Illustrative mockup
         </span>
       </div>

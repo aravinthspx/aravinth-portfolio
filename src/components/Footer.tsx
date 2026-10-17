@@ -5,7 +5,7 @@ const year = new Date().getFullYear()
 
 export function Footer() {
   return (
-    <footer className="border-t border-line">
+    <footer className="relative z-10 border-t border-line bg-ink/70 backdrop-blur">
       <div className="container-x flex flex-col gap-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {year} {profile.name}. Designed and built as a learning project.

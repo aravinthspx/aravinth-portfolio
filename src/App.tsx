@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
+import { AmbientBackground } from './components/AmbientBackground'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 
@@ -25,8 +26,9 @@ export default function App() {
   return (
     <>
       <ScrollManager />
+      <AmbientBackground />
       <Nav />
-      <main id="main" tabIndex={-1} className="outline-none">
+      <main id="main" tabIndex={-1} className="relative z-10 outline-none">
         <Suspense fallback={<div className="min-h-dvh" />}>
           <Routes>
             <Route path="/" element={<Home />} />
