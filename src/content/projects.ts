@@ -100,7 +100,7 @@ export const projects: Project[] = [
       audience: 'Farmers and agricultural planners exploring crop options and organising seasonal work.',
       problem: 'Farm information is spread across separate tools, making it hard to connect yield estimates with day-to-day tasks.',
       team: 'Team of three',
-      context: 'Course project — 21CSC203P Advanced Programming Practice, SRM IST Ramapuram',
+      context: 'Course project — Advanced Programming Practice, SRM IST Ramapuram',
       role: null,
       timeline: null,
       constraints: [
