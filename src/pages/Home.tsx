@@ -9,6 +9,8 @@ import { FocusCards } from '../components/FocusCards'
 import { Terminal } from '../components/Terminal'
 import { Journey } from '../components/Journey'
 import { HeroStage, Tilt3D } from '../components/HeroStage'
+import { ScreenView } from '../components/ScreenView'
+import { ProjectLinks } from '../components/ProjectLinks'
 import { ButtonLink, CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ArrowIcon } from '../components/ui'
 
 /** Centred section heading: glowing pill eyebrow, big title, accent bar. */
@@ -214,7 +216,7 @@ function Featured() {
     <section id="console" aria-labelledby="console-title" className="relative py-24 md:py-32">
       <div className="container-x">
         <Heading pill="Featured build · interactive" title={p.name} id="console-title">
-          <span className="font-mono text-sm uppercase tracking-[0.25em] text-leaf">{p.type}</span>
+          <span className="font-mono text-sm uppercase tracking-[0.25em] text-leaf">{p.fullName ?? p.type}</span>
           <span className="mt-4 block">Explore the prototype from the command line — every answer comes from the project’s own documentation.</span>
         </Heading>
         <div className="grid items-start gap-8 lg:grid-cols-[1.25fr_0.75fr]">
@@ -241,6 +243,10 @@ function Featured() {
                 <span className="font-mono text-cream">Keyword-based</span>
               </li>
             </ul>
+            <div className="mt-6 border-t border-line pt-5">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Links</p>
+              <ProjectLinks links={p.links} name={p.name} compact />
+            </div>
             <div className="mt-6">
               <ButtonLink to={`/work/${p.slug}`} variant="ghost" className="w-full">
                 Read the case study <ArrowIcon />
@@ -248,6 +254,23 @@ function Featured() {
             </div>
           </Reveal>
         </div>
+
+        {p.screens.some((s) => s.image) && (
+          <div className="mt-10">
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">From the running app · click to enlarge</p>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {p.screens
+                .filter((s) => s.image)
+                .slice(0, 3)
+                .map((s, i) => (
+                  <Reveal as="li" key={s.title} delay={0.06 * i}>
+                    <ScreenView screen={s} />
+                    <p className="mt-2 text-sm font-semibold text-cream">{s.title}</p>
+                  </Reveal>
+                ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   )

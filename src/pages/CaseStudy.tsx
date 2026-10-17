@@ -2,15 +2,17 @@ import { useEffect, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { getProject, projects, type Status } from '../content/projects'
-import { mockups } from '../components/mockups'
+import { ScreenView } from '../components/ScreenView'
+import { ProjectLinks } from '../components/ProjectLinks'
 import { ArrowIcon, ButtonLink, Reveal, StatusTag } from '../components/ui'
 import NotFound from './NotFound'
 
-const sections = [
+const baseSections = [
   ['overview', 'Overview'],
   ['problem', 'Problem'],
   ['evidence', 'Evidence'],
   ['decisions', 'Decisions'],
+  ['architecture', 'Architecture'],
   ['solution', 'Solution'],
   ['outcomes', 'Outcomes'],
   ['reflection', 'Reflection'],
@@ -52,7 +54,11 @@ export default function CaseStudy() {
 
   if (!p) return <NotFound />
 
-  const Hero = mockups[p.screens[0].mockup]
+  const heroScreen = p.screens[0]
+  const hasShots = p.screens.some((s) => s.image)
+  // Architecture only appears when the project has it; numbering follows the visible sections.
+  const sections = baseSections.filter(([id]) => id !== 'architecture' || p.architecture)
+  const num = (id: string) => sections.findIndex(([s]) => s === id) + 1
   const next = projects[(projects.indexOf(p) + 1) % projects.length]
   const green = p.accent === 'green'
   const o = p.overview
@@ -84,19 +90,36 @@ export default function CaseStudy() {
         >
           {p.caseTitle}
         </motion.h1>
+        {p.fullName && (
+          <motion.p className="relative mt-4 font-mono text-sm uppercase tracking-[0.18em] text-accent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
+            {p.fullName}
+          </motion.p>
+        )}
         <motion.p className="relative mt-6 max-w-2xl text-lg leading-relaxed text-cream-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           {p.summary}
         </motion.p>
+        <motion.div className="relative mt-6 flex flex-col gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
+          {p.categories && (
+            <ul className="flex flex-wrap gap-2" aria-label="Categories">
+              {p.categories.map((c) => (
+                <li key={c} className="rounded-full border border-line bg-ink-2/70 px-3 py-1 font-mono text-[11px] text-cream-2">{c}</li>
+              ))}
+            </ul>
+          )}
+          <ProjectLinks links={p.links} name={p.name} />
+        </motion.div>
         <motion.div
           className={`relative mt-12 rounded-[2rem] p-4 sm:p-8 panel glow-ring`}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
         >
-          <Hero />
+          <ScreenView screen={heroScreen} priority />
           <p className="mt-4 text-center text-sm text-cream-2">
-            {p.screens[0].caption} <span className="text-muted">Illustrative mockup — not a shipped screen.</span>
+            {heroScreen.caption}{' '}
+            <span className="text-muted">{heroScreen.image ? 'Screenshot from the running application.' : 'Illustrative mockup — not a shipped screen.'}</span>
           </p>
+          {heroScreen.note && <p className="mt-2 text-center text-xs text-warn">{heroScreen.note}</p>}
         </motion.div>
       </header>
 
@@ -116,7 +139,7 @@ export default function CaseStudy() {
         </aside>
 
         <div className="min-w-0">
-          <Block id="overview" n={1} title="Overview">
+          <Block id="overview" n={num('overview')} title="Overview">
             <dl className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2">
               {facts.filter(([, v]) => v).map(([k, v]) => (
                 <div key={k} className="bg-ink-2 p-5">
@@ -161,7 +184,7 @@ export default function CaseStudy() {
             </div>
           </Block>
 
-          <Block id="problem" n={2} title="Problem">
+          <Block id="problem" n={num('problem')} title="Problem">
             <p className="max-w-3xl text-xl leading-relaxed text-cream">{p.problem.need}</p>
             <h3 className="mt-10 font-display text-lg font-semibold">What makes it difficult</h3>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -173,7 +196,7 @@ export default function CaseStudy() {
             </ul>
           </Block>
 
-          <Block id="evidence" n={3} title="Evidence">
+          <Block id="evidence" n={num('evidence')} title="Evidence">
             <p className="mb-6 max-w-3xl text-cream-2">No formal user research was conducted. What follows are implementation observations and documentation from the project itself.</p>
             <ul className="space-y-3">
               {p.evidence.items.map((e) => (
@@ -190,7 +213,7 @@ export default function CaseStudy() {
             </div>
           </Block>
 
-          <Block id="decisions" n={4} title="Design decisions">
+          <Block id="decisions" n={num('decisions')} title="Design decisions">
             <ol className="space-y-6">
               {p.decisions.map((d, i) => (
                 <Reveal as="li" key={d.title} delay={0.05 * i} className="rounded-3xl border border-line bg-ink-2/60 p-6 md:p-8">
@@ -206,7 +229,34 @@ export default function CaseStudy() {
             </ol>
           </Block>
 
-          <Block id="solution" n={5} title="Solution">
+          {p.architecture && (
+            <Block id="architecture" n={num('architecture')} title="Architecture">
+              <p className="mb-8 max-w-3xl text-cream-2">How requests flow through the prototype, as described in the project report.</p>
+              <ol className="relative space-y-4">
+                {p.architecture.map((l, i) => (
+                  <Reveal as="li" key={l.layer} delay={0.06 * i} className="relative">
+                    <div className="panel rounded-2xl p-5 md:grid md:grid-cols-[12rem_1fr] md:gap-6">
+                      <div>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Layer {i + 1}</p>
+                        <p className={`mt-1 font-display text-xl font-bold ${green ? 'text-leaf' : 'text-accent'}`}>{l.layer}</p>
+                        <p className="mt-1 text-xs text-cream-2">{l.detail}</p>
+                      </div>
+                      <ul className="mt-4 flex flex-wrap gap-2 md:mt-0 md:content-center">
+                        {l.items.map((it) => (
+                          <li key={it} className="rounded-lg border border-line bg-ink-3/60 px-3 py-1.5 text-sm text-cream-2">{it}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    {i < p.architecture!.length - 1 && (
+                      <span className="mx-auto mt-4 block h-4 w-px bg-gradient-to-b from-accent/70 to-transparent" aria-hidden="true" />
+                    )}
+                  </Reveal>
+                ))}
+              </ol>
+            </Block>
+          )}
+
+          <Block id="solution" n={num('solution')} title="Solution">
             <h3 className="font-display text-lg font-semibold">Feature status</h3>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">
               {p.features.map((f) => (
@@ -222,18 +272,19 @@ export default function CaseStudy() {
 
             <h3 className="mt-14 font-display text-lg font-semibold">Annotated screens</h3>
             <p className="mt-2 text-sm text-cream-2">
-              No screenshots were supplied, so these are illustrative mockups drawn for this portfolio. Some are interactive — try the buttons.
+              {hasShots
+                ? 'Screenshots from the running application. Click any screen to enlarge it.'
+                : 'No screenshots were supplied, so these are illustrative mockups drawn for this portfolio. Some are interactive — try the buttons.'}
             </p>
             <div className="mt-8 space-y-16">
               {p.screens.map((s, i) => {
-                const M = mockups[s.mockup]
                 return (
-                  <Reveal key={s.mockup} className="grid items-start gap-6 md:grid-cols-12">
+                  <Reveal key={s.title} className="grid items-start gap-6 md:grid-cols-12">
                     <div className={`md:col-span-7 ${i % 2 ? 'md:order-2' : ''}`}>
-                      <M />
+                      <ScreenView screen={s} />
                     </div>
                     <div className="md:col-span-5">
-                      <StatusTag status="illustrative" />
+                      <StatusTag status={s.image ? 'screenshot' : 'illustrative'} />
                       <h4 className="mt-3 font-display text-2xl font-bold">{s.title}</h4>
                       <p className="mt-2 text-cream-2">{s.caption}</p>
                       <ol className="mt-5 space-y-3">
@@ -244,6 +295,7 @@ export default function CaseStudy() {
                           </li>
                         ))}
                       </ol>
+                      {s.note && <p className="mt-4 rounded-xl border border-warn/25 bg-warn/5 px-3 py-2 text-xs leading-relaxed text-warn">{s.note}</p>}
                     </div>
                   </Reveal>
                 )
@@ -251,7 +303,7 @@ export default function CaseStudy() {
             </div>
           </Block>
 
-          <Block id="outcomes" n={6} title="Outcomes">
+          <Block id="outcomes" n={num('outcomes')} title="Outcomes">
             <ul className="space-y-3">
               {p.outcomes.map((x) => (
                 <StatusItem key={x.text} status={x.status}>{x.text}</StatusItem>
@@ -261,7 +313,7 @@ export default function CaseStudy() {
             <p className="mt-6 text-sm text-muted">No usage numbers, user-testing results or impact metrics are reported for this prototype.</p>
           </Block>
 
-          <Block id="reflection" n={7} title="Reflection">
+          <Block id="reflection" n={num('reflection')} title="Reflection">
             <div className="grid gap-8 md:grid-cols-2">
               <div className="rounded-3xl border border-line bg-ink-2/60 p-6">
                 <h3 className="font-display text-xl font-bold">What I learned</h3>

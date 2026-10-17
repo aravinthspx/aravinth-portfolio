@@ -3,6 +3,8 @@
 // Status labels keep claims honest:
 //   documented   – described as implemented in the project's own report/presentation
 //   planned      – requested or proposed, not confirmed as built
+//   development  – being worked on / concept stage, not in the current build
+//   screenshot   – a real screenshot of the running application
 //   illustrative – a mockup drawn for this portfolio, not a shipped screen
 //   observed     – something seen while running or troubleshooting the project
 //   hypothesis   – an unvalidated expectation
@@ -10,22 +12,33 @@
 // Draft fields: any field set to null is hidden on the site. Fill it in once confirmed
 // (e.g. your exact role, timeline or test results) and it will appear automatically.
 
-export type Status = 'documented' | 'planned' | 'illustrative' | 'observed' | 'hypothesis'
+export type Status = 'documented' | 'planned' | 'development' | 'illustrative' | 'screenshot' | 'observed' | 'hypothesis'
 
 export type Feature = { label: string; status: Status; note?: string }
 
 export type Decision = { title: string; chosen: string; alternative: string; tradeoff: string }
 
 export type Screen = {
-  mockup: string // key into the mockup registry (src/components/mockups)
+  mockup?: string // key into the mockup registry (src/components/mockups) — used when there is no screenshot
+  image?: { src: string; small: string; width: number; height: number; alt: string } // real app screenshot
   title: string
   caption: string
   annotations: string[]
+  note?: string // data caveat shown under the screen
 }
+
+// Leave a link as null to show "Coming soon" instead of a button. Paste the real URL to enable it.
+export type ProjectLinks = { liveDemo: string | null; github: string | null; video: string | null }
+
+export type ArchitectureLayer = { layer: string; detail: string; items: string[] }
 
 export type Project = {
   slug: string
   name: string
+  fullName?: string
+  categories?: string[]
+  links: ProjectLinks
+  architecture?: ArchitectureLayer[]
   caseTitle: string
   type: string
   summary: string
@@ -57,6 +70,10 @@ export const projects: Project[] = [
   {
     slug: 'agri-yield-pro',
     name: 'Agri-Yield Pro',
+    fullName: 'AI-Powered Crop Yield Prediction & Optimization System',
+    categories: ['Artificial Intelligence', 'Machine Learning', 'Full-Stack Development', 'Smart Agriculture'],
+    // ▼ Paste your real URLs here (keep null to show "Coming soon")
+    links: { liveDemo: null, github: null, video: null },
     caseTitle: 'Turning farm inputs into actionable crop plans',
     type: 'Agricultural decision-support prototype',
     summary:
@@ -64,10 +81,16 @@ export const projects: Project[] = [
     accent: 'green',
     journey: ['Choose crop', 'Enter conditions', 'Understand estimates', 'Create plan', 'Manage tasks'],
     stack: [
-      'React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Recharts', 'Framer Motion', 'Python', 'FastAPI',
-      'SQLite', 'SQLAlchemy', 'Leaflet', 'MapLibre GL', 'Three.js', 'React Three Fiber', 'Drei',
+      'React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Recharts', 'Framer Motion', 'Lucide React', 'Python', 'FastAPI', 'Uvicorn',
+      'Pydantic', 'SQLite', 'SQLAlchemy', 'bcrypt', 'PyJWT', 'pytest', 'Leaflet', 'MapLibre GL', 'Three.js', 'React Three Fiber', 'Drei',
     ],
-    stackNote: 'Technologies listed in the project report and frontend dependencies.',
+    stackNote: 'Technologies listed in the project report (implementation chapter, frontend modules and dependencies).',
+    architecture: [
+      { layer: 'Frontend', detail: 'React + TypeScript · Vite · Tailwind CSS · Recharts', items: ['Farm dashboard', 'AI yield optimizer', 'Crop planning', 'Agricultural assistant', 'India Agriculture explorer'] },
+      { layer: 'API layer', detail: 'FastAPI on Uvicorn', items: ['HTTP endpoints', 'Pydantic request/response schemas', 'Accounts: bcrypt password hashing + JWT'] },
+      { layer: 'Processing', detail: 'Python services', items: ['Decision-tree & random-forest regressors (synthetic samples)', 'Crop reference-range comparisons', 'Simulated weather scenarios', 'Keyword-based assistant logic'] },
+      { layer: 'Storage', detail: 'SQLite via SQLAlchemy + server memory', items: ['Users, saved predictions, chat logs (SQLite)', 'Active crop plans & version history (in memory — lost on restart)'] },
+    ],
     overview: {
       audience: 'Farmers and agricultural planners exploring crop options and organising seasonal work.',
       problem: 'Farm information is spread across separate tools, making it hard to connect yield estimates with day-to-day tasks.',
@@ -105,17 +128,17 @@ export const projects: Project[] = [
       ],
     },
     features: [
-      { label: 'Farm dashboard', status: 'documented' },
-      { label: 'Crop, land area, soil pH, nutrient and weather inputs', status: 'documented' },
-      { label: 'Illustrative yield estimates', status: 'documented', note: 'Synthetic training data' },
-      { label: 'Crop-specific input comparisons', status: 'documented' },
-      { label: 'Crop selection and farm setup', status: 'documented' },
-      { label: 'Growth stages and farming tasks', status: 'documented' },
-      { label: 'Task completion, skipping and rescheduling', status: 'documented' },
-      { label: 'Simulated weather updates', status: 'documented', note: 'Not a live feed' },
-      { label: 'Agricultural assistant', status: 'documented', note: 'Keyword-based' },
-      { label: 'State-wise agricultural exploration', status: 'documented', note: 'Generated data' },
-      { label: '3D India map interaction', status: 'planned', note: 'Discussed improvement; not confirmed in the project files' },
+      { label: 'AI crop yield prediction', status: 'documented', note: 'Decision-tree & random-forest models on synthetic data — illustrative estimates' },
+      { label: 'Farm dashboard with crop, area, soil pH, N-P-K and weather inputs', status: 'documented' },
+      { label: 'Crop-specific input comparisons and suggested actions', status: 'documented' },
+      { label: 'Crop planning from selection and farm setup to harvest and recorded sales', status: 'documented' },
+      { label: 'Growth stages with tasks to complete, skip or reschedule', status: 'documented' },
+      { label: 'Weather-aware plan updates', status: 'documented', note: 'Weather scenarios are simulated, not a live feed' },
+      { label: 'Soil health score and irrigation adjustments', status: 'documented', note: 'Irrigation revised by simulated weather scenarios' },
+      { label: 'Agricultural assistant (chatbot) for farmers', status: 'documented', note: 'Keyword-based responses, not an LLM' },
+      { label: 'Agricultural statistics and data visualisation', status: 'documented', note: 'Generated demonstration trends' },
+      { label: 'Interactive 3D India agricultural landscape', status: 'development', note: 'Concept: terrain, rivers, soil, irrigation and regions from geographic data' },
+      { label: 'Live weather feed and verified statistics', status: 'planned', note: 'Listed as future work in the report' },
     ],
     decisions: [
       {
@@ -138,12 +161,39 @@ export const projects: Project[] = [
       },
     ],
     screens: [
-      { mockup: 'agri-dashboard', title: 'Farm dashboard', caption: 'Farm summary with estimate, soil score and suggested actions.', annotations: ['Estimate shown with its unit and a “demo data” badge', 'Soil score summarises inputs at a glance', 'Suggested actions link estimate to tasks'] },
-      { mockup: 'agri-inputs', title: 'Farm inputs', caption: 'Crop, land area, soil pH, N-P-K and weather inputs.', annotations: ['Grouped by what the farmer knows', 'Units visible on every field'] },
-      { mockup: 'agri-estimate', title: 'Estimate explanation', caption: 'Inputs compared with crop reference ranges.', annotations: ['Bars show where each input sits in the range', 'Out-of-range inputs highlighted first'] },
-      { mockup: 'agri-timeline', title: 'Lifecycle timeline', caption: 'Growth stages with tasks to complete, skip or reschedule.', annotations: ['Current stage emphasised', 'Every task has three clear actions'] },
-      { mockup: 'agri-weather', title: 'Simulated weather update', caption: 'A weather scenario revises upcoming activities.', annotations: ['Labelled as a simulation', 'Shows which tasks changed and why'] },
-      { mockup: 'agri-map', title: 'State-wise explorer', caption: 'Explore crop indicators by state.', annotations: ['Generated demonstration data, labelled', 'Select a state to see its trend'] },
+      {
+        image: { src: '/images/agri/dashboard.webp', small: '/images/agri/dashboard-800.webp', width: 1600, height: 736, alt: 'Agri-Yield Pro farm dashboard with farm parameters, expected yield, production, crop health and pest risk cards, a yield trend chart and a farming plan' },
+        title: 'Farm dashboard',
+        caption: 'Farm parameters on the left; expected yield, total production, crop health and pest risk at the top; yield trend and farming plan below.',
+        annotations: ['Inputs: crop, area, soil pH and N-P-K', 'Estimate cards come from models trained on synthetic data', 'Farming plan turns nutrient gaps into actions, e.g. a nitrogen top-up'],
+        note: 'Weather readings and the statistics banner in this view are simulated or generated demonstration data, according to the project report.',
+      },
+      {
+        image: { src: '/images/agri/crop-categories.webp', small: '/images/agri/crop-categories-800.webp', width: 1600, height: 726, alt: 'Crop planning step one: choosing between seven crop categories such as cereals, vegetables, fruits and pulses' },
+        title: 'Crop planning — choose a category',
+        caption: 'The first step of the planning flow: seven crop categories to explore before building a plan.',
+        annotations: ['Each category leads to detailed crop profiles', 'A demo-farm tip guides first-time users through the flow'],
+      },
+      {
+        image: { src: '/images/agri/crop-profile.webp', small: '/images/agri/crop-profile-800.webp', width: 1600, height: 732, alt: 'Crop profile for apple showing basic information, a growth stages timeline and a Create Crop Plan button' },
+        title: 'Crop profile and growth stages',
+        caption: 'Requirements at a glance, a growth-stage timeline, and one clear next step: create a crop plan.',
+        annotations: ['Climate, water, soil, pH and temperature requirements', 'Growth stages with day ranges', 'Primary action repeated where the user finishes reading'],
+      },
+      {
+        image: { src: '/images/agri/statistics.webp', small: '/images/agri/statistics-800.webp', width: 1410, height: 760, alt: 'India Agriculture data explorer with state, crop and indicator filters and a historical output trend chart' },
+        title: 'India Agriculture explorer',
+        caption: 'Filter by state, crop and indicator, inspect the trend, explain terms simply and download CSV.',
+        annotations: ['Filters for state, crop/commodity and indicator', '“Explain simply” helper for unfamiliar terms', 'CSV export of the selected view'],
+        note: 'The project report states these trends are generated demonstration data with MoSPI-related labels — not verified official statistics.',
+      },
+      {
+        image: { src: '/images/agri/analytics.webp', small: '/images/agri/analytics-800.webp', width: 1600, height: 484, alt: 'Analytics panels: soil health score, market price trend against MSP, crop yield comparison and crop calendar' },
+        title: 'Analytics panels',
+        caption: 'Soil health score, market price vs MSP, crop yield comparison and the crop calendar.',
+        annotations: ['Soil score broken down into pH, temperature and nitrogen', 'Market price shown against the minimum support price', 'Calendar mirrors the crop lifecycle'],
+        note: 'Values come from synthetic or generated data and are for demonstration.',
+      },
     ],
     outcomes: [
       { status: 'documented', text: 'A locally runnable prototype that connects inputs, estimates, crop plans, simulated weather and guidance in one application.' },
@@ -169,6 +219,8 @@ export const projects: Project[] = [
   {
     slug: 'sitto',
     name: 'SITTO',
+    // ▼ Paste your real URLs here (keep null to show "Coming soon")
+    links: { liveDemo: null, github: null, video: null },
     caseTitle: 'Helping students find campus spaces through interactive navigation',
     type: 'Campus-space discovery prototype',
     summary:
@@ -278,6 +330,8 @@ export const getProject = (slug: string | undefined) => projects.find((p) => p.s
 export const statusLabel: Record<Status, string> = {
   documented: 'Documented',
   planned: 'Planned',
+  development: 'In development',
+  screenshot: 'App screenshot',
   illustrative: 'Illustrative mockup',
   observed: 'Observed',
   hypothesis: 'Hypothesis',

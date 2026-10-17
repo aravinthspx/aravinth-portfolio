@@ -14,7 +14,7 @@ npm run preview   # serve dist/ at http://localhost:4173 (SPA fallback included)
 ## Edit content
 
 - `src/content/profile.ts` — name, headline, intro, links, study line, `resumeUrl` (null hides the Resume link)
-- `src/content/projects.ts` — projects and case studies. Fields set to `null` (role, timeline, testing) stay hidden until you fill them in. Every claim carries a status: documented / planned / illustrative / observed / hypothesis.
+- `src/content/projects.ts` — projects and case studies. Each project has `links: { liveDemo, github, video }` — paste real URLs there; `null` shows "Coming soon". Screens can use a real screenshot (`image`, files in `public/images/agri/`) or an illustrative mockup (`mockup`). Fields set to `null` (role, timeline, testing) stay hidden until you fill them in. Every claim carries a status: documented / planned / illustrative / observed / hypothesis.
 - `src/content/focus.ts` — "Current focus" cards and the learning-journey timeline (no skill percentages; undated items say so).
 - `src/components/Terminal.tsx` — commands for the Agri-Yield Pro console; answers are read from `projects.ts`.
 - `src/content/certificates.ts` — certificates; files live in `public/certificates/` (copied unaltered).

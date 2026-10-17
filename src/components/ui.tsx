@@ -110,6 +110,8 @@ export function Reveal({ children, delay = 0, className = '', as = 'div' }: { ch
 const statusStyle: Record<Status, string> = {
   documented: 'text-ok border-ok/30 bg-ok/10',
   planned: 'text-warn border-warn/30 bg-warn/10',
+  development: 'text-accent border-accent/30 bg-accent/10',
+  screenshot: 'text-leaf border-leaf/30 bg-leaf/10',
   illustrative: 'text-accent-2 border-accent/40 bg-accent/10',
   observed: 'text-warm border-warm/30 bg-warm/10',
   hypothesis: 'text-cream-2 border-line bg-ink-3',

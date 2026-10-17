@@ -6,6 +6,7 @@ import { ProjectVisual } from './ProjectVisual'
 import { hasWebGL, useFinePointer } from '../lib/hooks'
 import { useMotionPref, spring } from '../lib/motion'
 import { ArrowIcon, StatusTag } from './ui'
+import { ProjectLinks } from './ProjectLinks'
 
 /** Floating project panel: status header, 3D diorama, key facts and a case-study link. */
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
@@ -75,6 +76,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
               {project.name}
             </h3>
           </div>
+          {project.fullName && <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-accent">{project.fullName}</p>}
           <p className="mt-2 font-display text-lg font-semibold text-cream-2">{project.caseTitle}</p>
           <p className="mt-3 text-sm leading-relaxed text-cream-2">{project.summary}</p>
 
@@ -93,6 +95,10 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             ))}
             {project.stack.length > 6 && <li className="px-1 py-0.5 font-mono text-[11px] text-muted">+{project.stack.length - 6} more</li>}
           </ul>
+
+          <div className="mt-5">
+            <ProjectLinks links={project.links} name={project.name} compact />
+          </div>
 
           <motion.div className="mt-auto pt-6" whileHover={{ x: 4 }} whileTap={{ scale: 0.96 }} transition={spring}>
             <Link
