@@ -5,7 +5,7 @@ import { profile, facts } from '../content/profile'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
 import { Tilt3D } from '../components/HeroStage'
-import { NeuralBackground } from '../components/NeuralBackground'
+import { HeroShowcase } from '../components/HeroShowcase'
 import { AboutSection } from '../components/AboutSection'
 import { Heading } from '../components/Heading'
 import { SkillsSection } from '../components/sections/Skills'
@@ -54,12 +54,10 @@ function Hero() {
   return (
     <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
       <div className="glow-accent pointer-events-none absolute -left-40 top-1/4 size-[32rem] rounded-full opacity-60 blur-3xl" aria-hidden="true" />
-      {/* Background: interactive network from tools to work */}
-      <NeuralBackground />
 
-      <div className="container-x pointer-events-none relative">
-        {/* Identity and calls to action; the network shows through on the right */}
-        <div className="min-w-0 text-center lg:max-w-[46%] lg:text-left [text-shadow:0_2px_16px_rgba(6,10,19,0.9)]">
+      <div className="container-x relative grid items-center gap-16 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
+        {/* Left: identity and calls to action */}
+        <div className="min-w-0 text-center lg:text-left">
           <motion.p {...rise(0)} className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2/70 px-3 py-1.5 font-mono text-[11px] text-cream-2 backdrop-blur">
             <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
             B.Tech CSE (AI &amp; ML) · SRM IST Ramapuram
@@ -88,7 +86,7 @@ function Hero() {
             {profile.intro}
           </motion.p>
 
-          <motion.div {...rise(0.6)} className="pointer-events-auto mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+          <motion.div {...rise(0.6)} className="mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <ButtonLink to="#projects" variant="accent">
               View Projects <ArrowIcon />
             </ButtonLink>
@@ -123,6 +121,16 @@ function Hero() {
             ))}
           </motion.dl>
         </div>
+
+        {/* Right: real project screens */}
+        <motion.div
+          className="min-w-0 pb-12"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.25, ease }}
+        >
+          <HeroShowcase />
+        </motion.div>
       </div>
     </section>
   )
