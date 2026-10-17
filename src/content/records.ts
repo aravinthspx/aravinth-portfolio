@@ -24,6 +24,7 @@ export type Hackathon = {
   image?: string // project screenshot, e.g. '/images/hackathons/my-project.webp'
   proof?: { image: string; thumb: string; alt: string } // certificate photo
   links?: Link[] // repository, demo, devpost…
+  caseStudy?: { label: string; href: string } // internal case-study page
 }
 
 export const hackathons: Hackathon[] = [
@@ -36,7 +37,17 @@ export const hackathons: Hackathon[] = [
     summary:
       'National-level 24-hour hackathon run by the Departments of CSE (Cyber Security) and CSE (Data Science) with the IEEE Systems, Man, and Cybernetics Society student branch chapter at GNITC, Hyderabad.',
     result: 'Participant',
-    // ▼ Add once confirmed: team, teamSize, role, problem, solution, technologies, image, links
+    team: 'Day Dreamers',
+    teamSize: 4,
+    // role: 'Add your role here once you want it shown',
+    problem:
+      'Problem statement 12 — students waste time walking around to find a free seat, reservations go unused when students don’t arrive, and administrators lack a central view of seat availability and usage.',
+    solution:
+      'SITTO: a campus seat-discovery platform. Students pick a building and a lab or reading hall, choose a seat on a live map with a date, time and duration, and get a QR pass; admins see campus-wide seat metrics and verify entry with a QR scanner.',
+    technologies: ['React', 'Vite', 'Tailwind CSS', 'Python', 'Flask', 'Supabase', 'PostgreSQL', 'jsQR'],
+    image: '/images/sitto/home-800.webp',
+    caseStudy: { label: 'Read the SITTO case study', href: '/work/sitto' },
+    // links: [{ label: 'Repository', url: 'https://github.com/…' }],
     proof: {
       image: '/certificates/tech-horizon-2-0-participation.jpg',
       thumb: '/certificates/thumb-tech-horizon.webp',
@@ -114,7 +125,7 @@ export const education: Education[] = [
     coursework: ['21CSC203P — Advanced Programming Practice'],
     projects: [
       { name: 'Agri-Yield Pro', href: '/work/agri-yield-pro', note: 'Advanced Programming Practice course project · team of three' },
-      { name: 'SITTO', href: '/work/sitto', note: 'Team project · team of four' },
+      { name: 'SITTO', href: '/work/sitto', note: 'Built at Tech Horizon 2.0 hackathon · team of four' },
     ],
     achievements: [],
   },

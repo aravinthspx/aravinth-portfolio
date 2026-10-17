@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { hackathons, type Hackathon } from '../../content/records'
 import { Heading, EmptyState } from '../Heading'
 import { Dialog } from '../Dialog'
-import { ButtonLink, ExternalIcon, Reveal } from '../ui'
+import { ArrowIcon, ButtonLink, ExternalIcon, Reveal } from '../ui'
 import { spring } from '../../lib/motion'
 
 const TrophyIcon = ({ className = 'size-6' }: { className?: string }) => (
@@ -58,9 +59,16 @@ function HackathonCard({ h, index }: { h: Hackathon; index: number }) {
               ))}
             </ul>
           )}
-          {h.links && h.links.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {h.links.map((l) => (
+          {(h.caseStudy || (h.links && h.links.length > 0)) && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {h.caseStudy && (
+                <motion.span className="inline-flex" whileHover={{ x: 3 }} whileTap={{ scale: 0.96 }} transition={spring}>
+                  <Link to={h.caseStudy.href} className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-6px_rgba(79,217,234,0.8)] hover:bg-accent-2">
+                    {h.caseStudy.label} <ArrowIcon className="size-4" />
+                  </Link>
+                </motion.span>
+              )}
+              {h.links?.map((l) => (
                 <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/10">
                   {l.label} <ExternalIcon className="size-3.5" />
                 </a>
@@ -71,7 +79,12 @@ function HackathonCard({ h, index }: { h: Hackathon; index: number }) {
 
         {(h.proof || h.image) && (
           <div className="min-w-0">
-            {h.image && <img src={h.image} alt={`${h.name} project screenshot`} loading="lazy" className="mb-4 w-full rounded-2xl border border-line" />}
+            {h.image && (
+              <figure className="mb-4">
+                <img src={h.image} alt={`Screenshot of the project built at ${h.name}`} loading="lazy" className="w-full rounded-2xl border border-line" />
+                <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-muted">Project built at the event</figcaption>
+              </figure>
+            )}
             {h.proof && (
               <>
                 <motion.button

@@ -95,13 +95,6 @@ export const journey: Milestone[] = [
     href: '/work/agri-yield-pro',
   },
   {
-    when: 'Team project · date not listed',
-    title: 'SITTO',
-    body: 'Team of four. Campus seat discovery and reservations, from campus map to QR check-in.',
-    kind: 'Project',
-    href: '/work/sitto',
-  },
-  {
     when: '10 Aug 2026',
     title: 'Three Forage job simulations',
     body: 'Datacom (partnering with AI), Deloitte (data analytics) and BCG X (GenAI) — practical task-based programmes.',
@@ -114,11 +107,11 @@ export const journey: Milestone[] = [
     kind: 'Certificate',
   },
   {
-    when: '9–10 Oct 2026',
-    title: 'Tech Horizon 2.0 hackathon',
-    body: 'Took part in a national-level 24-hour offline hackathon run by the IEEE SMC Society at GNITC, Hyderabad.',
+    when: '9–10 Oct 2026 · Tech Horizon 2.0',
+    title: 'SITTO at Tech Horizon 2.0',
+    body: 'Team Day Dreamers (four members) built SITTO — campus seat discovery, booking and QR check-in — at a national-level 24-hour hackathon run by the IEEE SMC Society at GNITC, Hyderabad.',
     kind: 'Hackathon',
-    href: '/#hackathons',
+    href: '/work/sitto',
   },
   {
     when: 'Oct 2026 · now',

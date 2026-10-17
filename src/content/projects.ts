@@ -245,7 +245,7 @@ export const projects: Project[] = [
       audience: 'Students looking for a library or lab seat, and administrators who manage those spaces.',
       problem: 'Students walk between buildings searching for a free seat, and administrators lack a central view of availability.',
       team: 'Team of four — “Day Dreamers”',
-      context: null,
+      context: 'Built at Tech Horizon 2.0 — national-level 24-hour hackathon, IEEE SMC Society, GNITC Hyderabad (9–10 Oct 2026)',
       role: null,
       timeline: null,
       constraints: [
