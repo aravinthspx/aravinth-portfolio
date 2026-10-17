@@ -13,12 +13,12 @@ function Hero() {
   return (
     <section aria-labelledby="hero-title" className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24">
       <div className="container-x relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
-        <div className="min-w-0 lg:col-span-7">
+        <div className="min-w-0 lg:col-span-6">
           <motion.p className="flex flex-wrap items-baseline gap-x-3 gap-y-1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className="font-display text-xl font-bold tracking-wide text-cream">{profile.name}</span>
             <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">{profile.title}</span>
           </motion.p>
-          <h1 id="hero-title" className="mt-6 font-display text-[clamp(2rem,9.5vw,2.6rem)] font-extrabold leading-[0.98] tracking-tight text-cream sm:text-6xl lg:text-[3.9rem] xl:text-[4.6rem]">
+          <h1 id="hero-title" className="mt-6 font-display text-[clamp(2rem,9.5vw,2.6rem)] font-extrabold leading-[0.98] tracking-tight text-cream sm:text-6xl lg:text-[3.5rem] xl:text-[4.2rem]">
             {words.map((w, i) => (
               <Fragment key={i}>
               <span className="inline-block overflow-hidden pb-1 align-bottom">
@@ -47,7 +47,7 @@ function Hero() {
             </ButtonLink>
           </motion.div>
         </div>
-        <motion.div className="min-w-0 lg:col-span-5" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1, ease: [0.2, 0.8, 0.2, 1] }}>
+        <motion.div className="min-w-0 lg:col-span-6" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1, ease: [0.2, 0.8, 0.2, 1] }}>
           <HeroVisual />
         </motion.div>
       </div>

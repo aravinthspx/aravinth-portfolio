@@ -15,6 +15,14 @@ export const profile = {
   },
   // Source: Agri-Yield Pro project report title page. Set to null to hide.
   study: 'B.Tech Computer Science and Engineering (AI & Machine Learning), SRM Institute of Science and Technology, Ramapuram',
+  // Hero portrait: background removed, shown in black and white. Set to null to hide.
+  portrait: {
+    src: '/images/aravinth-cutout-801.webp',
+    srcSet: '/images/aravinth-cutout-480.webp 480w, /images/aravinth-cutout-801.webp 801w',
+    width: 801,
+    height: 1509,
+    alt: 'Black and white portrait of Aravinth M, seated and looking to the side',
+  } as { src: string; srcSet: string; width: number; height: number; alt: string } | null,
   // Add a real file to /public (e.g. /resume.pdf) and set the path here to show a Resume link.
   resumeUrl: null as string | null,
 }
