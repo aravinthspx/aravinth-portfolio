@@ -15,9 +15,9 @@ export function JumpingPortrait({ target, children }: { target: RefObject<HTMLEl
   const velocity = useVelocity(scrollY)
 
   // Zoom curve across the section: small → largest at the centre → small again.
-  const zoom = useTransform(scrollYProgress, [0, 0.45, 1], [0.82, 1.12, 0.86])
+  const zoom = useTransform(scrollYProgress, [0, 0.45, 1], [0.9, 1.07, 0.93])
   // Fast scrolling pulls the image back a little (zoom out), then it settles.
-  const pull = useTransform(velocity, [-3000, 0, 3000], [-0.07, 0, -0.07], { clamp: true })
+  const pull = useTransform(velocity, [-3000, 0, 3000], [-0.05, 0, -0.05], { clamp: true })
   const scale = useSpring(useTransform(() => zoom.get() + pull.get()), { stiffness: 90, damping: 16, mass: 0.8 })
 
   if (reduced) return <div className="absolute inset-0">{children}</div>
@@ -25,7 +25,7 @@ export function JumpingPortrait({ target, children }: { target: RefObject<HTMLEl
   return (
     <motion.div
       className="absolute inset-0 origin-[50%_75%]"
-      initial={{ opacity: 0, scale: 0.6 }}
+      initial={{ opacity: 0, scale: 0.85 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ amount: 0.2 }}
       transition={{ opacity: { duration: 0.6 }, scale: { type: 'spring', stiffness: 120, damping: 18 } }}
