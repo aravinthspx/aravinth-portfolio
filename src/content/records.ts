@@ -117,7 +117,7 @@ export type Education = {
 }
 
 // Sources: Agri-Yield Pro report (institution, programme, course code), CGPA as provided by Aravinth.
-// Years inferred from the 2025-series register number — correct them here if needed.
+// Years (2025–2029) confirmed by Aravinth.
 export const education: Education[] = [
   {
     institution: 'SRM Institute of Science and Technology — Ramapuram',
