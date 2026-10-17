@@ -29,7 +29,7 @@ function BrandMark() {
         <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,#13213a_0%,#080d17_75%)]">
           {/* glass sheen */}
           <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/12 to-transparent" />
-          <span className="relative font-display text-[15px] font-extrabold leading-none tracking-[-0.04em]" style={{ transform: 'translateZ(12px)' }}>
+          <span className="relative font-display text-[15px] font-bold leading-none tracking-[-0.04em]" style={{ transform: 'translateZ(12px)' }}>
             <span className="text-cream">A</span>
             <span className="bg-gradient-to-br from-accent to-leaf bg-clip-text text-transparent">M</span>
           </span>

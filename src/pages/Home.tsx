@@ -21,7 +21,7 @@ function Heading({ pill, title, id, children }: { pill: string; title: ReactNode
         <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" aria-hidden="true" />
         {pill}
       </p>
-      <h2 id={id} className="mt-5 font-display text-4xl font-extrabold tracking-tight text-cream sm:text-5xl md:text-6xl">
+      <h2 id={id} className="mt-5 font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl md:text-5xl">
         {title}
       </h2>
       <span className="mx-auto mt-5 block h-1 w-16 rounded-full bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
@@ -56,7 +56,7 @@ function Hero() {
         <Tilt3D className="mt-4">
         <motion.h1
           id="hero-title"
-          className="whitespace-nowrap font-display [text-shadow:none] text-[clamp(2.2rem,10vw,8.5rem)] font-extrabold leading-[0.95] tracking-tight"
+          className="whitespace-nowrap font-display [text-shadow:none] text-[clamp(2.4rem,9vw,5.5rem)] font-bold leading-[0.95] tracking-tight"
           initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.2, 0.8, 0.2, 1] }}
@@ -69,7 +69,7 @@ function Hero() {
           AI/ML student · product builder
         </motion.p>
 
-        <p className="mx-auto mt-8 max-w-3xl font-display text-2xl font-semibold leading-snug text-cream sm:text-3xl" aria-label={`“${profile.headline}”`}>
+        <p className="mx-auto mt-8 max-w-3xl font-display text-xl font-medium leading-snug text-cream sm:text-2xl" aria-label={`“${profile.headline}”`}>
           <span aria-hidden="true">
             “
             {words.map((w, i) => (
@@ -336,7 +336,7 @@ function Contact() {
           <p className="relative inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
             <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" /> Contact
           </p>
-          <h2 id="contact-title" className="relative mt-6 font-display text-4xl font-extrabold leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+          <h2 id="contact-title" className="relative mt-6 font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
             Let’s build something <span className="bg-gradient-to-r from-accent to-leaf bg-clip-text text-transparent">useful.</span>
           </h2>
           <a href={`mailto:${profile.email}`} className="group relative mt-10 inline-flex max-w-full items-center gap-3 break-all font-display text-lg font-semibold text-cream sm:text-2xl">

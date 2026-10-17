@@ -72,7 +72,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           </div>
           <div className="mt-4 flex items-center gap-3">
             {project.logo && <img src={project.logo} alt="" width={400} height={160} loading="lazy" className="h-10 w-auto rounded-lg bg-white px-2 py-1" />}
-            <h3 id={`p-${project.slug}`} className="font-display text-3xl font-extrabold tracking-tight text-cream sm:text-4xl">
+            <h3 id={`p-${project.slug}`} className="font-display text-2xl font-bold tracking-tight text-cream sm:text-3xl">
               {project.name}
             </h3>
           </div>

@@ -130,7 +130,7 @@ export function SectionHeading({ eyebrow, title, id, children }: { eyebrow: stri
   return (
     <Reveal className="mb-12 md:mb-16 max-w-3xl">
       <p className="eyebrow mb-4">{eyebrow}</p>
-      <h2 id={id} className="font-display text-4xl font-bold leading-[1.02] tracking-tight text-cream sm:text-5xl md:text-6xl">
+      <h2 id={id} className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-cream sm:text-4xl md:text-5xl">
         {title}
       </h2>
       {children && <div className="mt-5 text-lg leading-relaxed text-cream-2">{children}</div>}

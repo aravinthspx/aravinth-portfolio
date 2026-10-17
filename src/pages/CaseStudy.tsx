@@ -23,7 +23,7 @@ function Block({ id, n, title, children }: { id: string; n: number; title: strin
     <section id={id} aria-labelledby={`${id}-h`} className="scroll-mt-24 border-t border-line py-16 md:py-24">
       <Reveal>
         <p className="font-mono text-xs text-muted">0{n}</p>
-        <h2 id={`${id}-h`} className="mt-2 font-display text-3xl font-bold tracking-tight text-cream md:text-5xl">
+        <h2 id={`${id}-h`} className="mt-2 font-display text-2xl font-bold tracking-tight text-cream md:text-4xl">
           {title}
         </h2>
       </Reveal>
@@ -83,7 +83,7 @@ export default function CaseStudy() {
           Case study · {p.name}
         </motion.p>
         <motion.h1
-          className="relative mt-5 max-w-5xl font-display text-4xl font-extrabold leading-[1] tracking-tight text-cream sm:text-6xl md:text-7xl"
+          className="relative mt-5 max-w-5xl font-display text-3xl font-bold leading-[1.08] tracking-tight text-cream sm:text-4xl md:text-5xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
@@ -336,7 +336,7 @@ export default function CaseStudy() {
         <Link to={`/work/${next.slug}`} className="group container-x flex flex-col gap-4 py-16 md:flex-row md:items-end md:justify-between md:py-24">
           <span>
             <span className="eyebrow">Next case study</span>
-            <span className="mt-4 block font-display text-5xl font-extrabold tracking-tight transition-colors group-hover:text-accent-2 md:text-7xl">{next.name}</span>
+            <span className="mt-4 block font-display text-4xl font-bold tracking-tight transition-colors group-hover:text-accent-2 md:text-5xl">{next.name}</span>
             <span className="mt-2 block text-cream-2">{next.caseTitle}</span>
           </span>
           <span className="grid size-16 shrink-0 place-items-center rounded-full border border-line transition-all group-hover:translate-x-2 group-hover:border-accent-2 group-hover:bg-accent group-hover:text-ink">
