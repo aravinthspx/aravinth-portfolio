@@ -10,8 +10,9 @@ import { SkillsSection } from '../components/sections/Skills'
 import { ProjectsSection } from '../components/sections/Projects'
 import { HackathonsSection } from '../components/sections/Hackathons'
 import { CertificatesSection } from '../components/sections/Certificates'
+import { ContactSection } from '../components/sections/Contact'
 import { EducationSection, ExperienceSection, AchievementsSection, BlogSection } from '../components/sections/Records'
-import { ButtonLink, CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ArrowIcon } from '../components/ui'
+import { ButtonLink, IconLink, GitHubIcon, LinkedInIcon, ArrowIcon } from '../components/ui'
 
 function Hero() {
   const [live, setLive] = useState(false)
@@ -128,42 +129,6 @@ function JourneySection() {
   )
 }
 
-function Contact() {
-  return (
-    <section id="contact" aria-labelledby="contact-title" className="relative py-28 md:py-40">
-      <div className="container-x">
-        <Reveal className="panel glow-ring relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] px-6 py-14 text-center md:px-12 md:py-20">
-          <div className="glow-accent pointer-events-none absolute left-1/2 top-0 size-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" aria-hidden="true" />
-          <p className="relative inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-            <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" /> Contact
-          </p>
-          <h2 id="contact-title" className="relative mt-6 font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-            Let’s build something <span className="bg-gradient-to-r from-accent to-leaf bg-clip-text text-transparent">useful.</span>
-          </h2>
-          <a href={`mailto:${profile.email}`} className="group relative mt-10 inline-flex max-w-full items-center gap-3 break-all font-display text-lg font-semibold text-cream sm:text-2xl">
-            <MailIcon className="size-6 shrink-0 text-accent" />
-            <span className="underline decoration-line decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent">{profile.email}</span>
-          </a>
-          <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
-            <CopyEmail />
-          </div>
-          <div className="relative mt-6 flex items-center justify-center gap-3">
-            <IconLink href={`mailto:${profile.email}`} label="Send an email">
-              <MailIcon />
-            </IconLink>
-            <IconLink href={profile.links.linkedin} label="LinkedIn profile (opens in new tab)">
-              <LinkedInIcon />
-            </IconLink>
-            <IconLink href={profile.links.github} label="GitHub profile (opens in new tab)">
-              <GitHubIcon />
-            </IconLink>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
 export default function Home() {
   return (
     <>
@@ -179,7 +144,7 @@ export default function Home() {
       <AchievementsSection />
       <EducationSection />
       <BlogSection />
-      <Contact />
+      <ContactSection />
     </>
   )
 }

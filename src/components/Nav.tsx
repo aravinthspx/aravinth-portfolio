@@ -1,17 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { navSections } from '../lib/sections'
 import { AnimatePresence, motion } from 'motion/react'
 import { profile } from '../content/profile'
 import { useMotionPref, spring } from '../lib/motion'
 import { GitHubIcon, LinkedInIcon } from './ui'
 
-const links = [
-  { hash: '#projects', label: 'Projects' },
-  { hash: '#about', label: 'About' },
-  { hash: '#skills', label: 'Skills' },
-  { hash: '#certificates', label: 'Certificates' },
-  { hash: '#contact', label: 'Contact' },
-]
+const links = navSections.map((sec) => ({ id: sec.id, hash: `#${sec.id}`, label: sec.label }))
+
+/** Scroll-spy: the id of the section currently in the middle of the viewport (home page only). */
+function useActiveSection(enabled: boolean) {
+  const [active, setActive] = useState<string>('home')
+  useEffect(() => {
+    if (!enabled || !('IntersectionObserver' in window)) return
+    const els = links.map((l) => document.getElementById(l.id)).filter((el): el is HTMLElement => !!el)
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (hit) setActive(hit.target.id)
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.01] },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [enabled])
+  return enabled ? active : null
+}
 
 /**
  * Brand mark: a glass "AM" monogram tile with a cyan→leaf gradient edge.
@@ -65,6 +79,8 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const { pathname } = useLocation()
+  const active = useActiveSection(pathname === '/')
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24)
@@ -101,20 +117,28 @@ export function Nav() {
               </span>
               <span className="mt-1.5 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex">
                 <span className="h-px w-4 bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
-                AI/ML · Product builder
+                {profile.shortTitle}
               </span>
             </span>
           </Link>
         </motion.span>
 
-        <ul className="hidden items-center gap-1 md:flex">
-          {links.map((l) => (
-            <motion.li key={l.hash} whileHover={{ y: -2 }} whileTap={{ scale: 0.94 }} transition={spring}>
-              <Link to={{ pathname: '/', hash: l.hash }} className="rounded-full px-4 py-2 text-sm font-medium text-cream-2 transition-colors hover:bg-ink-3 hover:text-cream">
-                {l.label}
-              </Link>
-            </motion.li>
-          ))}
+        <ul className="hidden items-center gap-0.5 xl:flex">
+          {links.map((l) => {
+            const on = active === l.id
+            return (
+              <motion.li key={l.hash} whileHover={{ y: -2 }} whileTap={{ scale: 0.94 }} transition={spring} className="relative">
+                {on && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-full border border-accent/40 bg-accent/10" transition={spring} aria-hidden="true" />}
+                <Link
+                  to={{ pathname: '/', hash: l.hash }}
+                  aria-current={on ? 'location' : undefined}
+                  className={`relative block rounded-full px-3 py-2 text-[13px] font-medium transition-colors ${on ? 'text-accent' : 'text-cream-2 hover:text-cream'}`}
+                >
+                  {l.label}
+                </Link>
+              </motion.li>
+            )
+          })}
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -133,18 +157,12 @@ export function Nav() {
               Resume
             </a>
           )}
-          <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub profile (opens in new tab)" className="grid size-10 place-items-center rounded-full text-cream-2 hover:bg-ink-3 hover:text-cream">
-            <GitHubIcon />
-          </a>
-          <a href={profile.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn profile (opens in new tab)" className="grid size-10 place-items-center rounded-full text-cream-2 hover:bg-ink-3 hover:text-cream">
-            <LinkedInIcon />
-          </a>
         </div>
 
         <motion.button
           ref={btnRef}
           type="button"
-          className="grid size-11 place-items-center rounded-full border border-line md:hidden cursor-pointer"
+          className="grid size-11 place-items-center rounded-full border border-line xl:hidden cursor-pointer"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? 'Close menu' : 'Open menu'}
@@ -167,20 +185,25 @@ export function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-line/60 md:hidden"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line/60 xl:hidden"
           >
             <div className="container-x py-6">
-              <ul className="flex flex-col gap-1">
+              <ul className="grid gap-1 sm:grid-cols-2">
                 {links.map((l, i) => (
-                  <motion.li key={l.hash} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
-                    <Link to={{ pathname: '/', hash: l.hash }} onClick={() => setOpen(false)} className="block rounded-2xl px-3 py-3 font-display text-3xl font-bold text-cream hover:bg-ink-3">
+                  <motion.li key={l.hash} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 * i }}>
+                    <Link
+                      to={{ pathname: '/', hash: l.hash }}
+                      onClick={() => setOpen(false)}
+                      aria-current={active === l.id ? 'location' : undefined}
+                      className={`block rounded-2xl px-3 py-2.5 font-display text-2xl font-bold hover:bg-ink-3 ${active === l.id ? 'text-accent' : 'text-cream'}`}
+                    >
                       {l.label}
                     </Link>
                   </motion.li>
                 ))}
               </ul>
-              <div className="mt-6 flex items-center gap-3">
-                <MotionToggle />
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <MotionToggle className="md:hidden" />
                 <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub profile (opens in new tab)" className="grid size-11 place-items-center rounded-full border border-line">
                   <GitHubIcon />
                 </a>

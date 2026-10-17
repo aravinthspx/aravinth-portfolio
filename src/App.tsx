@@ -8,6 +8,7 @@ import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 
 const CaseStudy = lazy(() => import('./pages/CaseStudy'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
 
 /** Scroll to top on route change, or to the #section when a hash is present. */
 function ScrollManager() {
@@ -49,6 +50,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/work/:slug" element={<CaseStudy />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

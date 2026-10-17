@@ -6,6 +6,7 @@ import { ScreenView } from '../components/ScreenView'
 import { ProjectLinks } from '../components/ProjectLinks'
 import { ArrowIcon, ButtonLink, Reveal, StatusTag } from '../components/ui'
 import NotFound from './NotFound'
+import { SITE_TITLE } from '../lib/meta'
 
 const baseSections = [
   ['overview', 'Overview'],
@@ -48,7 +49,7 @@ export default function CaseStudy() {
   useEffect(() => {
     if (p) document.title = `${p.name} — ${p.caseTitle} | Aravinth M`
     return () => {
-      document.title = 'Aravinth M — AI/ML Student & Product Builder'
+      document.title = SITE_TITLE
     }
   }, [p])
 

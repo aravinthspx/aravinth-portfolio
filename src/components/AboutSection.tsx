@@ -1,6 +1,6 @@
 import { useRef, type ReactNode } from 'react'
 import { motion } from 'motion/react'
-import { profile } from '../content/profile'
+import { profile, about } from '../content/profile'
 import { projects } from '../content/projects'
 import { certificates } from '../content/certificates'
 import { focusAreas } from '../content/focus'
@@ -10,26 +10,19 @@ import { Reveal } from './ui'
 // Fade the cut-out's bottom (the photo crops the legs) so it melts into the page.
 const PORTRAIT_FADE = 'linear-gradient(to bottom, #000 0%, #000 72%, transparent 97%)'
 
-type IconName = 'build' | 'data' | 'trust' | 'compass'
+type IconName = (typeof about.cards)[number]['icon']
 
 function Icon({ name }: { name: IconName }) {
   const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   return (
     <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true" {...p}>
-      {name === 'build' && <path d="M14.5 5.5 18.5 9.5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z" />}
-      {name === 'data' && <path d="M4 19V5m0 14h16M8 15l3-4 3 2 4-6" />}
-      {name === 'trust' && <path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-4" />}
-      {name === 'compass' && <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.5-12.5-2 5-5 2 2-5 5-2Z" />}
+      {name === 'focus' && <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0-3.5h.01" />}
+      {name === 'interests' && <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z" />}
+      {name === 'goals' && <path d="M4 19V5m0 14h16M8 15l3-4 3 2 4-6" />}
+      {name === 'direction' && <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.5-12.5-2 5-5 2 2-5 5-2Z" />}
     </svg>
   )
 }
-
-const stories: { icon: IconName; title: string; body: string }[] = [
-  { icon: 'build', title: 'Learning by building', body: 'I learn through projects that force ideas to work end to end — interface, API and data.' },
-  { icon: 'data', title: 'Honest about data', body: 'A farm-planning prototype taught me to explain estimates and label synthetic data instead of over-claiming accuracy.' },
-  { icon: 'trust', title: 'Details shape trust', body: 'A campus-space platform showed how a mis-mapped building or unclear empty state undermines a useful tool.' },
-  { icon: 'compass', title: 'Where I’m heading', body: 'Prototypes that connect AI with clear, usable interfaces — and better ways to evaluate them.' },
-]
 
 /** Card with a soft cyan spotlight that follows the cursor. */
 function SpotlightCard({ children, delay }: { children: ReactNode; delay: number }) {
@@ -158,15 +151,15 @@ export function AboutSection() {
               About <span className="bg-gradient-to-r from-accent to-leaf bg-clip-text text-transparent">me</span>
             </h2>
             <span className="mt-5 block h-1 w-16 rounded-full bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
-            <p className="mt-7 text-xl leading-relaxed text-cream md:text-2xl">
-              I’m most interested in the space where <span className="text-accent">machine learning</span> meets{' '}
-              <span className="text-leaf">everyday decisions</span> — and in making the result <span className="underline decoration-accent/60 decoration-2 underline-offset-[6px]">understandable</span> to the person using it.
+            <p className="mt-7 text-xl leading-relaxed text-cream md:text-2xl">{about.intro}</p>
+            <p className="mt-4 text-cream-2">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">What I enjoy building · </span>
+              {about.enjoyBuilding}
             </p>
-            <p className="mt-4 text-cream-2">An AI/ML student exploring product design and full-stack development — learning most by building.</p>
           </Reveal>
 
           <ul className="mt-9 grid gap-4 sm:grid-cols-2">
-            {stories.map((s, i) => (
+            {about.cards.map((s, i) => (
               <SpotlightCard key={s.title} delay={0.06 * i}>
                 <span className="grid size-10 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
                   <Icon name={s.icon} />
