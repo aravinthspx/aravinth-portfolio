@@ -107,6 +107,8 @@ export type Education = {
   institution: string
   degree: string
   department: string
+  location?: string
+  cgpa?: { value: string; scale: string } // as you report it, e.g. { value: '8.27', scale: '10' }
   startYear: string | null // set when confirmed, e.g. '2025'
   graduationYear: string | null // expected graduation, e.g. '2029'
   coursework: string[]
@@ -114,14 +116,17 @@ export type Education = {
   achievements: string[]
 }
 
-// Source: Agri-Yield Pro project report (title page and course code). Years left blank until confirmed.
+// Sources: Agri-Yield Pro report (institution, programme, course code), CGPA as provided by Aravinth.
+// Years inferred from the 2025-series register number — correct them here if needed.
 export const education: Education[] = [
   {
-    institution: 'SRM Institute of Science and Technology, Ramapuram, Chennai',
-    degree: 'Bachelor of Technology (B.Tech)',
-    department: 'Computer Science and Engineering — Artificial Intelligence & Machine Learning',
-    startYear: null,
-    graduationYear: null,
+    institution: 'SRM Institute of Science and Technology — Ramapuram',
+    degree: 'B.Tech',
+    department: 'Computer Science & Engineering (Artificial Intelligence & Machine Learning)',
+    location: 'Chennai, India',
+    cgpa: { value: '8.27', scale: '10' },
+    startYear: '2025',
+    graduationYear: '2029',
     coursework: ['21CSC203P — Advanced Programming Practice'],
     projects: [
       { name: 'Agri-Yield Pro', href: '/work/agri-yield-pro', note: 'Advanced Programming Practice course project · team of three' },

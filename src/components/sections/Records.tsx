@@ -5,70 +5,102 @@ import { Heading } from '../Heading'
 import { ArrowIcon, ExternalIcon, Reveal } from '../ui'
 
 /* ------------------------------ Education ------------------------------- */
+const CheckIcon = () => (
+  <svg viewBox="0 0 24 24" className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8.5 12 2.5 2.5 4.5-5" />
+  </svg>
+)
+
 export function EducationSection() {
   if (!education.length) return null
   return (
     <section id="education" aria-labelledby="education-title" className="relative py-24 md:py-32">
       <div className="container-x">
         <Heading pill="Academic path" title="Education" id="education-title" />
-        <ul className="mx-auto grid max-w-4xl gap-6">
+        <ul className="mx-auto grid max-w-5xl gap-6">
           {education.map((e) => {
-            const years = [e.startYear, e.graduationYear ? `${e.graduationYear} (expected)` : null].filter(Boolean).join(' – ')
+            const years = e.startYear && e.graduationYear ? `${e.startYear}–${e.graduationYear}` : e.startYear ?? null
             return (
-              <Reveal as="li" key={e.institution + e.degree} className="panel glow-ring relative overflow-hidden rounded-3xl p-6 md:p-8">
-                <div className="glow-accent pointer-events-none absolute -right-20 -top-20 size-64 rounded-full blur-2xl" aria-hidden="true" />
-                <div className="relative flex flex-col gap-6 md:flex-row md:items-start">
-                  <span className="grid size-14 shrink-0 place-items-center rounded-2xl border border-accent/30 bg-accent/10 text-accent" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m2 9 10-5 10 5-10 5L2 9Zm4 2v5c2 2 10 2 12 0v-5M22 9v6" />
-                    </svg>
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    {years && <p className="font-mono text-xs text-accent">{years}</p>}
-                    <h3 className="font-display text-2xl font-bold text-cream">{e.degree}</h3>
-                    <p className="mt-1 text-cream-2">{e.department}</p>
-                    <p className="mt-1 text-sm text-muted">{e.institution}</p>
-
-                    <div className="mt-6 grid gap-6 md:grid-cols-2">
-                      {e.coursework.length > 0 && (
-                        <div>
-                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Relevant coursework</p>
-                          <ul className="mt-2 space-y-1.5 text-sm text-cream-2">
-                            {e.coursework.map((c) => (
-                              <li key={c} className="flex gap-2"><span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />{c}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {e.projects.length > 0 && (
-                        <div>
-                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Academic projects</p>
-                          <ul className="mt-2 space-y-2 text-sm">
-                            {e.projects.map((p) => (
-                              <li key={p.name}>
-                                {p.href ? (
-                                  <Link to={p.href} className="inline-flex items-center gap-1.5 font-semibold text-accent hover:text-accent-2">
-                                    {p.name} <ArrowIcon className="size-3.5" />
-                                  </Link>
-                                ) : (
-                                  <span className="font-semibold text-cream">{p.name}</span>
-                                )}
-                                {p.note && <span className="block text-xs text-muted">{p.note}</span>}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                    {e.achievements.length > 0 && (
-                      <ul className="mt-5 space-y-1 text-sm text-cream-2">
-                        {e.achievements.map((a) => (
-                          <li key={a}>★ {a}</li>
-                        ))}
-                      </ul>
+              <Reveal as="li" key={e.institution + e.degree} className="panel relative overflow-hidden rounded-[2rem] p-6 sm:p-10">
+                <div className="glow-accent pointer-events-none absolute -right-24 -top-24 size-72 rounded-full blur-2xl" aria-hidden="true" />
+                <div className="relative flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+                  <div className="min-w-0">
+                    {(years || e.graduationYear) && (
+                      <p className="flex flex-wrap items-center gap-3">
+                        {years && <span className="rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">{years}</span>}
+                        {e.graduationYear && <span className="font-mono text-xs text-muted">Graduation target: {e.graduationYear}</span>}
+                      </p>
+                    )}
+                    <h3 className="mt-4 font-display text-2xl font-bold leading-tight text-cream sm:text-3xl md:text-4xl">{e.institution}</h3>
+                    <p className="mt-3 text-lg text-accent">
+                      {e.degree} — {e.department}
+                    </p>
+                    {e.location && (
+                      <p className="mt-3 flex items-center gap-2 font-mono text-xs text-muted">
+                        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                          <path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z" />
+                          <circle cx="12" cy="10" r="2.5" />
+                        </svg>
+                        {e.location}
+                      </p>
                     )}
                   </div>
+
+                  {e.cgpa && (
+                    <div className="shrink-0 rounded-2xl border border-warm/40 bg-[radial-gradient(120%_120%_at_50%_0%,rgba(229,180,95,0.12),rgba(11,17,29,0.9)_70%)] px-8 py-6 text-center shadow-[0_0_40px_-16px_rgba(229,180,95,0.6)] md:min-w-[14rem]">
+                      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-warm">Cumulative CGPA</p>
+                      <p className="mt-2 font-display text-5xl font-bold text-cream">
+                        {e.cgpa.value} <span className="text-3xl text-cream-2">/ {e.cgpa.scale}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
+
+                {(e.coursework.length > 0 || e.projects.length > 0) && (
+                  <div className="relative mt-8 border-t border-line pt-8">
+                    <p className="flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                      <svg viewBox="0 0 24 24" className="size-4 text-accent" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                        <path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3V5Zm18 0h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7V5Z" />
+                      </svg>
+                      Coursework &amp; academic projects
+                    </p>
+                    <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                      {e.coursework.map((c) => (
+                        <li key={c} className="flex items-center gap-3 rounded-xl border border-line bg-ink-2/70 px-4 py-3.5 text-sm text-cream">
+                          <span className="text-accent"><CheckIcon /></span>
+                          {c}
+                        </li>
+                      ))}
+                      {e.projects.map((p) => (
+                        <li key={p.name}>
+                          {p.href ? (
+                            <Link to={p.href} className="group flex h-full items-center gap-3 rounded-xl border border-line bg-ink-2/70 px-4 py-3.5 text-sm transition-colors hover:border-accent/50">
+                              <span className="text-leaf"><CheckIcon /></span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block font-semibold text-cream group-hover:text-accent-2">{p.name}</span>
+                                {p.note && <span className="block text-xs text-muted">{p.note}</span>}
+                              </span>
+                              <ArrowIcon className="size-4 text-accent transition-transform group-hover:translate-x-1" />
+                            </Link>
+                          ) : (
+                            <span className="flex items-center gap-3 rounded-xl border border-line bg-ink-2/70 px-4 py-3.5 text-sm text-cream">
+                              <span className="text-leaf"><CheckIcon /></span>
+                              {p.name}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {e.achievements.length > 0 && (
+                  <ul className="relative mt-5 space-y-1 text-sm text-cream-2">
+                    {e.achievements.map((a) => (
+                      <li key={a}>★ {a}</li>
+                    ))}
+                  </ul>
+                )}
               </Reveal>
             )
           })}
