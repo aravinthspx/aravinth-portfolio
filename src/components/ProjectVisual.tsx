@@ -58,7 +58,7 @@ export function ProjectVisual({ slug }: { slug: string }) {
       aria-hidden="true"
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
-      className={`relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] ${green ? 'bg-[radial-gradient(120%_90%_at_50%_10%,#252b20_0%,#151513_70%)]' : 'bg-[radial-gradient(120%_90%_at_50%_10%,#2a251d_0%,#151513_70%)]'}`}
+      className={`relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] ${green ? 'bg-[radial-gradient(120%_90%_at_50%_10%,#16261d_0%,#080d17_72%)]' : 'bg-[radial-gradient(120%_90%_at_50%_10%,#0f2733_0%,#080d17_72%)]'}`}
     >
       {webgl && seen ? (
         <SceneBoundary fallback={<Fallback slug={slug} />}>

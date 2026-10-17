@@ -4,7 +4,7 @@ import { MeshPhysicalMaterial, MeshStandardMaterial, type Material } from 'three
 export type Finish = 'glass' | 'chrome' | 'matte' | 'ivory' | 'green'
 
 export const palette = {
-  ink: '#11110f',
+  ink: '#060a13',
   matte: '#1c1c1a',
   chrome: '#d6d5d0',
   ivory: '#ece6d8',

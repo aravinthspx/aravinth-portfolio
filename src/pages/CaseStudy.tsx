@@ -69,7 +69,7 @@ export default function CaseStudy() {
     <article className="pt-24 md:pt-32">
       {/* Intro + final experience shown early */}
       <header className="container-x relative">
-        <div className={`pointer-events-none absolute -top-20 right-0 size-[30rem] rounded-full blur-3xl ${green ? 'glow-accent' : 'glow-warm'}`} aria-hidden="true" />
+        <div className={`pointer-events-none absolute -top-20 right-0 size-[30rem] rounded-full blur-3xl ${green ? 'glow-warm' : 'glow-accent'}`} aria-hidden="true" />
         <nav aria-label="Breadcrumb" className="relative mb-8 text-sm text-muted">
           <Link to={{ pathname: '/', hash: '#work' }} className="hover:text-cream">← All work</Link>
         </nav>
@@ -88,7 +88,7 @@ export default function CaseStudy() {
           {p.summary}
         </motion.p>
         <motion.div
-          className={`relative mt-12 rounded-[2rem] border border-line p-4 sm:p-8 ${green ? 'bg-[linear-gradient(160deg,#1f241b_0%,#151513_70%)]' : 'bg-[linear-gradient(160deg,#28221a_0%,#151513_70%)]'}`}
+          className={`relative mt-12 rounded-[2rem] p-4 sm:p-8 panel glow-ring`}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
@@ -143,7 +143,7 @@ export default function CaseStudy() {
                 <ol className="mt-3 space-y-2">
                   {p.journey.map((j, i) => (
                     <li key={j} className="flex items-center gap-3 text-cream-2">
-                      <span className={`grid size-7 shrink-0 place-items-center rounded-full font-mono text-xs ${green ? 'bg-accent/20 text-accent-2' : 'bg-warm/15 text-warm'}`}>{i + 1}</span>
+                      <span className={`grid size-7 shrink-0 place-items-center rounded-full font-mono text-xs ${green ? 'bg-leaf/15 text-leaf' : 'bg-accent/15 text-accent'}`}>{i + 1}</span>
                       {j}
                     </li>
                   ))}
@@ -239,7 +239,7 @@ export default function CaseStudy() {
                       <ol className="mt-5 space-y-3">
                         {s.annotations.map((a, j) => (
                           <li key={a} className="flex gap-3 text-sm text-cream-2">
-                            <span className={`grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] ${green ? 'bg-accent text-ink' : 'bg-warm text-ink'}`}>{j + 1}</span>
+                            <span className={`grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] ${green ? 'bg-leaf text-ink' : 'bg-accent text-ink'}`}>{j + 1}</span>
                             {a}
                           </li>
                         ))}

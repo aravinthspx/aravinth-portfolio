@@ -27,6 +27,14 @@ export const profile = {
   resumeUrl: null as string | null,
 }
 
+// Quick facts shown under the hero. Source: Agri-Yield Pro report title page and certificates.
+export const facts = [
+  { label: 'Institution', value: 'SRM IST Ramapuram' },
+  { label: 'Programme', value: 'B.Tech CSE (AI & ML)' },
+  { label: 'Recent work', value: 'Agri-Yield Pro · SITTO' },
+  { label: 'Certificates', value: '4 completed' },
+]
+
 export const interests = [
   {
     title: 'AI / ML',

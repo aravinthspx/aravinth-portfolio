@@ -12,6 +12,26 @@ const links = [
   { hash: '#contact', label: 'Contact' },
 ]
 
+/** Original orbit logo mark: a core with two orbiting points. */
+function OrbitMark() {
+  return (
+    <span className="relative grid size-10 place-items-center" aria-hidden="true">
+      <svg viewBox="0 0 40 40" className="size-10">
+        <circle cx="20" cy="20" r="15" fill="none" stroke="rgba(79,217,234,0.35)" strokeWidth="1" />
+        <circle cx="20" cy="20" r="9" fill="none" stroke="rgba(159,220,116,0.3)" strokeWidth="1" />
+        <circle cx="20" cy="20" r="4.5" fill="#4fd9ea" />
+        <circle cx="20" cy="20" r="7" fill="rgba(79,217,234,0.18)" />
+      </svg>
+      <span className="orbit-spin absolute inset-0">
+        <span className="absolute left-1/2 top-[2px] size-2 -translate-x-1/2 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" />
+      </span>
+      <span className="orbit-spin-rev absolute inset-[9px]">
+        <span className="absolute bottom-0 left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-leaf" />
+      </span>
+    </span>
+  )
+}
+
 export function MotionToggle({ className = '' }: { className?: string }) {
   const { reduced, systemReduced, toggle } = useMotionPref()
   return (
@@ -64,9 +84,15 @@ export function Nav() {
         Skip to content
       </a>
       <nav aria-label="Primary" className="container-x flex h-16 items-center justify-between gap-4 md:h-20">
-        <Link to="/" className="font-display text-lg font-extrabold tracking-[0.2em] text-cream hover:text-white" aria-label={`${profile.name} — home`}>
-          {profile.wordmark}
-          <span className="text-accent">.</span>
+        <Link to="/" className="group flex items-center gap-3" aria-label={`${profile.name} — home`}>
+          <OrbitMark />
+          <span className="flex flex-col leading-none">
+            <span className="flex items-center gap-2">
+              <span className="font-display text-lg font-bold text-cream group-hover:text-white">{profile.shortName}</span>
+              <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[10px] text-accent">AI·ML</span>
+            </span>
+            <span className="mt-1 hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:block">Product builder</span>
+          </span>
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
@@ -81,6 +107,15 @@ export function Nav() {
 
         <div className="hidden items-center gap-2 md:flex">
           <MotionToggle />
+          <motion.span className="inline-flex" whileHover={{ y: -2, scale: 1.04 }} whileTap={{ scale: 0.95 }} transition={spring}>
+            <Link
+              to={{ pathname: '/', hash: '#contact' }}
+              className="ml-1 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-4px_rgba(79,217,234,0.75)] hover:bg-accent-2"
+            >
+              <span className="size-1.5 rounded-full bg-ink/70" aria-hidden="true" />
+              Let’s talk
+            </Link>
+          </motion.span>
           {profile.resumeUrl && (
             <a href={profile.resumeUrl} className="rounded-full px-3 py-2 text-sm text-cream-2 hover:text-cream" target="_blank" rel="noreferrer">
               Resume

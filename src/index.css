@@ -1,22 +1,24 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Warm graphite neutrals */
-  --color-ink: #11110f;
-  --color-ink-2: #181816;
-  --color-ink-3: #22221f;
-  --color-line: #302f2b;
-  /* Off-white, soft gray, muted stone */
-  --color-cream: #f1eee7;
-  --color-cream-2: #c6c2b8;
-  --color-muted: #8f8a80;
-  /* Sparing accents: muted lime, warm amber */
-  --color-accent: #b9d77a;
-  --color-accent-2: #cfe3a0;
-  --color-warm: #d9a95b;
-  --color-ok: #a3c98a;
-  --color-warn: #dfb066;
-  --color-bad: #e2907f;
+  /* Deep-space navy neutrals */
+  --color-ink: #060a13;
+  --color-ink-2: #0b111d;
+  --color-ink-3: #121a2a;
+  --color-line: #1d283b;
+  /* Cool white, soft slate, muted steel */
+  --color-cream: #eef3f8;
+  --color-cream-2: #b1bccb;
+  --color-muted: #75829a;
+  /* Glow accents: cyan (primary) and leaf green (secondary); amber for "planned" */
+  --color-accent: #4fd9ea;
+  --color-accent-2: #a2eef7;
+  --color-leaf: #9fdc74;
+  --color-leaf-2: #c6eda8;
+  --color-warm: #e5b45f;
+  --color-ok: #8fdc8a;
+  --color-warn: #e9bd6a;
+  --color-bad: #f0928a;
 
   --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
@@ -96,13 +98,21 @@
   }
   .outline-text {
     color: transparent;
-    -webkit-text-stroke: 1px rgb(241 238 231 / 0.09);
+    -webkit-text-stroke: 1px rgb(238 243 248 / 0.08);
   }
   .glow-accent {
-    background: radial-gradient(closest-side, rgb(185 215 122 / 0.08), transparent);
+    background: radial-gradient(closest-side, rgb(79 217 234 / 0.16), transparent);
   }
   .glow-warm {
-    background: radial-gradient(closest-side, rgb(217 169 91 / 0.08), transparent);
+    background: radial-gradient(closest-side, rgb(159 220 116 / 0.12), transparent);
+  }
+  .glow-ring {
+    box-shadow: 0 0 0 1px rgb(79 217 234 / 0.18), 0 0 40px -8px rgb(79 217 234 / 0.35);
+  }
+  .panel {
+    background: linear-gradient(180deg, rgb(18 26 42 / 0.82), rgb(11 17 29 / 0.82));
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(8px);
   }
 }
 
@@ -121,4 +131,17 @@
 }
 .marquee:hover {
   animation-play-state: paused;
+}
+
+@keyframes orbit {
+  to { transform: rotate(360deg); }
+}
+.orbit-spin {
+  animation: orbit 9s linear infinite;
+}
+.orbit-spin-rev {
+  animation: orbit 6s linear infinite reverse;
+}
+.orbit-slow {
+  animation: orbit 120s linear infinite;
 }

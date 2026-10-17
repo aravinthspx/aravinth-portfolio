@@ -1,8 +1,9 @@
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
-import { AmbientBackground } from './components/AmbientBackground'
+import { Starfield } from './components/Starfield'
+import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 
@@ -23,10 +24,25 @@ function ScrollManager() {
 }
 
 export default function App() {
+  const { pathname, hash } = useLocation()
+  // Deep links (case studies, #sections) skip the intro.
+  const [gate, setGate] = useState(() => !hash && shouldShowIntro(pathname))
+
   return (
     <>
       <ScrollManager />
-      <AmbientBackground />
+      <Starfield />
+      <IntroGate
+        open={gate}
+        onEnter={() => {
+          setGate(false)
+          // Hand keyboard focus to the page once it mounts.
+          requestAnimationFrame(() => document.getElementById('main')?.focus({ preventScroll: true }))
+        }}
+      />
+      {/* The site mounts when the intro closes, so the hero's entrance plays on entry. */}
+      {!gate && (
+      <>
       <Nav />
       <main id="main" tabIndex={-1} className="relative z-10 outline-none">
         <Suspense fallback={<div className="min-h-dvh" />}>
@@ -38,6 +54,8 @@ export default function App() {
         </Suspense>
       </main>
       <Footer />
+      </>
+      )}
       <div className="grain" aria-hidden="true" />
     </>
   )
