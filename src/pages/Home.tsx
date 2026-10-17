@@ -124,6 +124,9 @@ function Hero() {
   )
 }
 
+// Fade the portrait's bottom (cropped legs) and top edge so it melts into the page.
+const PORTRAIT_FADE = 'linear-gradient(to bottom, transparent 0%, #000 12%, #000 70%, transparent 98%)'
+
 function About() {
   const p = profile.portrait
   const stories = [
@@ -133,67 +136,54 @@ function About() {
     { icon: '✦', title: 'Where I’m heading', body: 'Keep building prototypes that connect AI with clear, usable interfaces — and keep getting better at evaluating them properly.' },
   ]
   return (
-    <section id="about" aria-labelledby="about-title" className="relative py-24 md:py-32">
-      <div className="container-x">
+    <section id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-32">
+      {/* Large black-and-white portrait as a background layer behind the text */}
+      {p && (
+        <div className="pointer-events-none absolute inset-0">
+          <div className="glow-accent absolute left-1/2 top-[30%] size-[40rem] -translate-x-[80%] rounded-full blur-3xl" aria-hidden="true" />
+          <img
+            src={p.src}
+            srcSet={p.srcSet}
+            sizes="(min-width: 1024px) 700px, 90vw"
+            width={p.width}
+            height={p.height}
+            alt={p.alt}
+            loading="lazy"
+            decoding="async"
+            className="absolute bottom-0 left-1/2 h-[78%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom opacity-40 contrast-[1.1] grayscale sm:h-[88%] lg:h-[96%] lg:-translate-x-[92%] lg:opacity-55"
+            style={{ maskImage: PORTRAIT_FADE, WebkitMaskImage: PORTRAIT_FADE }}
+          />
+          {/* darken towards the text so it stays readable */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_25%,rgba(6,10,19,0.55)_60%,rgba(6,10,19,0.75)_100%)] max-lg:bg-[linear-gradient(to_bottom,rgba(6,10,19,0.35),rgba(6,10,19,0.65))]" aria-hidden="true" />
+        </div>
+      )}
+
+      <div className="container-x relative">
         <Heading pill="Profile & perspective" title="About me" id="about-title">
           An AI/ML student exploring product design and full-stack development — learning most by building.
         </Heading>
-        <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          {p && (
-            <Reveal className="mx-auto w-full max-w-md">
-              <figure className="panel glow-ring overflow-hidden rounded-[1.75rem] p-3">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] bg-[radial-gradient(90%_70%_at_50%_30%,#14304a_0%,#0b111d_70%)]">
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(79,217,234,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(79,217,234,0.06)_1px,transparent_1px)] bg-[size:28px_28px]" aria-hidden="true" />
-                  <img
-                    src={p.src}
-                    srcSet={p.srcSet}
-                    sizes="(min-width: 1024px) 420px, 90vw"
-                    width={p.width}
-                    height={p.height}
-                    alt={p.alt}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-x-0 bottom-0 mx-auto h-[96%] w-auto max-w-none object-contain object-bottom contrast-[1.08] grayscale"
-                    style={{ maskImage: 'linear-gradient(to bottom, #000 78%, transparent 99%)', WebkitMaskImage: 'linear-gradient(to bottom, #000 78%, transparent 99%)' }}
-                  />
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full border border-leaf/30 bg-ink/80 px-3 py-1 font-mono text-[11px] text-leaf backdrop-blur">
-                    <span className="size-1.5 rounded-full bg-leaf" aria-hidden="true" /> Student builder
-                  </span>
-                  <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-xl border border-line bg-ink/85 px-3 py-2 font-mono text-[11px] backdrop-blur">
-                    <span className="text-cream-2">SRM IST Ramapuram</span>
-                    <span className="text-accent">CSE · AI &amp; ML</span>
-                  </div>
-                </div>
-                <figcaption className="flex items-center justify-between gap-3 px-2 pb-1 pt-4">
-                  <span>
-                    <span className="block font-display text-lg font-bold text-cream">{profile.name}</span>
-                    <span className="block font-mono text-[11px] text-muted">B.Tech · Computer Science and Engineering</span>
-                  </span>
-                  <span className="rounded-md border border-leaf/40 bg-leaf/10 px-2 py-1 font-mono text-[10px] text-leaf">AI &amp; ML</span>
-                </figcaption>
-              </figure>
-            </Reveal>
-          )}
-          <div>
-            <Reveal>
-              <p className="text-xl leading-relaxed text-cream md:text-2xl">
-                I’m most interested in the space where machine learning meets everyday decisions — and in making the result understandable to the person using it.
-              </p>
-            </Reveal>
-            <ul className="mt-8 grid gap-4">
-              {stories.map((s, i) => (
-                <Reveal as="li" key={s.title} delay={0.06 * i} className="panel flex gap-4 rounded-2xl p-5 transition-colors hover:border-accent/40">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent" aria-hidden="true">
-                    {s.icon}
-                  </span>
-                  <span>
-                    <span className="block font-display text-lg font-bold text-cream">{s.title}</span>
-                    <span className="mt-1 block text-sm leading-relaxed text-cream-2">{s.body}</span>
-                  </span>
-                </Reveal>
-              ))}
-            </ul>
-          </div>
+        <div className="lg:ml-auto lg:w-[56%]">
+          <Reveal>
+            <p className="text-xl leading-relaxed text-cream drop-shadow-[0_2px_12px_rgba(6,10,19,0.9)] md:text-2xl">
+              I’m most interested in the space where machine learning meets everyday decisions — and in making the result understandable to the person using it.
+            </p>
+            <p className="mt-4 font-mono text-xs uppercase tracking-[0.18em] text-accent">
+              {profile.name} · SRM IST Ramapuram · CSE (AI &amp; ML)
+            </p>
+          </Reveal>
+          <ul className="mt-8 grid gap-4">
+            {stories.map((s, i) => (
+              <Reveal as="li" key={s.title} delay={0.06 * i} className="panel flex gap-4 rounded-2xl p-5 transition-colors hover:border-accent/40">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent" aria-hidden="true">
+                  {s.icon}
+                </span>
+                <span>
+                  <span className="block font-display text-lg font-bold text-cream">{s.title}</span>
+                  <span className="mt-1 block text-sm leading-relaxed text-cream-2">{s.body}</span>
+                </span>
+              </Reveal>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
