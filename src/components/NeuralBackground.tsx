@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 import { useMotionPref } from '../lib/motion'
 
 /**
- * Hero panel: a small feed-forward network that flows from tools I use (top) to work they
+ * Hero background: a feed-forward network that flows from tools I use (top) to work they
  * produced (bottom). Signals fire through it; hover any node to trace its connections.
- * Drawn on a 2D canvas — no WebGL — and static when reduced motion is on.
+ * On wide screens it fills the right side of the hero; on narrow screens it sits faintly
+ * behind the text as decoration. 2D canvas — no WebGL — and static with reduced motion.
  */
 
 type Out = { label: string; to: string; color: string }
@@ -18,6 +19,13 @@ const outputs: Out[] = [
 const sizes = [inputs.length, 6, 5, outputs.length]
 const layerY = [0.19, 0.41, 0.62, 0.82]
 const CYAN = [79, 217, 234] as const
+const WIDE = '(min-width: 1024px)'
+/** Horizontal band the network occupies: right side on wide screens, full width otherwise. */
+const band = (wide: boolean) => (wide ? [0.52, 0.95] : [0.06, 0.94])
+const sx = (x: number, wide: boolean) => {
+  const [a, b] = band(wide)
+  return a + x * (b - a)
+}
 
 type Node = { l: number; i: number; x: number; y: number; glow: number }
 type Pulse = { from: Node; to: Node; t: number; speed: number }
@@ -33,13 +41,25 @@ function buildNodes(): Node[] {
 const hex = (h: string) => [1, 3, 5].map((k) => parseInt(h.slice(k, k + 2), 16)) as unknown as readonly [number, number, number]
 const nodeColor = (n: Node) => (n.l === 3 ? hex(outputs[n.i].color) : CYAN)
 
-export function NeuralPanel() {
+export function NeuralBackground() {
   const { reduced } = useMotionPref()
   const wrap = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const hoverRef = useRef<Node | null>(null)
   const [hover, setHover] = useState<string | null>(null)
   const nodesRef = useRef<Node[]>(buildNodes())
+  const [wide, setWide] = useState(() => window.matchMedia(WIDE).matches)
+  const wideRef = useRef(wide)
+
+  useEffect(() => {
+    const mq = window.matchMedia(WIDE)
+    const on = () => {
+      wideRef.current = mq.matches
+      setWide(mq.matches)
+    }
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
 
   useEffect(() => {
     const cv = canvas.current
@@ -84,7 +104,7 @@ export function NeuralPanel() {
     function draw() {
       ctx!.clearRect(0, 0, w, h)
       const hv = hoverRef.current
-      const P = (n: Node) => [n.x * w, n.y * h] as const
+      const P = (n: Node) => [sx(n.x, wideRef.current) * w, n.y * h] as const
 
       // Edges
       for (let l = 0; l < 3; l++) {
@@ -197,7 +217,7 @@ export function NeuralPanel() {
       let best: Node | null = null
       let bd = 22 * 22
       for (const n of nodes) {
-        const d = (n.x * w - px) ** 2 + (n.y * h - py) ** 2
+        const d = (sx(n.x, wideRef.current) * w - px) ** 2 + (n.y * h - py) ** 2
         if (d < bd) {
           bd = d
           best = n
@@ -235,7 +255,7 @@ export function NeuralPanel() {
       cv.removeEventListener('pointerleave', leave)
       cv.removeEventListener('pointerdown', click)
     }
-  }, [reduced])
+  }, [reduced, wide])
 
   // Hovering an HTML label should light the matching node too.
   const point = (key: string | null) => {
@@ -244,45 +264,40 @@ export function NeuralPanel() {
   }
 
   return (
-    <div className="relative w-full">
-      <div ref={wrap} className="relative aspect-square w-full overflow-hidden rounded-[2rem] border border-line bg-[radial-gradient(80%_60%_at_50%_45%,rgba(79,217,234,0.08),rgba(6,10,19,0.35)_75%)] backdrop-blur-[2px]">
-        <canvas ref={canvas} className="absolute inset-0 size-full touch-none" aria-hidden="true" />
+    <div ref={wrap} className="absolute inset-0 opacity-40 lg:opacity-100 [mask-image:linear-gradient(to_bottom,black_80%,transparent)]" aria-hidden={!wide}>
+      <canvas ref={canvas} className="pointer-events-none absolute inset-0 size-full lg:pointer-events-auto" aria-hidden="true" />
+      {wide && (
+        <>
+          {/* Input labels sit above their nodes */}
+          {inputs.map((s, i) => (
+            <span
+              key={s}
+              onPointerEnter={() => point(`0-${i}`)}
+              onPointerLeave={() => point(null)}
+              className={`absolute -translate-x-1/2 -translate-y-full whitespace-nowrap font-mono text-[11px] tracking-wider transition-colors ${hover === `0-${i}` ? 'text-accent' : 'text-cream-2'}`}
+              style={{ left: `${sx((i + 1) / (inputs.length + 1), true) * 100}%`, top: `calc(${layerY[0] * 100}% - 14px)` }}
+            >
+              {s}
+            </span>
+          ))}
 
-        {/* Input labels sit above their nodes */}
-        {inputs.map((s, i) => (
-          <span
-            key={s}
-            onPointerEnter={() => point(`0-${i}`)}
-            onPointerLeave={() => point(null)}
-            className={`absolute -translate-x-1/2 -translate-y-full whitespace-nowrap font-mono text-[10px] tracking-wider transition-colors sm:text-[11px] ${hover === `0-${i}` ? 'text-accent' : 'text-cream-2'}`}
-            style={{ left: `${((i + 1) / (inputs.length + 1)) * 100}%`, top: `calc(${layerY[0] * 100}% - 14px)` }}
-          >
-            {s}
-          </span>
-        ))}
+          {/* Output labels are real links */}
+          {outputs.map((o, i) => {
+            const cls = `absolute -translate-x-1/2 whitespace-nowrap rounded-full border bg-ink/80 px-2.5 py-1 font-mono text-[11px] font-semibold tracking-wide backdrop-blur transition-colors ${hover === `3-${i}` ? 'text-ink' : 'text-cream'}`
+            const style = { left: `${sx((i + 1) / (outputs.length + 1), true) * 100}%`, top: `calc(${layerY[3] * 100}% + 14px)`, borderColor: `${o.color}80`, background: hover === `3-${i}` ? o.color : undefined }
+            const events = { onPointerEnter: () => point(`3-${i}`), onPointerLeave: () => point(null), onFocus: () => point(`3-${i}`), onBlur: () => point(null) }
+            return o.to.startsWith('#') ? (
+              <a key={o.label} href={o.to} className={cls} style={style} {...events}>{o.label}</a>
+            ) : (
+              <Link key={o.label} to={o.to} className={cls} style={style} {...events}>{o.label}</Link>
+            )
+          })}
 
-        {/* Output labels are real links */}
-        {outputs.map((o, i) => {
-          const cls = `absolute -translate-x-1/2 whitespace-nowrap rounded-full border bg-ink/80 px-2.5 py-1 font-mono text-[10px] font-semibold tracking-wide backdrop-blur transition-colors sm:text-[11px] ${hover === `3-${i}` ? 'text-ink' : 'text-cream'}`
-          const style = { left: `${((i + 1) / (outputs.length + 1)) * 100}%`, top: `calc(${layerY[3] * 100}% + 14px)`, borderColor: `${o.color}80`, background: hover === `3-${i}` ? o.color : undefined }
-          const events = { onPointerEnter: () => point(`3-${i}`), onPointerLeave: () => point(null), onFocus: () => point(`3-${i}`), onBlur: () => point(null) }
-          return o.to.startsWith('#') ? (
-            <a key={o.label} href={o.to} className={cls} style={style} {...events}>{o.label}</a>
-          ) : (
-            <Link key={o.label} to={o.to} className={cls} style={style} {...events}>{o.label}</Link>
-          )
-        })}
-
-        <p className="pointer-events-none absolute left-6 top-5 hidden font-mono text-[10px] sm:block uppercase tracking-[0.2em] text-muted">
-          <span className="text-accent">●</span> tools
-        </p>
-        <p className="pointer-events-none absolute bottom-5 left-6 hidden font-mono text-[10px] sm:block uppercase tracking-[0.2em] text-muted">
-          <span className="text-leaf">●</span> work
-        </p>
-        <p className="pointer-events-none absolute bottom-5 right-6 hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:block">
-          {reduced ? 'hover a node' : 'hover · click a node'}
-        </p>
-      </div>
+          <p className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.2em] text-muted" style={{ left: `${sx(0, true) * 100}%`, top: `calc(${layerY[3] * 100}% + 64px)` }}>
+            {reduced ? 'tools → work · hover a node' : 'tools → work · hover · click a node'}
+          </p>
+        </>
+      )}
     </div>
   )
 }

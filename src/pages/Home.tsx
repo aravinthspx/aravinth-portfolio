@@ -5,7 +5,7 @@ import { profile, facts } from '../content/profile'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
 import { Tilt3D } from '../components/HeroStage'
-import { NeuralPanel } from '../components/NeuralPanel'
+import { NeuralBackground } from '../components/NeuralBackground'
 import { AboutSection } from '../components/AboutSection'
 import { Heading } from '../components/Heading'
 import { SkillsSection } from '../components/sections/Skills'
@@ -54,10 +54,12 @@ function Hero() {
   return (
     <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-28 md:pt-32">
       <div className="glow-accent pointer-events-none absolute -left-40 top-1/4 size-[32rem] rounded-full opacity-60 blur-3xl" aria-hidden="true" />
+      {/* Background: interactive network from tools to work */}
+      <NeuralBackground />
 
-      <div className="container-x relative grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
-        {/* Left: identity and calls to action */}
-        <div className="min-w-0 text-center lg:text-left">
+      <div className="container-x pointer-events-none relative">
+        {/* Identity and calls to action; the network shows through on the right */}
+        <div className="min-w-0 text-center lg:max-w-[46%] lg:text-left [text-shadow:0_2px_16px_rgba(6,10,19,0.9)]">
           <motion.p {...rise(0)} className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2/70 px-3 py-1.5 font-mono text-[11px] text-cream-2 backdrop-blur">
             <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
             B.Tech CSE (AI &amp; ML) · SRM IST Ramapuram
@@ -69,7 +71,7 @@ function Hero() {
           <Tilt3D className="mt-3" max={5}>
             <motion.h1
               id="hero-title"
-              className="whitespace-nowrap font-display text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[0.95] tracking-tight"
+              className="whitespace-nowrap font-display [text-shadow:none] text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[0.95] tracking-tight"
               initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.9, delay: 0.15, ease }}
@@ -86,7 +88,7 @@ function Hero() {
             {profile.intro}
           </motion.p>
 
-          <motion.div {...rise(0.6)} className="mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+          <motion.div {...rise(0.6)} className="pointer-events-auto mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <ButtonLink to="#projects" variant="accent">
               View Projects <ArrowIcon />
             </ButtonLink>
@@ -106,32 +108,22 @@ function Hero() {
               <LinkedInIcon />
             </IconLink>
           </motion.div>
+
+          <motion.dl
+            className="mt-14 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 lg:mt-12 lg:grid-cols-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            {facts.map((f) => (
+              <div key={f.label} className="border-l-2 border-accent/40 py-1 pl-4 text-left">
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">{f.label}</dt>
+                <dd className="mt-1 font-display text-sm font-semibold text-cream sm:text-base">{f.value}</dd>
+              </div>
+            ))}
+          </motion.dl>
         </div>
-
-        {/* Right: interactive network from tools to work */}
-        <motion.div
-          className="relative mx-auto w-full max-w-[34rem]"
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.2, ease }}
-        >
-          <NeuralPanel />
-        </motion.div>
       </div>
-
-      <motion.dl
-        className="container-x relative mt-14 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-      >
-        {facts.map((f) => (
-          <div key={f.label} className="border-l-2 border-accent/40 py-1 pl-4 text-left">
-            <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">{f.label}</dt>
-            <dd className="mt-1 font-display text-sm font-semibold text-cream sm:text-base">{f.value}</dd>
-          </div>
-        ))}
-      </motion.dl>
     </section>
   )
 }
