@@ -12,22 +12,29 @@ const links = [
   { hash: '#contact', label: 'Contact' },
 ]
 
-/** Original orbit logo mark: a core with two orbiting points. */
-function OrbitMark() {
+/**
+ * Brand mark: a glass "AM" monogram tile with a cyan→leaf gradient edge.
+ * It tilts in 3D and glows when the logo link is hovered or focused.
+ */
+function BrandMark() {
+  const { reduced } = useMotionPref()
   return (
-    <span className="relative grid size-10 place-items-center" aria-hidden="true">
-      <svg viewBox="0 0 40 40" className="size-10">
-        <circle cx="20" cy="20" r="15" fill="none" stroke="rgba(79,217,234,0.35)" strokeWidth="1" />
-        <circle cx="20" cy="20" r="9" fill="none" stroke="rgba(159,220,116,0.3)" strokeWidth="1" />
-        <circle cx="20" cy="20" r="4.5" fill="#4fd9ea" />
-        <circle cx="20" cy="20" r="7" fill="rgba(79,217,234,0.18)" />
-      </svg>
-      <span className="orbit-spin absolute inset-0">
-        <span className="absolute left-1/2 top-[2px] size-2 -translate-x-1/2 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" />
-      </span>
-      <span className="orbit-spin-rev absolute inset-[9px]">
-        <span className="absolute bottom-0 left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-leaf" />
-      </span>
+    <span className="relative block size-11 [perspective:400px]" aria-hidden="true">
+      <motion.span
+        className="relative block size-full rounded-[14px] bg-gradient-to-br from-accent-2 via-accent to-leaf p-[1.5px] shadow-[0_0_0_rgba(79,217,234,0)] transition-shadow duration-300 group-hover:shadow-[0_0_26px_-4px_rgba(79,217,234,0.75)] group-focus-visible:shadow-[0_0_26px_-4px_rgba(79,217,234,0.75)]"
+        variants={reduced ? undefined : { rest: { rotateX: 0, rotateY: 0, scale: 1 }, hover: { rotateX: -14, rotateY: 20, scale: 1.06 } }}
+        transition={spring}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,#13213a_0%,#080d17_75%)]">
+          {/* glass sheen */}
+          <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/12 to-transparent" />
+          <span className="relative font-display text-[15px] font-extrabold leading-none tracking-[-0.04em]" style={{ transform: 'translateZ(12px)' }}>
+            <span className="text-cream">A</span>
+            <span className="bg-gradient-to-br from-accent to-leaf bg-clip-text text-transparent">M</span>
+          </span>
+        </span>
+      </motion.span>
     </span>
   )
 }
@@ -84,16 +91,20 @@ export function Nav() {
         Skip to content
       </a>
       <nav aria-label="Primary" className="container-x flex h-16 items-center justify-between gap-4 md:h-20">
-        <Link to="/" className="group flex items-center gap-3" aria-label={`${profile.name} — home`}>
-          <OrbitMark />
-          <span className="flex flex-col leading-none">
-            <span className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-cream group-hover:text-white">{profile.shortName}</span>
-              <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[10px] text-accent">AI·ML</span>
+        <motion.span className="inline-flex" initial="rest" animate="rest" whileHover="hover" whileFocus="hover">
+          <Link to="/" className="group flex items-center gap-3 rounded-2xl" aria-label={`${profile.name} — home`}>
+            <BrandMark />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-[17px] font-bold tracking-tight text-cream transition-colors group-hover:text-white">
+                {profile.shortName} <span className="text-accent">M</span>
+              </span>
+              <span className="mt-1.5 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex">
+                <span className="h-px w-4 bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
+                AI/ML · Product builder
+              </span>
             </span>
-            <span className="mt-1 hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:block">Product builder</span>
-          </span>
-        </Link>
+          </Link>
+        </motion.span>
 
         <ul className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
