@@ -1,4 +1,4 @@
-import { Fragment, useState, type ReactNode } from 'react'
+import { Fragment, useRef, useState, type ReactNode } from 'react'
 import { motion } from 'motion/react'
 import { profile, facts } from '../content/profile'
 import { projects } from '../content/projects'
@@ -8,6 +8,7 @@ import { CertificateCard } from '../components/CertificateCard'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
 import { HeroStage, Tilt3D } from '../components/HeroStage'
+import { JumpingPortrait } from '../components/JumpingPortrait'
 import { ButtonLink, CopyEmail, IconLink, Reveal, GitHubIcon, LinkedInIcon, MailIcon, ArrowIcon } from '../components/ui'
 
 /** Centred section heading: glowing pill eyebrow, big title, accent bar. */
@@ -133,6 +134,7 @@ const PORTRAIT_FADE = 'linear-gradient(to bottom, transparent 0%, #000 12%, #000
 
 function About() {
   const p = profile.portrait
+  const sectionRef = useRef<HTMLElement>(null)
   const stories = [
     { icon: '◆', title: 'Learning by building', body: 'Rather than studying topics in isolation, I learn through projects that force ideas to work end to end — interface, API and data.' },
     { icon: '◎', title: 'Honest about data', body: 'A farm-planning prototype taught me to explain estimates and to label synthetic and demonstration data clearly instead of over-claiming accuracy.' },
@@ -140,23 +142,25 @@ function About() {
     { icon: '✦', title: 'Where I’m heading', body: 'Keep building prototypes that connect AI with clear, usable interfaces — and keep getting better at evaluating them properly.' },
   ]
   return (
-    <section id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-32">
+    <section ref={sectionRef} id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-32">
       {/* Large black-and-white portrait as a background layer behind the text */}
       {p && (
         <div className="pointer-events-none absolute inset-0">
           <div className="glow-accent absolute left-1/2 top-[30%] size-[40rem] -translate-x-[80%] rounded-full blur-3xl" aria-hidden="true" />
-          <img
-            src={p.src}
-            srcSet={p.srcSet}
-            sizes="(min-width: 1024px) 700px, 90vw"
-            width={p.width}
-            height={p.height}
-            alt={p.alt}
-            loading="lazy"
-            decoding="async"
-            className="absolute bottom-0 left-1/2 h-[78%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom opacity-40 contrast-[1.1] grayscale sm:h-[88%] lg:h-[96%] lg:-translate-x-[92%] lg:opacity-55"
-            style={{ maskImage: PORTRAIT_FADE, WebkitMaskImage: PORTRAIT_FADE }}
-          />
+          <JumpingPortrait target={sectionRef}>
+            <img
+              src={p.src}
+              srcSet={p.srcSet}
+              sizes="(min-width: 1024px) 700px, 90vw"
+              width={p.width}
+              height={p.height}
+              alt={p.alt}
+              loading="lazy"
+              decoding="async"
+              className="absolute bottom-0 left-1/2 h-[78%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom opacity-40 contrast-[1.1] grayscale sm:h-[88%] lg:h-[96%] lg:-translate-x-[92%] lg:opacity-55"
+              style={{ maskImage: PORTRAIT_FADE, WebkitMaskImage: PORTRAIT_FADE }}
+            />
+          </JumpingPortrait>
           {/* darken towards the text so it stays readable */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_25%,rgba(6,10,19,0.55)_60%,rgba(6,10,19,0.75)_100%)] max-lg:bg-[linear-gradient(to_bottom,rgba(6,10,19,0.35),rgba(6,10,19,0.65))]" aria-hidden="true" />
         </div>
