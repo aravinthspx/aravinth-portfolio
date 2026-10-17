@@ -247,11 +247,12 @@ function Moon({ target, shape, color, rx, rz, speed, phase, animate }: { target:
 }
 
 /** Leans the whole system toward the cursor with a spring, and fits it to narrow screens. */
-function Rig({ animate, children }: { animate: boolean; children: React.ReactNode }) {
+function Rig({ animate, framed, children }: { animate: boolean; framed: boolean; children: React.ReactNode }) {
   const g = useRef<THREE.Group>(null)
   const s = useMemo(() => new Spring3(26, 6), [])
   const { viewport } = useThree()
-  const fit = Math.min(1, viewport.width / 7.5)
+  // Framed: the whole system (outer orbit included) has to fit inside a panel.
+  const fit = framed ? Math.min(viewport.width, viewport.height * 1.15) / 11 : Math.min(1, viewport.width / 7.5)
   useFrame((_, dt) => {
     if (!g.current || !animate) return
     const on = pointer.inside && pointer.type === 'mouse'
@@ -260,7 +261,7 @@ function Rig({ animate, children }: { animate: boolean; children: React.ReactNod
     g.current.rotation.set(s.pos.x, s.pos.y, 0)
   })
   return (
-    <group ref={g} scale={fit} position={[0, -0.25, 0]}>
+    <group ref={g} scale={fit} position={[0, framed ? 0 : -0.25, 0]}>
       {children}
     </group>
   )
@@ -287,7 +288,7 @@ function DepthDust({ count, animate }: { count: number; animate: boolean }) {
   )
 }
 
-export default function HeroOrbit({ active, reduced, mobile, moons, onReady }: { active: boolean; reduced: boolean; mobile: boolean; moons: MoonTarget[]; onReady?: () => void }) {
+export default function HeroOrbit({ active, reduced, mobile, moons, onReady, framed = false }: { active: boolean; reduced: boolean; mobile: boolean; moons: MoonTarget[]; onReady?: () => void; framed?: boolean }) {
   const animate = active && !reduced
   useEffect(() => installPointer(), [])
   const conf: { shape: MoonShape; color: string; rx: number; rz: number; speed: number; phase: number; tilt: [number, number, number] }[] = [
@@ -307,7 +308,7 @@ export default function HeroOrbit({ active, reduced, mobile, moons, onReady }: {
       <pointLight position={[4, 5, 6]} intensity={60} color="#ffffff" />
       <pointLight position={[-5, -2, 3]} intensity={30} color={CYAN} />
       <DepthDust count={mobile ? 120 : 280} animate={animate} />
-      <Rig animate={animate}>
+      <Rig animate={animate} framed={framed}>
         <Globe animate={animate} mobile={mobile} />
         {moons.map((m, i) => {
           const c = conf[i % conf.length]

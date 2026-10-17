@@ -9,10 +9,10 @@ import type { MoonTarget } from '../three/HeroOrbit'
 const HeroOrbit = lazy(() => import('../three/HeroOrbit'))
 
 /** CSS-only orbit rings: shown while the 3D scene loads and whenever WebGL is unavailable. */
-function OrbitFallback() {
+function OrbitFallback({ framed }: { framed: boolean }) {
   return (
-    <div className="pointer-events-none absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2" aria-hidden="true">
-      <div className="orbit-slow relative size-[44rem] max-w-[160vw] rounded-full border border-accent/10">
+    <div className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1/2 ${framed ? 'top-1/2' : 'top-[44%]'}`} aria-hidden="true">
+      <div className={`orbit-slow relative rounded-full border border-accent/10 ${framed ? 'size-[min(80vw,30rem)]' : 'size-[44rem] max-w-[160vw]'}`}>
         <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(79,217,234,0.9)]" />
       </div>
       <div className="absolute inset-[18%] rounded-full border border-leaf/10" />
@@ -21,8 +21,8 @@ function OrbitFallback() {
   )
 }
 
-/** Full-bleed interactive 3D layer behind the hero text. */
-export function HeroStage({ onLive }: { onLive?: (live: boolean) => void }) {
+/** Interactive 3D layer: full-bleed behind content, or `framed` to fit inside a panel. */
+export function HeroStage({ onLive, framed = false }: { onLive?: (live: boolean) => void; framed?: boolean }) {
   const { reduced } = useMotionPref()
   const fine = useFinePointer()
   const navigate = useNavigate()
@@ -44,7 +44,7 @@ export function HeroStage({ onLive }: { onLive?: (live: boolean) => void }) {
   return (
     <div ref={ref} className="absolute inset-0" aria-hidden="true">
       <div className={`transition-opacity duration-700 ${live ? 'opacity-0' : 'opacity-100'}`}>
-        <OrbitFallback />
+        <OrbitFallback framed={framed} />
       </div>
       {webgl && (
         <SceneBoundary fallback={null}>
@@ -55,6 +55,7 @@ export function HeroStage({ onLive }: { onLive?: (live: boolean) => void }) {
                 reduced={reduced}
                 mobile={mobile}
                 moons={moons}
+                framed={framed}
                 onReady={() => {
                   setLive(true)
                   onLive?.(true)
