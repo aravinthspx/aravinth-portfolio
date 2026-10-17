@@ -82,7 +82,7 @@ export type Milestone = {
   when: string // shown as-is; undated items say so rather than guessing
   title: string
   body: string
-  kind: 'Project' | 'Certificate' | 'Job simulation' | 'Now'
+  kind: 'Project' | 'Certificate' | 'Job simulation' | 'Hackathon' | 'Now'
   href?: string
 }
 
@@ -112,6 +112,13 @@ export const journey: Milestone[] = [
     title: 'AI Prompting for Everyone',
     body: 'Course certificate from DeepLearning.AI.',
     kind: 'Certificate',
+  },
+  {
+    when: '9–10 Oct 2026',
+    title: 'Tech Horizon 2.0 hackathon',
+    body: 'Took part in a national-level 24-hour offline hackathon run by the IEEE SMC Society at GNITC, Hyderabad.',
+    kind: 'Hackathon',
+    href: '/#hackathons',
   },
   {
     when: 'Oct 2026 · now',

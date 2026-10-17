@@ -11,21 +11,38 @@ export type Hackathon = {
   id: string
   name: string
   organizer: string
-  date: string // e.g. 'Mar 2026' or '2026'
-  format: string // e.g. 'Online' or 'Chennai, India'
+  date: string // e.g. 'Mar 2026' or '9–10 Oct 2026'
+  format: string // e.g. 'Online' or 'Offline · Hyderabad'
+  summary?: string // what the event was (not a claim about results)
   team?: string
   teamSize?: number
   role?: string
-  problem: string
-  solution: string
-  technologies: string[]
-  result?: string // only real results, e.g. 'Finalist' — omit if none
-  image?: string // e.g. '/images/hackathons/my-project.webp'
-  proof?: string // certificate image/PDF path or URL
+  problem?: string // leave out until confirmed
+  solution?: string
+  technologies?: string[]
+  result?: string // only real results, e.g. 'Participant', 'Finalist'
+  image?: string // project screenshot, e.g. '/images/hackathons/my-project.webp'
+  proof?: { image: string; thumb: string; alt: string } // certificate photo
   links?: Link[] // repository, demo, devpost…
 }
 
 export const hackathons: Hackathon[] = [
+  {
+    id: 'tech-horizon-2-0',
+    name: 'Tech Horizon 2.0',
+    organizer: 'IEEE SMC Society · Guru Nanak Institutions Technical Campus',
+    date: '9–10 Oct 2026',
+    format: 'Offline · Hyderabad · 24 hours',
+    summary:
+      'National-level 24-hour hackathon run by the Departments of CSE (Cyber Security) and CSE (Data Science) with the IEEE Systems, Man, and Cybernetics Society student branch chapter at GNITC, Hyderabad.',
+    result: 'Participant',
+    // ▼ Add once confirmed: team, teamSize, role, problem, solution, technologies, image, links
+    proof: {
+      image: '/certificates/tech-horizon-2-0-participation.jpg',
+      thumb: '/certificates/thumb-tech-horizon.webp',
+      alt: 'Tech Horizon 2.0 participation certificate awarded to M. Aravinth by IEEE-SMC Society, Guru Nanak Institutions Technical Campus, Hyderabad, 9–10 October 2026',
+    },
+  },
   // {
   //   id: 'example-2026',
   //   name: 'Hackathon name',

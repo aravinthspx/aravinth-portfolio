@@ -10,6 +10,7 @@ type Tone = { text: string; chip: string; ring: string; glow: string; dot: strin
 const tones: Record<Milestone['kind'], Tone> = {
   Project: { text: 'text-accent', chip: 'border-accent/40 bg-accent/10 text-accent', ring: 'border-accent/60', glow: 'shadow-[0_0_30px_-4px_rgba(79,217,234,0.8)]', dot: 'bg-accent', beam: 'from-accent', card: 'border-accent/40 shadow-[0_0_44px_-14px_rgba(79,217,234,0.5)]' },
   'Job simulation': { text: 'text-leaf', chip: 'border-leaf/40 bg-leaf/10 text-leaf', ring: 'border-leaf/60', glow: 'shadow-[0_0_30px_-4px_rgba(159,220,116,0.8)]', dot: 'bg-leaf', beam: 'from-leaf', card: 'border-leaf/40 shadow-[0_0_44px_-14px_rgba(159,220,116,0.45)]' },
+  Hackathon: { text: 'text-accent-2', chip: 'border-accent-2/40 bg-accent-2/10 text-accent-2', ring: 'border-accent-2/60', glow: 'shadow-[0_0_30px_-4px_rgba(162,238,247,0.8)]', dot: 'bg-accent-2', beam: 'from-accent-2', card: 'border-accent-2/40 shadow-[0_0_44px_-14px_rgba(162,238,247,0.45)]' },
   Certificate: { text: 'text-warm', chip: 'border-warm/40 bg-warm/10 text-warm', ring: 'border-warm/60', glow: 'shadow-[0_0_30px_-4px_rgba(229,180,95,0.8)]', dot: 'bg-warm', beam: 'from-warm', card: 'border-warm/40 shadow-[0_0_44px_-14px_rgba(229,180,95,0.45)]' },
   Now: { text: 'text-cream', chip: 'border-cream-2/40 bg-cream-2/10 text-cream', ring: 'border-cream/60', glow: 'shadow-[0_0_30px_-4px_rgba(238,243,248,0.7)]', dot: 'bg-cream', beam: 'from-cream', card: 'border-cream-2/40 shadow-[0_0_44px_-14px_rgba(238,243,248,0.35)]' },
 }
@@ -20,6 +21,7 @@ function KindIcon({ kind }: { kind: Milestone['kind'] }) {
     <svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden="true" {...p}>
       {kind === 'Project' && <path d="M5 15c-1 1.5-1 4-1 4s2.5 0 4-1M9 15l-3-3c1.5-4 5-7.5 11-8-.5 6-4 9.5-8 11Zm4-6.5a1.5 1.5 0 1 0 0-.01" />}
       {kind === 'Job simulation' && <path d="M4 8h16v11H4zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M4 13h16" />}
+      {kind === 'Hackathon' && <path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6" />}
       {kind === 'Certificate' && <path d="M12 3 9.5 8.5 4 9.3l4 3.9-.9 5.8L12 16.3l4.9 2.7-.9-5.8 4-3.9-5.5-.8L12 3Z" />}
       {kind === 'Now' && <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />}
     </svg>
@@ -133,7 +135,7 @@ export function Journey() {
                   {m.href && (
                     <motion.span className="relative mt-4 inline-block" whileHover={{ x: 4 }} transition={spring}>
                       <Link to={m.href} className={`inline-flex items-center gap-1.5 text-sm font-semibold ${t.text} hover:brightness-125`}>
-                        Read case study <span className="sr-only">: {m.title}</span>
+                        {m.href.startsWith('/work') ? 'Read case study' : 'View details'} <span className="sr-only">: {m.title}</span>
                         <ArrowIcon className="size-3.5" />
                       </Link>
                     </motion.span>
