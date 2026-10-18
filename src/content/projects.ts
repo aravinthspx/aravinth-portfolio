@@ -29,7 +29,7 @@ export type Screen = {
 }
 
 // Leave a link as null to show "Coming soon" instead of a button. Paste the real URL to enable it.
-export type ProjectLinks = { liveDemo: string | null; github: string | null; video: string | null }
+export type ProjectLinks = { liveDemo: string | null; liveDemoLabel?: string; github: string | null; video: string | null }
 
 export type ArchitectureLayer = { layer: string; detail: string; items: string[] }
 
@@ -226,7 +226,7 @@ export const projects: Project[] = [
     name: 'SITTO',
     filters: ['Full Stack', 'Web Development'],
     // ▼ Paste your real URLs here (keep null to show "Coming soon")
-    links: { liveDemo: null, github: null, video: null },
+    links: { liveDemo: 'https://sitto-self.vercel.app', liveDemoLabel: 'View site', github: null, video: null },
     caseTitle: 'Helping students find campus spaces through interactive navigation',
     type: 'Campus-space discovery prototype',
     summary:

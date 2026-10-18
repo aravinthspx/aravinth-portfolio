@@ -47,7 +47,7 @@ export const hackathons: Hackathon[] = [
     technologies: ['React', 'Vite', 'Tailwind CSS', 'Python', 'Flask', 'Supabase', 'PostgreSQL', 'jsQR'],
     image: '/images/sitto/home-800.webp',
     caseStudy: { label: 'Read the SITTO case study', href: '/work/sitto' },
-    // links: [{ label: 'Repository', url: 'https://github.com/…' }],
+    links: [{ label: 'View site', url: 'https://sitto-self.vercel.app' }],
     proof: {
       image: '/certificates/tech-horizon-2-0-participation.jpg',
       thumb: '/certificates/thumb-tech-horizon.webp',

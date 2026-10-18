@@ -1,12 +1,6 @@
 import type { ProjectLinks as Links } from '../content/projects'
 import { ExternalIcon, GitHubIcon } from './ui'
 
-const items = [
-  { key: 'liveDemo', label: 'Live demo' },
-  { key: 'github', label: 'GitHub repository' },
-  { key: 'video', label: 'Demo video' },
-] as const
-
 const PlayIcon = () => (
   <svg viewBox="0 0 24 24" className="size-4" fill="currentColor" aria-hidden="true">
     <path d="M8 5.5v13l11-6.5-11-6.5Z" />
@@ -18,6 +12,12 @@ const PlayIcon = () => (
  * "Coming soon" chip instead of a button, so no placeholder URL is ever published.
  */
 export function ProjectLinks({ links, name, compact = false }: { links: Links; name: string; compact?: boolean }) {
+  const items = [
+    { key: 'liveDemo' as const, label: links.liveDemoLabel ?? 'View site' },
+    { key: 'github' as const, label: 'GitHub repository' },
+    { key: 'video' as const, label: 'Demo video' },
+  ]
+
   return (
     <ul className="flex flex-wrap gap-2" aria-label={`${name} links`}>
       {items.map(({ key, label }) => {
