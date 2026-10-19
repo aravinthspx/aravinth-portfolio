@@ -78,7 +78,7 @@ export const projects: Project[] = [
     filters: ['AI/ML', 'Full Stack', 'Web Development'],
     categories: ['Artificial Intelligence', 'Machine Learning', 'Full-Stack Development', 'Smart Agriculture'],
     // ▼ Paste your real URLs here (keep null to show "Coming soon")
-    links: { liveDemo: null, github: null, video: null },
+    links: { liveDemo: 'https://agri-yield-pro-india.vercel.app', liveDemoLabel: 'View site', github: null, video: null },
     caseTitle: 'Turning farm inputs into actionable crop plans',
     type: 'Agricultural decision-support prototype',
     summary:
