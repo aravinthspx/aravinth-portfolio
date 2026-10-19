@@ -1,43 +1,143 @@
+<div align="center">
+
 # Aravinth M — Portfolio
 
-React + TypeScript + Vite + Tailwind CSS v4 + Motion + React Three Fiber/Drei.
+**AI/ML Engineering Student · Aspiring Machine Learning Engineer**
+B.Tech CSE (AI & ML), SRM Institute of Science and Technology, Ramapuram
 
-## Run
+[![Live site](https://img.shields.io/badge/Live_site-aravinth--portfolio-4fd9ea?style=for-the-badge&logo=vercel&logoColor=white)](https://aravinth-portfolio-virid.vercel.app)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Aravinth_M-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aravinth-m-07445a36a)
+[![GitHub](https://img.shields.io/badge/GitHub-aravinthspx-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/aravinthspx)
+
+![React](https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?logo=tailwindcss&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white)
+![Motion](https://img.shields.io/badge/Motion-FF0055?logo=framer&logoColor=white)
+
+</div>
+
+---
+
+A space-themed personal portfolio built to show real work honestly: every project, certificate and milestone on the site is backed by screenshots, reports or certificates, and every feature is labelled with how it is known (implemented, documented, planned…). No fake percentages, metrics or testimonials.
+
+## ✨ Highlights
+
+- **Cinematic intro** — a launch orb opens a short, skippable intro reel (portrait, name, role, a loader to 100%). Shown once per session; `Esc` or *Skip intro* goes straight in.
+- **Project showcase** — layered browser-window previews of real project screens in the hero, plus project cards with:
+  - a **UI / Architecture** toggle that switches the preview to a system diagram,
+  - a **Quick view** dialog with features, stack and links,
+  - **3D dioramas** (React Three Fiber) and full **case-study pages** at `/work/:slug`.
+- **Live GitHub strip** — latest public repositories fetched from the GitHub API, with loading, error and honest empty states.
+- **Skills with evidence** — each skill links to where it was used; switch between **Cards** and a **Tree** view.
+- **Learning journey** — a constellation timeline of real milestones with a legend and “up next” goals.
+- **Certificates & hackathons** — searchable, filterable certificates with credential IDs; hackathon entries with team, problem, solution and proof.
+- **Contact** — validated form that opens Gmail (or any email app) with the message pre-filled; a form-service endpoint can be plugged in to send directly.
+- **Polish** — scroll-spy navigation, animated starfield, spring physics, responsive down to 375 px, keyboard-friendly dialogs, and full `prefers-reduced-motion` support.
+
+## 🚀 Featured projects
+
+| Project | What it is | Links |
+| --- | --- | --- |
+| **Agri-Yield Pro** | Crop planning web app for farmers: live weather, mandi prices, yield optimizer, crop-plan wizard and a multilingual farm assistant. | [Live](https://agri-yield-pro-india.vercel.app) · [Code](https://github.com/aravinthspx/Agri-Yield-Pro) |
+| **SITTO** | Smart campus seating — find and reserve library and lab seats with QR check-in. Built at Tech Horizon 2.0 by team Day Dreamers. | [Live](https://sitto-self.vercel.app) |
+
+## 🛠️ Tech stack
+
+| Area | Tools |
+| --- | --- |
+| Framework | React 19, TypeScript, Vite |
+| Styling | Tailwind CSS v4, custom design tokens (cyan + green space theme) |
+| Animation | Motion (springs, layout animations, scroll-linked effects) |
+| 3D | Three.js, React Three Fiber, Drei — lazy-loaded with static fallbacks |
+| Routing | React Router 7 (home, case studies, blog, 404) |
+| Quality | `tsc` type-checking, oxlint |
+| Hosting | Vercel |
+
+## 📦 Getting started
+
+Requires Node.js 20.19+ or 22.12+.
 
 ```bash
+git clone https://github.com/aravinthspx/aravinth-portfolio.git
+cd aravinth-portfolio
 npm install
-npm run dev       # http://localhost:5173
-npm run build     # type-check + production build to dist/
-npm run preview   # serve dist/ at http://localhost:4173 (SPA fallback included)
-npm run lint
+npm run dev
 ```
 
-## Edit content (no component changes needed)
-
-| What | File |
+| Command | What it does |
 | --- | --- |
-| Name, headline, intro, email, social links, location, portrait | `src/content/profile.ts` → `profile` |
-| About text and the four About cards | `src/content/profile.ts` → `about` |
-| Hero facts strip and the "Where I’m heading" goals | `src/content/profile.ts` → `facts`, `direction` |
-| Live GitHub repositories (Projects section) | Automatic — read from `profile.links.github` via GitHub’s public API, cached per browser session. Shows an honest empty state until public repos exist. |
-| **Resume PDF** | Put it in `public/` (e.g. `public/resume.pdf`) and set `resumeUrl: '/resume.pdf'` in `profile.ts`. While `null`, download buttons are hidden and the Contact section offers "Request my resume" by email. |
-| **Contact form delivery** | `src/content/profile.ts` → `contactForm.endpoint`. `null` = the form opens the visitor's email app with the message pre-filled. Paste a public form-service URL (e.g. Formspree) to send directly. Never put private keys here. |
-| Skills (no percentages; each has `evidence`) | `src/content/skills.ts` |
-| Projects, case studies, links (live demo / GitHub / video), screenshots, filters | `src/content/projects.ts` |
-| **Certificates** (category, credential ID, skills, file, verify link) | `src/content/certificates.ts` + files in `public/certificates/` |
-| **Hackathons**, experience, achievements, education, blog posts | `src/content/records.ts` — copy the commented template in each list |
-| Current-focus cards and learning-journey timeline | `src/content/focus.ts` |
+| `npm run dev` | Start the dev server at http://localhost:5173 |
+| `npm run build` | Type-check and build to `dist/` |
+| `npm run preview` | Serve the production build at http://localhost:4173 |
+| `npm run lint` | Lint with oxlint |
 
-Empty lists are handled automatically: **Hackathons** shows an empty state; **Experience**, **Achievements** and **Blog** stay hidden (and out of the navigation and footer) until they have entries. The navigation, footer and scroll-spy all read from `src/lib/sections.ts`.
+## 🗂️ Project structure
 
-Blog posts get their own page at `/blog/<slug>`; paragraphs starting with `## ` become headings.
+```text
+src/
+├── content/        # All site content — edit these, not the components
+│   ├── profile.ts       # name, headline, about, facts, goals, contact settings
+│   ├── projects.ts      # projects, case studies, screenshots, links
+│   ├── certificates.ts  # certificates and credential IDs
+│   ├── skills.ts        # skill groups, each with evidence
+│   ├── records.ts       # hackathons, education, experience, achievements, blog
+│   └── focus.ts         # current-focus cards and journey milestones
+├── components/     # UI: hero, intro, nav, cards, dialogs, sections/
+├── pages/          # Home, CaseStudy, BlogPost, NotFound
+├── three/          # React Three Fiber scenes and materials
+└── lib/            # motion prefs, hooks, section list, email helpers
+public/
+├── images/         # project screenshots and portrait
+└── certificates/   # certificate files and thumbnails
+```
 
-Status labels keep claims honest: *Implemented* (seen working in screenshots), *Documented* (described in project reports), *In development*, *Planned*, *Illustrative mockup*, *Observed*, *Hypothesis*.
+## ✏️ Editing content
 
-## Hosting
+Everything visible on the site comes from `src/content/` — no component changes needed.
 
-Routes (`/work/:slug`, `/blog/:slug`) use client-side routing. `public/_redirects` (Netlify) and `vercel.json` (Vercel) rewrite unknown paths to `index.html` so refresh and direct links work. On GitHub Pages, switch to `HashRouter` in `src/main.tsx`.
+| What | Where |
+| --- | --- |
+| Name, headline, intro, email, social links, portrait | `profile.ts` → `profile` |
+| About text and cards | `profile.ts` → `about` |
+| Hero facts and “Where I’m heading” goals | `profile.ts` → `facts`, `direction` |
+| **Resume** | Add a PDF to `public/` (e.g. `public/resume.pdf`) and set `resumeUrl: '/resume.pdf'`. While `null`, download buttons stay hidden and visitors can request it by email. |
+| **Contact form delivery** | `profile.ts` → `contactForm.endpoint`. `null` opens Gmail / the email app with the message pre-filled. Paste a public form-service URL (e.g. Formspree) to send directly. Never put private keys here. |
+| Projects, case studies, live / GitHub / video links | `projects.ts` — a `null` link shows as “Coming soon” |
+| Certificates | `certificates.ts` + files in `public/certificates/` |
+| Hackathons, education, experience, achievements, blog posts | `records.ts` — copy the commented template in each list |
+| Skills | `skills.ts` (no percentages; each skill has `evidence`) |
+| Focus cards and journey timeline | `focus.ts` |
+| Live GitHub repositories | Automatic, from `profile.links.github` |
 
-- Append `?no3d` to any URL to preview the static (no-WebGL) fallbacks.
-- The home page shows a short "Get started" intro once per browser session (deep links skip it). Clear `aravinth-intro-seen` from session storage to see it again.
-- Once you have a domain, add an absolute `og:image` and `og:url` in `index.html` for richer link previews.
+Empty lists are handled automatically: **Experience**, **Achievements** and **Blog** stay hidden — including from the navigation and footer — until they have entries. Blog posts get their own page at `/blog/<slug>`.
+
+### Honesty labels
+
+Features and claims carry a status so nothing is overstated:
+**Implemented** (seen working) · **Documented** (described in a project report) · **In development** · **Planned** · **Illustrative mockup** · **Observed** · **Hypothesis**.
+
+## ☁️ Deployment
+
+Deployed on **Vercel**. `vercel.json` rewrites every route to `index.html`, so refreshes and direct links to `/work/...` pages work; `public/_redirects` does the same on Netlify.
+
+```bash
+npx vercel deploy --prod
+```
+
+Tips:
+- Append `?no3d` to any URL to preview the static, no-WebGL fallbacks.
+- To see the intro again, clear `aravinth-intro-seen` from session storage (or open a private window).
+
+## 📬 Contact
+
+- **Email:** aravinthff2007@gmail.com
+- **LinkedIn:** [Aravinth M](https://www.linkedin.com/in/aravinth-m-07445a36a)
+- **GitHub:** [@aravinthspx](https://github.com/aravinthspx)
+
+<div align="center">
+
+Designed and built by **Aravinth M** · Chennai, India
+
+</div>
