@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { profile } from '../content/profile'
 import { SMOOTH, useMotionPref, spring } from '../lib/motion'
 import { gmailUrl } from '../lib/email'
+import { CursorPreview, MenuBigNumber, RollText, menuInfo } from './MenuExtras'
 import { GitHubIcon, LinkedInIcon } from './ui'
 import { PaletteButton, useCommandPalette } from './CommandPalette'
 
@@ -88,6 +89,7 @@ export function Nav() {
 
   // Header hides while scrolling down and slides back on any scroll up.
   const [hidden, setHidden] = useState(false)
+  const [hovered, setHovered] = useState<number | null>(null)
   useEffect(() => {
     let last = window.scrollY
     const on = () => {
@@ -105,6 +107,9 @@ export function Nav() {
 
   // Close the menu on navigation.
   useEffect(() => setOpen(false), [pathname])
+  useEffect(() => {
+    if (!open) setHovered(null)
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -209,16 +214,11 @@ export function Nav() {
             animate={{ clipPath: 'circle(150% at calc(100% - 3.25rem) 2.5rem)', transition: { duration: 0.9, ease: SMOOTH } }}
             exit={{ clipPath: 'circle(0% at calc(100% - 3.25rem) 2.5rem)', transition: { duration: 0.6, ease: [0.64, 0, 0.78, 0], delay: 0.15 } }}
           >
-            {/* faint oversized monogram */}
-            <motion.span
-              className="pointer-events-none absolute -bottom-10 -right-6 select-none font-display text-[42vw] font-bold leading-none text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.08)] sm:text-[30vw]"
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 1.2, delay: 0.3, ease: SMOOTH } }}
-              exit={{ opacity: 0, transition: { duration: 0.2 } }}
-              aria-hidden="true"
-            >
-              AM
-            </motion.span>
+            {/* giant outlined number that follows the hovered link */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.3, duration: 0.8 } }} exit={{ opacity: 0, transition: { duration: 0.2 } }}>
+              <MenuBigNumber n={String((hovered ?? Math.max(links.findIndex((l) => l.id === active), 0)) + 1).padStart(2, '0')} />
+            </motion.div>
+            <CursorPreview id={hovered === null ? null : links[hovered].id} />
 
             <div className="container-x relative flex min-h-full flex-col pb-8 pt-24 md:pt-28">
               <motion.p
@@ -229,11 +229,15 @@ export function Nav() {
               >
                 Navigate
               </motion.p>
-              <ul className="mt-4 grid gap-x-10 sm:grid-cols-2">
+              <ul className="mt-4 grid gap-x-10 sm:grid-cols-2" onPointerLeave={() => setHovered(null)}>
                 {links.map((l, i) => {
                   const on = active === l.id
                   return (
-                    <li key={l.hash} className="overflow-hidden border-b border-ink/10">
+                    <li
+                      key={l.hash}
+                      className={`overflow-hidden border-b border-ink/10 transition-opacity duration-500 ${hovered !== null && hovered !== i ? 'opacity-35' : 'opacity-100'}`}
+                      onPointerEnter={(e) => e.pointerType !== 'touch' && setHovered(i)}
+                    >
                       <motion.div
                         initial={{ y: '110%' }}
                         animate={{ y: '0%', transition: { duration: 0.8, delay: 0.18 + i * 0.05, ease: SMOOTH } }}
@@ -242,12 +246,16 @@ export function Nav() {
                         <Link
                           to={{ pathname: '/', hash: l.hash }}
                           onClick={() => setOpen(false)}
+                          onFocus={() => setHovered(i)}
                           aria-current={on ? 'location' : undefined}
-                          className="group/item flex items-center gap-4 py-3 outline-none focus-visible:underline sm:py-4"
+                          className="group/item flex items-center gap-4 py-3 outline-none sm:py-4"
                         >
                           <span className="w-7 font-mono text-xs text-ink/40">{String(i + 1).padStart(2, '0')}</span>
-                          <span className="font-display text-[clamp(2rem,7.5vw,3.5rem)] font-bold leading-none tracking-tight transition-transform duration-500 group-hover/item:translate-x-3 group-focus-visible/item:translate-x-3">
-                            {l.label}
+                          <span className="flex min-w-0 flex-col transition-transform duration-500 group-hover/item:translate-x-3 group-focus-visible/item:translate-x-3">
+                            <span className="font-display text-[clamp(2rem,10vw,3rem)] font-bold leading-none tracking-tight sm:text-[clamp(1.6rem,4.6vw,3.5rem)]">
+                              <RollText text={l.label} />
+                            </span>
+                            <span className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45">{menuInfo[l.id]?.blurb}</span>
                           </span>
                           {on && <span className="size-2 rounded-full bg-ink" aria-hidden="true" />}
                           <svg viewBox="0 0 24 24" className="ml-auto size-6 -translate-x-3 opacity-0 transition-all duration-500 group-hover/item:translate-x-0 group-hover/item:opacity-100" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
