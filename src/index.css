@@ -188,3 +188,14 @@ html.lenis body {
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
+
+/* Background grid: one major cell (112px) of slow diagonal drift, looping seamlessly. */
+@keyframes grid-drift {
+  to {
+    transform: translate3d(112px, 112px, 0);
+  }
+}
+.grid-drift {
+  animation: grid-drift 28s linear infinite;
+  will-change: transform;
+}
