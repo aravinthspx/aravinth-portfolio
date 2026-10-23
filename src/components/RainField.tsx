@@ -4,17 +4,19 @@ import { useMotionPref } from '../lib/motion'
 type Drop = { x: number; y: number; r: number; slide: boolean; v: number; seed: number; trail: number }
 type Streak = { x1: number; y1: number; x2: number; y2: number; a: number }
 
-const BLADE = 120 // wiper blade length (px)
+const WIPE = 42 // radius cleared around the cursor (px)
 const MAX_DROPS = 900
 
 /**
  * Page background: black rain on a mirror. Beads keep landing; larger drops slide down,
- * swallow the beads in their way and leave a trail. The cursor (or a finger) is a wiper
- * blade that clears every drop it sweeps over, leaving a brief wet streak.
+ * swallow the beads in their way and leave a trail. The cursor (or a finger) wipes the glass:
+ * drops inside a small circle around it are cleared, leaving a brief wet streak. On mouse/pen
+ * devices a minimal ring cursor glides after the pointer.
  * Static beads with reduced motion; pauses while the tab is hidden.
  */
 export function RainField() {
   const ref = useRef<HTMLCanvasElement>(null)
+  const ring = useRef<HTMLDivElement>(null)
   const { reduced } = useMotionPref()
 
   useEffect(() => {
@@ -27,8 +29,8 @@ export function RainField() {
     let last = performance.now()
     let drops: Drop[] = []
     const streaks: Streak[] = []
-    // wiper state: target and eased position, eased blade angle, visibility
-    const wiper = { x: -999, y: -999, px: -999, py: -999, ex: -999, ey: -999, angle: 0, on: 0, active: false }
+    // wiper state: target, eased position, visibility, press
+    const wiper = { x: -999, y: -999, ex: -999, ey: -999, on: 0, active: false, press: 0, mouse: false }
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -74,7 +76,7 @@ export function RainField() {
       // pieces never stack into a dark smear; older bands are fainter.
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
-      ctx.lineWidth = BLADE * 0.85
+      ctx.lineWidth = WIPE * 2
       const bands = [0.022, 0.014, 0.008, 0.004]
       bands.forEach((alpha, k) => {
         const hi = 1 - k * 0.25
@@ -94,22 +96,6 @@ export function RainField() {
         }
       })
       for (const d of drops) drawDrop(d)
-      // the wiper blade: a black rubber bar across the direction of travel
-      if (wiper.on > 0.02) {
-        ctx.save()
-        ctx.translate(wiper.ex, wiper.ey)
-        ctx.rotate(wiper.angle)
-        ctx.globalAlpha = wiper.on
-        ctx.fillStyle = '#0a0a0a'
-        ctx.beginPath()
-        ctx.roundRect(-BLADE / 2, -3, BLADE, 6, 3)
-        ctx.fill()
-        ctx.fillStyle = 'rgba(10,10,10,0.35)'
-        ctx.beginPath()
-        ctx.roundRect(-BLADE / 2 + 6, 3, BLADE - 12, 3, 1.5)
-        ctx.fill()
-        ctx.restore()
-      }
     }
 
     const step = (now: number) => {
@@ -164,32 +150,29 @@ export function RainField() {
       drops = drops.filter((d) => d.y - d.r < h + 10)
       drops.push(...born)
 
-      // wiper: ease toward the pointer, turn the blade across the direction of travel
+      // wiper: ease toward the pointer and clear the drops along the way
       if (wiper.active) {
         if (wiper.ex < -900) {
           wiper.ex = wiper.x
           wiper.ey = wiper.y
         }
-        const nx = wiper.ex + (wiper.x - wiper.ex) * 0.35
-        const ny = wiper.ey + (wiper.y - wiper.ey) * 0.35
-        const mvx = nx - wiper.ex
-        const mvy = ny - wiper.ey
-        const speed = Math.hypot(mvx, mvy)
-        if (speed > 0.6) {
-          const want = Math.atan2(mvy, mvx) + Math.PI / 2
-          let diff = want - wiper.angle
-          // a blade has no front/back: take the shorter turn either way
-          diff = ((((diff + Math.PI / 2) % Math.PI) + Math.PI) % Math.PI) - Math.PI / 2
-          wiper.angle += diff * 0.25
-          // clear every drop inside the area the blade swept this frame
-          const half = BLADE / 2
-          drops = drops.filter((d) => segDist(d.x, d.y, wiper.ex, wiper.ey, nx, ny) > half + d.r)
+        const nx = wiper.ex + (wiper.x - wiper.ex) * 0.3
+        const ny = wiper.ey + (wiper.y - wiper.ey) * 0.3
+        if (Math.hypot(nx - wiper.ex, ny - wiper.ey) > 0.5) {
+          drops = drops.filter((d) => segDist(d.x, d.y, wiper.ex, wiper.ey, nx, ny) > WIPE + d.r)
           streaks.push({ x1: wiper.ex, y1: wiper.ey, x2: nx, y2: ny, a: 1 })
         }
         wiper.ex = nx
         wiper.ey = ny
       }
-      wiper.on += ((wiper.active ? 1 : 0) - wiper.on) * 0.12
+      wiper.on += ((wiper.active && wiper.mouse ? 1 : 0) - wiper.on) * 0.15
+      wiper.press *= 0.86
+      // minimal ring cursor, above the page content
+      const el = ring.current
+      if (el) {
+        el.style.transform = `translate3d(${wiper.ex}px, ${wiper.ey}px, 0) translate(-50%, -50%) scale(${1 + wiper.press * 0.6})`
+        el.style.opacity = String(wiper.on)
+      }
       for (let i = streaks.length - 1; i >= 0; i--) {
         streaks[i].a -= dt * 0.7
         if (streaks[i].a <= 0) streaks.splice(i, 1)
@@ -205,6 +188,11 @@ export function RainField() {
       wiper.x = e.clientX
       wiper.y = e.clientY
       wiper.active = true
+      wiper.mouse = e.pointerType !== 'touch'
+    }
+    const onDown = (e: PointerEvent) => {
+      onMove(e)
+      wiper.press = 1
     }
     const onEnd = (e: PointerEvent) => {
       if (e.pointerType === 'touch') wiper.active = false
@@ -230,7 +218,7 @@ export function RainField() {
     else {
       raf = requestAnimationFrame(step)
       window.addEventListener('pointermove', onMove, { passive: true })
-      window.addEventListener('pointerdown', onMove, { passive: true })
+      window.addEventListener('pointerdown', onDown, { passive: true })
       window.addEventListener('pointerup', onEnd, { passive: true })
       window.addEventListener('pointercancel', onEnd, { passive: true })
       document.documentElement.addEventListener('pointerleave', onLeave)
@@ -240,7 +228,7 @@ export function RainField() {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onMove)
+      window.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointerup', onEnd)
       window.removeEventListener('pointercancel', onEnd)
       document.documentElement.removeEventListener('pointerleave', onLeave)
@@ -249,10 +237,20 @@ export function RainField() {
   }, [reduced])
 
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
-      {/* faint mirror sheen */}
-      <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0)_35%,rgba(0,0,0,0.025)_55%,rgba(255,255,255,0)_75%)]" />
-      <canvas ref={ref} className="absolute inset-0" />
-    </div>
+    <>
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
+        {/* faint mirror sheen */}
+        <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0)_35%,rgba(0,0,0,0.025)_55%,rgba(255,255,255,0)_75%)]" />
+        <canvas ref={ref} className="absolute inset-0" />
+      </div>
+      {/* minimal cursor: thin ring with a centre dot, above the content (mouse/pen only) */}
+      <div
+        ref={ring}
+        aria-hidden="true"
+        className="pointer-events-none fixed left-0 top-0 z-[75] hidden size-9 rounded-full border border-cream/70 opacity-0 [@media(hover:hover)]:block"
+      >
+        <span className="absolute left-1/2 top-1/2 size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cream" />
+      </div>
+    </>
   )
 }
