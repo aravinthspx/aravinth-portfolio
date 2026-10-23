@@ -159,3 +159,32 @@
   filter: none;
 }
 
+
+/* Smooth scrolling (Lenis) takes over; native smooth scroll would fight it. */
+html.smooth-scroll {
+  scroll-behavior: auto;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+[data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* Every link and button eases between states instead of snapping. */
+@layer base {
+  a,
+  button,
+  [role='button'],
+  input,
+  textarea,
+  select {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform;
+    transition-duration: 0.35s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

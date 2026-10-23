@@ -62,7 +62,7 @@ export function Journey() {
   const { reduced } = useMotionPref()
   const listRef = useRef<HTMLOListElement>(null)
   const { scrollYProgress } = useScroll({ target: listRef, offset: ['start 75%', 'end 55%'] })
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.6 })
+  const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 28, mass: 0.6 })
   const cometTop = useTransform(progress, (v) => `${Math.min(100, Math.max(0, v * 100))}%`)
   const n = journey.length
   const [reached, setReached] = useState(reduced ? n - 1 : -1)
@@ -139,7 +139,7 @@ export function Journey() {
                   initial={reduced ? false : { opacity: 0, x: right ? 70 : -70, rotateY: right ? -18 : 18 }}
                   whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
                   viewport={{ once: true, margin: '0px 0px -12% 0px' }}
-                  transition={{ type: 'spring', stiffness: 110, damping: 16 }}
+                  transition={{ type: 'spring', stiffness: 100, damping: 26 }}
                   whileHover={reduced ? undefined : { y: -4, rotateY: right ? -3 : 3 }}
                 >
                   {/* oversized step number */}

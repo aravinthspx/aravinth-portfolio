@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { gmailUrl } from '../lib/email'
+import { scrollToTarget } from '../lib/scroll'
 import { profile } from '../content/profile'
 import { navSections } from '../lib/sections'
 import { useMotionPref, spring } from '../lib/motion'
@@ -11,7 +12,7 @@ const year = new Date().getFullYear()
 export function Footer() {
   const { reduced } = useMotionPref()
   const toTop = () => {
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })
+    scrollToTarget(0, { immediate: reduced })
     document.getElementById('main')?.focus({ preventScroll: true })
   }
 

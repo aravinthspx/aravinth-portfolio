@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { motion } from 'motion/react'
 import { Reveal } from './ui'
+import { SMOOTH } from '../lib/motion'
 
-/** Title words jump up one after another from behind a mask, with a springy landing. */
+/** Title words rise one after another from behind a mask and come into focus. */
 export function BounceWords({ text, delay = 0.08 }: { text: string; delay?: number }) {
   const words = text.split(' ')
   return (
@@ -18,7 +19,7 @@ export function BounceWords({ text, delay = 0.08 }: { text: string; delay?: numb
         <span key={i} className="inline-block overflow-hidden pb-[0.12em] align-bottom" aria-hidden="true">
           <motion.span
             className="inline-block"
-            variants={{ hidden: { y: '110%', rotate: 6 }, show: { y: '0%', rotate: 0, transition: { type: 'spring', stiffness: 300, damping: 14 } } }}
+            variants={{ hidden: { y: '110%', opacity: 0, filter: 'blur(6px)' }, show: { y: '0%', opacity: 1, filter: 'blur(0px)', transition: { duration: 1, ease: SMOOTH } } }}
           >
             {w}
             {i < words.length - 1 ? ' ' : ''}
@@ -45,7 +46,7 @@ export function Heading({ pill, title, id, children }: { pill: string; title: Re
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ type: 'spring', stiffness: 160, damping: 12, delay: 0.35 }}
+        transition={{ duration: 1.2, delay: 0.45, ease: SMOOTH }}
         aria-hidden="true"
       />
       {children && <div className="mt-5 text-lg leading-relaxed text-cream-2">{children}</div>}

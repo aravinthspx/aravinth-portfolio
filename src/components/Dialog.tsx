@@ -56,7 +56,7 @@ export function Dialog({ open, onClose, title, children }: { open: boolean; onCl
           </svg>
         </button>
       </div>
-      <div className="max-h-[calc(100dvh-7rem)] overflow-auto p-4 sm:p-6">{children}</div>
+      <div data-lenis-prevent className="max-h-[calc(100dvh-7rem)] overflow-auto p-4 sm:p-6">{children}</div>
     </dialog>
   )
 }

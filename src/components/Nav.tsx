@@ -188,6 +188,7 @@ export function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            data-lenis-prevent
             className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line/60 xl:hidden"
           >
             <div className="container-x py-6">

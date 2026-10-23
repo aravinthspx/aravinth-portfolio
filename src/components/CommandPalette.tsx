@@ -205,7 +205,7 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
                 />
                 <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 font-mono text-[10px] text-muted sm:block">Esc</kbd>
               </div>
-              <ul ref={list} id="palette-list" role="listbox" aria-label="Results" className="max-h-[min(60vh,26rem)] overflow-y-auto p-2">
+              <ul ref={list} data-lenis-prevent id="palette-list" role="listbox" aria-label="Results" className="max-h-[min(60vh,26rem)] overflow-y-auto p-2">
                 {shown.length === 0 && <li className="px-3 py-8 text-center text-sm text-muted">No results for “{q}”.</li>}
                 {shown.map((it, i) => {
                   const header = it.group !== lastGroup

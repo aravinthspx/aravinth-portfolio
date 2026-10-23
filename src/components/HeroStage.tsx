@@ -75,8 +75,8 @@ export function Tilt3D({ children, className = '', max = 8 }: { children: ReactN
   const fine = useFinePointer()
   const rx = useMotionValue(0)
   const ry = useMotionValue(0)
-  const srx = useSpring(rx, { stiffness: 120, damping: 14 })
-  const sry = useSpring(ry, { stiffness: 120, damping: 14 })
+  const srx = useSpring(rx, { stiffness: 90, damping: 26 })
+  const sry = useSpring(ry, { stiffness: 90, damping: 26 })
 
   useEffect(() => {
     if (reduced || !fine) {

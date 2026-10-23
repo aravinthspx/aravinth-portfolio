@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode, type ComponentProps } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { spring } from '../lib/motion'
+import { SMOOTH, spring } from '../lib/motion'
 import { statusLabel, type Status } from '../content/projects'
 import { profile } from '../content/profile'
 
@@ -91,16 +91,16 @@ export function IconLink({ href, label, children }: { href: string; label: strin
 }
 
 /* ---------- Reveal ---------- */
-/** Fades content in as it scrolls into view, landing with a small spring bounce. */
+/** Content glides up and comes into focus as it scrolls into view. */
 export function Reveal({ children, delay = 0, className = '', as = 'div' }: { children: ReactNode; delay?: number; className?: string; as?: 'div' | 'li' | 'section' | 'article' }) {
   const M = motion[as]
   return (
     <M
       className={className}
-      initial={{ opacity: 0, y: 56, scale: 0.94 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 48, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ type: 'spring', stiffness: 210, damping: 15, mass: 0.9, delay, opacity: { duration: 0.35, delay } }}
+      transition={{ duration: 1.1, delay, ease: SMOOTH }}
     >
       {children}
     </M>

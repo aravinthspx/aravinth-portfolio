@@ -7,6 +7,7 @@ import { Starfield } from './components/Starfield'
 import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { useMotionPref } from './lib/motion'
+import { scrollToTarget, startSmoothScroll } from './lib/scroll'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 
@@ -15,10 +16,10 @@ const BlogPost = lazy(() => import('./pages/BlogPost'))
 
 const EASE = [0.76, 0, 0.24, 1] as const
 
-/** Thin bar across the top that fills as you scroll, with a springy follow. */
+/** Thin bar across the top that fills smoothly as you scroll. */
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 260, damping: 26, mass: 0.4 })
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.5 })
   return <motion.div className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-cream" style={{ scaleX }} aria-hidden="true" />
 }
 
@@ -31,7 +32,7 @@ function HashScroller() {
     let t = 0
     const go = () => {
       const el = document.getElementById(hash.slice(1))
-      if (el) el.scrollIntoView()
+      if (el) scrollToTarget(el)
       else if (tries++ < 30) t = window.setTimeout(go, 50)
     }
     go()
@@ -75,15 +76,23 @@ export default function App() {
   const { reduced } = useMotionPref()
   // Deep links (case studies, #sections) skip the intro.
   const [gate, setGate] = useState(() => !hash && shouldShowIntro(pathname))
-  // The very first page load shows no curtain (the intro or the hero entrance covers it).
+  // No curtain until the first real page change (hash links within a page never trigger it).
   const [first, setFirst] = useState(true)
-  useEffect(() => {
-    if (pathname !== '/' || hash) setFirst(false)
-  }, [pathname, hash])
   // Without the curtain, jump to the top as soon as the page changes.
   useEffect(() => {
     if (reduced && !window.location.hash) window.scrollTo(0, 0)
   }, [pathname, reduced])
+
+  // Smooth (inertia) scrolling, off when reduced motion is on.
+  useEffect(() => {
+    if (reduced) return
+    document.documentElement.classList.add('smooth-scroll')
+    const stop = startSmoothScroll()
+    return () => {
+      stop()
+      document.documentElement.classList.remove('smooth-scroll')
+    }
+  }, [reduced])
 
   const routes = (
     <Routes location={location}>
@@ -121,7 +130,7 @@ export default function App() {
                   initial={false}
                   onExitComplete={() => {
                     // Swap scroll position while the curtain covers the screen.
-                    if (!window.location.hash) window.scrollTo(0, 0)
+                    if (!window.location.hash) scrollToTarget(0, { immediate: true })
                     setFirst(false)
                   }}
                 >

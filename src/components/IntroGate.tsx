@@ -40,7 +40,7 @@ function LaunchOrb({ onLaunch, btnRef }: { onLaunch: () => void; btnRef: React.R
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.06 }}
       whileTap={{ scale: 0.92 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 28 }}
     >
       {/* pulse rings */}
       {[0, 1].map((i) => (
@@ -201,7 +201,7 @@ function Reel({ onDone }: { onDone: () => void }) {
               className="font-display text-3xl font-bold tracking-tight text-cream sm:text-5xl"
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 220, damping: 16 }}
+              transition={{ type: 'spring', stiffness: 180, damping: 26 }}
             >
               Welcome <span className="bg-gradient-to-r from-accent to-leaf bg-clip-text text-transparent">aboard.</span>
             </motion.p>

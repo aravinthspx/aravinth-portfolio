@@ -61,7 +61,7 @@ function Chip({ children, className, delay = 0 }: { children: ReactNode; classNa
       initial={{ opacity: 0, scale: 0.8, y: 10 }}
       whileInView={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
       viewport={{ once: true }}
-      transition={{ opacity: { delay, duration: 0.4 }, scale: { delay, type: 'spring', stiffness: 260, damping: 18 }, y: { delay: delay + 0.4, duration: 5, repeat: Infinity, ease: 'easeInOut' } }}
+      transition={{ opacity: { delay, duration: 0.4 }, scale: { delay, type: 'spring', stiffness: 200, damping: 30 }, y: { delay: delay + 0.4, duration: 5, repeat: Infinity, ease: 'easeInOut' } }}
     >
       {children}
     </motion.span>

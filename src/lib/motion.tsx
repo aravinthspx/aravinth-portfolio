@@ -51,4 +51,8 @@ export function MotionProvider({ children }: { children: ReactNode }) {
 
 export const useMotionPref = () => useContext(Ctx)
 
-export const spring = { type: 'spring', stiffness: 420, damping: 22 } as const
+/** Smooth ease-out (quint): fast start, long soft landing. Used for every entrance. */
+export const SMOOTH = [0.22, 1, 0.36, 1] as const
+
+/** Hover/press and layout spring: critically damped, so it glides into place without bouncing. */
+export const spring = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 } as const

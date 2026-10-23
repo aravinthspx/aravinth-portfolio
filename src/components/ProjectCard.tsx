@@ -16,8 +16,8 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const ref = useRef<HTMLDivElement>(null)
   const rx = useMotionValue(0)
   const ry = useMotionValue(0)
-  const srx = useSpring(rx, { stiffness: 200, damping: 20 })
-  const sry = useSpring(ry, { stiffness: 200, damping: 20 })
+  const srx = useSpring(rx, { stiffness: 140, damping: 26 })
+  const sry = useSpring(ry, { stiffness: 140, damping: 26 })
   const glareX = useTransform(sry, [-5, 5], ['15%', '85%'])
   const glare = useTransform(glareX, (x) => `radial-gradient(500px circle at ${x} 0%, rgba(0,0,0,0.03), transparent 50%)`)
   const tiltOn = fine && !reduced

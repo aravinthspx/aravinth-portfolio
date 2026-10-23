@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useMotionPref } from '../lib/motion'
+import { SMOOTH, useMotionPref } from '../lib/motion'
 import { profile, facts } from '../content/profile'
 import { FocusCards } from '../components/FocusCards'
 import { Journey } from '../components/Journey'
@@ -47,8 +47,8 @@ function RoleRotator() {
   )
 }
 
-const ease = [0.2, 0.8, 0.2, 1] as const
-const rise = (delay: number) => ({ initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay, ease } })
+const ease = SMOOTH
+const rise = (delay: number) => ({ initial: { opacity: 0, y: 24, filter: 'blur(6px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)' }, transition: { duration: 1, delay, ease } })
 
 function Hero() {
   return (
@@ -73,24 +73,30 @@ function Hero() {
               aria-label={profile.name}
               initial="hidden"
               animate="show"
-              transition={{ staggerChildren: 0.055, delayChildren: 0.2 }}
+              transition={{ staggerChildren: 0.045, delayChildren: 0.25 }}
             >
-              {/* Each letter drops in and bounces on landing. */}
+              {/* Each letter glides up from behind a mask and comes into focus. */}
               {`${profile.shortName} M`.split('').map((ch, i) => (
-                <motion.span
-                  key={i}
-                  aria-hidden="true"
-                  className={`inline-block ${ch === 'M' && i > 0 ? 'text-muted' : 'text-cream'}`}
-                  variants={{
-                    hidden: { y: -120, opacity: 0, rotate: i % 2 ? 8 : -8 },
-                    show: { y: 0, opacity: 1, rotate: 0, transition: { type: 'spring', stiffness: 520, damping: 13, mass: 0.8 } },
-                  }}
-                  whileHover={{ y: -14, transition: { type: 'spring', stiffness: 600, damping: 10 } }}
-                >
-                  {ch === ' ' ? ' ' : ch}
-                </motion.span>
+                <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom" aria-hidden="true">
+                  <motion.span
+                    className={`inline-block ${ch === 'M' && i > 0 ? 'text-muted' : 'text-cream'}`}
+                    variants={{
+                      hidden: { y: '105%', opacity: 0, filter: 'blur(10px)' },
+                      show: { y: '0%', opacity: 1, filter: 'blur(0px)', transition: { duration: 1.1, ease: SMOOTH } },
+                    }}
+                  >
+                    {ch === ' ' ? '\u00a0' : ch}
+                  </motion.span>
+                </span>
               ))}
             </motion.h1>
+            <motion.span
+              className="mx-auto mt-3 block h-px w-full max-w-md origin-left bg-cream/60 lg:mx-0"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.4, delay: 0.9, ease: SMOOTH }}
+              aria-hidden="true"
+            />
           </Tilt3D>
 
           <motion.p {...rise(0.3)} className="mt-6 font-display text-xl font-medium text-cream sm:text-2xl">
