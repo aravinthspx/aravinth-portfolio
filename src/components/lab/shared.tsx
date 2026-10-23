@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode, type RefObject } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
 /** Drawing colours for the black-and-white canvases. */
 export const INK = '#0a0a0a'
@@ -109,7 +110,37 @@ export function Metric({ label, value }: { label: string; value: ReactNode }) {
   )
 }
 
-/** Layout shared by every demo: numbered header, canvas on the left, controls and explanation on the right. */
+/** A number that rolls smoothly to its new value instead of jumping. */
+export function Count({ value, decimals = 0, suffix = '' }: { value: number; decimals?: number; suffix?: string }) {
+  const [shown, setShown] = useState(value)
+  const from = useRef(value)
+  useEffect(() => {
+    if (!Number.isFinite(value)) return
+    const start = performance.now()
+    const a = from.current
+    let raf = 0
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 380)
+      const v = a + (value - a) * (1 - (1 - t) ** 3)
+      from.current = v
+      setShown(v)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value])
+  if (!Number.isFinite(value)) return <>∞</>
+  return (
+    <>
+      {shown.toFixed(decimals)}
+      {suffix}
+    </>
+  )
+}
+
+const rise = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.2, 0.8, 0.2, 1] as const } } }
+
+/** Layout shared by every demo: numbered header, canvas on the left, controls and explanation on the right. Children animate in, staggered. */
 export function DemoShell({
   id,
   index,
@@ -119,6 +150,7 @@ export function DemoShell({
   canvas,
   controls,
   metrics,
+  extra,
   how,
 }: {
   id: string
@@ -129,45 +161,124 @@ export function DemoShell({
   canvas: ReactNode
   controls: ReactNode
   metrics: ReactNode
+  extra?: ReactNode
   how: ReactNode
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24 border-t border-line py-16 md:py-24">
+    <motion.section
+      id={id}
+      aria-labelledby={`${id}-title`}
+      className="scroll-mt-40 py-12 md:py-16"
+      initial="hidden"
+      animate="show"
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
+    >
       <div className="grid gap-x-12 gap-y-4 md:grid-cols-[auto_1fr] md:items-end">
-        <p className="font-display text-6xl font-bold leading-none text-transparent [-webkit-text-stroke:1.5px_#0a0a0a] md:text-8xl" aria-hidden="true">
+        <motion.p
+          variants={{ hidden: { opacity: 0, x: -40, rotate: -6 }, show: { opacity: 1, x: 0, rotate: 0, transition: { type: 'spring', stiffness: 160, damping: 16 } } }}
+          className="font-display text-6xl font-bold leading-none text-transparent [-webkit-text-stroke:1.5px_#0a0a0a] md:text-8xl"
+          aria-hidden="true"
+        >
           {index}
-        </p>
-        <div>
+        </motion.p>
+        <motion.div variants={rise}>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">{kicker}</p>
           <h2 id={`${id}-title`} className="mt-2 font-display text-3xl font-bold tracking-tight text-cream md:text-4xl">
             {title}
           </h2>
           <p className="mt-3 max-w-2xl text-cream-2">{summary}</p>
-        </div>
+        </motion.div>
       </div>
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.35fr_1fr]">
-        <div className="min-w-0">{canvas}</div>
+        <motion.div
+          className="min-w-0"
+          variants={{ hidden: { opacity: 0, scale: 0.94, clipPath: 'inset(8% 8% 8% 8% round 24px)' }, show: { opacity: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0% round 24px)', transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] } } }}
+        >
+          {canvas}
+        </motion.div>
         <div className="min-w-0 space-y-6">
-          <div className="flex flex-wrap gap-2">{controls}</div>
-          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">{metrics}</dl>
-          <div className="rounded-2xl border border-line bg-ink-2 p-5 text-sm leading-relaxed text-cream-2">
+          <motion.div variants={rise} className="flex flex-wrap gap-2">
+            {controls}
+          </motion.div>
+          <motion.dl variants={rise} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {metrics}
+          </motion.dl>
+          {extra && <motion.div variants={rise}>{extra}</motion.div>}
+          <motion.div variants={rise} className="rounded-2xl border border-line bg-ink-2 p-5 text-sm leading-relaxed text-cream-2">
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">How it works</p>
             {how}
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
-/** Canvas wrapper with a square aspect, border and an instruction caption. */
-export function Stage({ boxRef, children, caption }: { boxRef: RefObject<HTMLDivElement | null>; children: ReactNode; caption: string }) {
+/**
+ * Canvas wrapper: square plot with a live crosshair + coordinate readout that follows the pointer,
+ * an optional celebratory stamp, and an instruction caption.
+ */
+export function Stage({ boxRef, children, caption, stamp }: { boxRef: RefObject<HTMLDivElement | null>; children: ReactNode; caption: string; stamp?: string | null }) {
+  const [pt, setPt] = useState<{ x: number; y: number } | null>(null)
   return (
     <figure>
-      <div ref={boxRef} className="relative aspect-square w-full overflow-hidden rounded-3xl border border-line bg-ink shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]">
+      <div
+        ref={boxRef}
+        onPointerMove={(e) => {
+          if (e.pointerType !== 'mouse') return
+          const r = e.currentTarget.getBoundingClientRect()
+          setPt({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height })
+        }}
+        onPointerLeave={() => setPt(null)}
+        className="relative aspect-square w-full overflow-hidden rounded-3xl border border-line bg-ink shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]"
+      >
         {children}
+        {pt && (
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <div className="absolute inset-x-0 h-px bg-cream/25" style={{ top: `${pt.y * 100}%` }} />
+            <div className="absolute inset-y-0 w-px bg-cream/25" style={{ left: `${pt.x * 100}%` }} />
+            <div
+              className="absolute whitespace-nowrap rounded-md bg-cream px-2 py-1 font-mono text-[10px] text-ink"
+              style={{ left: `${pt.x * 100}%`, top: `${pt.y * 100}%`, transform: `translate(${pt.x > 0.75 ? 'calc(-100% - 10px)' : '10px'}, ${pt.y > 0.85 ? 'calc(-100% - 10px)' : '10px'})` }}
+            >
+              x {pt.x.toFixed(2)} · y {(1 - pt.y).toFixed(2)}
+            </div>
+          </div>
+        )}
+        <AnimatePresence>
+          {stamp && (
+            <motion.div
+              key={stamp}
+              className="pointer-events-none absolute inset-0 grid place-items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            >
+              <motion.span
+                className="rounded-xl border-4 border-cream bg-ink/85 px-6 py-3 font-display text-3xl font-bold uppercase tracking-[0.12em] text-cream backdrop-blur-sm md:text-4xl"
+                initial={{ scale: 2.4, rotate: -14, opacity: 0 }}
+                animate={{ scale: 1, rotate: -8, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 15 }}
+              >
+                {stamp}
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <figcaption className="mt-2 font-mono text-[11px] text-muted">{caption}</figcaption>
     </figure>
   )
+}
+
+/** Shows a stamp for a moment when `trigger` flips to true. */
+export function useStamp(trigger: boolean, text: string, ms = 1600) {
+  const [stamp, setStamp] = useState<string | null>(null)
+  useEffect(() => {
+    if (!trigger) return
+    setStamp(text)
+    const t = window.setTimeout(() => setStamp(null), ms)
+    return () => window.clearTimeout(t)
+  }, [trigger, text, ms])
+  return stamp
 }

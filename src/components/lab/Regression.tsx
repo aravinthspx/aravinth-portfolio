@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Btn, DemoShell, INK, Metric, SOFT, Slider, Stage, drawGrid, gauss, prepare, seeded, unit, useBoxSize } from './shared'
+import { Btn, Count, DemoShell, INK, Metric, SOFT, Slider, Stage, drawGrid, gauss, prepare, seeded, unit, useBoxSize, useStamp } from './shared'
 
 type P = { x: number; y: number } // both in 0–1, y measured upward
 
@@ -27,6 +27,104 @@ function exactFit(pts: P[]) {
   return { w, b: my - w * mx }
 }
 
+const WR = [-2.5, 2.5] as const // slope range shown on the landscape
+const BR = [-1.5, 2] as const // intercept range
+
+/**
+ * Loss landscape: error (MSE) for every slope/intercept pair, as grey bands with contour lines.
+ * The dot is the current model; its trail is the path gradient descent took downhill.
+ */
+function LossLandscape({ pts, version, path, model }: { pts: P[]; version: number; path: { w: number; b: number }[]; model: { w: number; b: number } }) {
+  const box = useRef<HTMLDivElement>(null)
+  const cv = useRef<HTMLCanvasElement>(null)
+  const map = useRef<HTMLCanvasElement | null>(null)
+  const { w: W, h: H } = useBoxSize(box)
+
+  // Recompute the surface only when the data changes.
+  useEffect(() => {
+    const N = 110
+    const o = document.createElement('canvas')
+    o.width = N
+    o.height = N
+    const g = o.getContext('2d')!
+    const img = g.createImageData(N, N)
+    const vals: number[] = []
+    for (let j = 0; j < N; j++) {
+      for (let i = 0; i < N; i++) {
+        const w = WR[0] + ((i + 0.5) / N) * (WR[1] - WR[0])
+        const b = BR[1] - ((j + 0.5) / N) * (BR[1] - BR[0])
+        vals.push(Math.log(mse(pts, w, b) + 1e-4))
+      }
+    }
+    const lo = Math.min(...vals)
+    const hi = Math.max(...vals)
+    const band = (v: number) => Math.floor(((v - lo) / (hi - lo || 1)) * 14)
+    for (let j = 0; j < N; j++) {
+      for (let i = 0; i < N; i++) {
+        const k = j * N + i
+        const t = (vals[k] - lo) / (hi - lo || 1)
+        const edge = (i + 1 < N && band(vals[k]) !== band(vals[k + 1])) || (j + 1 < N && band(vals[k]) !== band(vals[k + N]))
+        const grey = edge ? 120 : Math.round(255 - (1 - t) * 70)
+        img.data.set([grey, grey, grey, 255], k * 4)
+      }
+    }
+    g.putImageData(img, 0, 0)
+    map.current = o
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version])
+
+  useEffect(() => {
+    const c = cv.current
+    if (!c || !W || !map.current) return
+    const ctx = prepare(c, W, H)
+    ctx.imageSmoothingEnabled = true
+    ctx.drawImage(map.current, 0, 0, W, H)
+    const X = (w: number) => ((w - WR[0]) / (WR[1] - WR[0])) * W
+    const Y = (b: number) => ((BR[1] - b) / (BR[1] - BR[0])) * H
+    const ex = exactFit(pts)
+    if (ex) {
+      ctx.strokeStyle = INK
+      ctx.lineWidth = 1.5
+      const x = X(ex.w)
+      const y = Y(ex.b)
+      ctx.beginPath()
+      ctx.moveTo(x - 6, y - 6)
+      ctx.lineTo(x + 6, y + 6)
+      ctx.moveTo(x + 6, y - 6)
+      ctx.lineTo(x - 6, y + 6)
+      ctx.stroke()
+    }
+    if (path.length > 1) {
+      ctx.strokeStyle = INK
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      path.forEach((p, i) => (i ? ctx.lineTo(X(p.w), Y(p.b)) : ctx.moveTo(X(p.w), Y(p.b))))
+      ctx.stroke()
+    }
+    ctx.fillStyle = INK
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.arc(X(model.w), Y(model.b), 6, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.stroke()
+  })
+
+  return (
+    <figure className="rounded-2xl border border-line bg-ink-2 p-3">
+      <figcaption className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        <span>Loss landscape</span>
+        <span>● model · ✕ minimum</span>
+      </figcaption>
+      <div ref={box} className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
+        <canvas ref={cv} className="absolute inset-0 size-full" role="img" aria-label="Map of the error for every slope and intercept, with the path gradient descent has taken" />
+        <span className="absolute bottom-1 right-2 font-mono text-[9px] text-muted">slope →</span>
+        <span className="absolute left-2 top-1 font-mono text-[9px] text-muted">↑ intercept</span>
+      </div>
+    </figure>
+  )
+}
+
 export function RegressionDemo() {
   const box = useRef<HTMLDivElement>(null)
   const cv = useRef<HTMLCanvasElement>(null)
@@ -40,6 +138,12 @@ export function RegressionDemo() {
   const [epoch, setEpoch] = useState(0)
   const [history, setHistory] = useState<number[]>([mse(pts.current, 0, 0.5)])
   const [count, setCount] = useState(pts.current.length)
+  const [version, setVersion] = useState(0)
+  const path = useRef<{ w: number; b: number }[]>([{ w: 0, b: 0.5 }])
+  const [diverged, setDiverged] = useState(false)
+  const [fittedFlag, setFittedFlag] = useState(false)
+  const fittedStamp = useStamp(fittedFlag, 'Fitted')
+  const divergedStamp = useStamp(diverged, 'Diverged!', 2200)
   const lrRef = useRef(lr)
   useEffect(() => {
     lrRef.current = lr
@@ -48,6 +152,10 @@ export function RegressionDemo() {
   const restart = (data?: P[]) => {
     if (data) pts.current = data
     model.current = { w: 0, b: 0.5 }
+    path.current = [{ w: 0, b: 0.5 }]
+    setVersion((v) => v + 1)
+    setDiverged(false)
+    setFittedFlag(false)
     setEpoch(0)
     setHistory([mse(pts.current, 0, 0.5)])
     setCount(pts.current.length)
@@ -72,10 +180,16 @@ export function RegressionDemo() {
           model.current.b -= (lrRef.current * 2 * gb) / P.length
         }
         const loss = mse(P, model.current.w, model.current.b)
+        const last = path.current[path.current.length - 1]
+        if (Math.hypot(last.w - model.current.w, last.b - model.current.b) > 0.004) path.current.push({ ...model.current })
+        if (path.current.length > 600) path.current.shift()
+        const ex = exactFit(P)
+        if (ex && Math.abs(loss - mse(P, ex.w, ex.b)) < 2e-6) setFittedFlag(true)
         setEpoch((e) => e + 3)
         setHistory((h) => (h.length > 240 ? [...h.slice(1), loss] : [...h, loss]))
         if (!Number.isFinite(loss) || loss > 1e6) {
           setRunning(false)
+          setDiverged(true)
           return
         }
       }
@@ -139,6 +253,8 @@ export function RegressionDemo() {
     const p = unit(e)
     pts.current = [...pts.current, { x: p.x, y: 1 - p.y }]
     setCount(pts.current.length)
+    setVersion((v) => v + 1)
+    setFittedFlag(false)
     setHistory((h) => [...h, mse(pts.current, model.current.w, model.current.b)])
   }
 
@@ -155,7 +271,7 @@ export function RegressionDemo() {
       title="Linear regression, trained live"
       summary="Fit a straight line with gradient descent — the same optimiser behind most neural networks. Add points, press Train, and watch the error shrink. Push the learning rate too high and it diverges."
       canvas={
-        <Stage boxRef={box} caption="Click to add points · dashed ticks are errors (residuals) · solid line is the model">
+        <Stage boxRef={box} stamp={divergedStamp ?? fittedStamp} caption="Click to add points · dashed ticks are errors (residuals) · solid line is the model">
           <canvas ref={cv} onPointerDown={add} className="absolute inset-0 size-full cursor-crosshair touch-none" role="img" aria-label={`Regression plot with ${count} points; current line y = ${model.current.w.toFixed(2)}x + ${model.current.b.toFixed(2)}`} />
         </Stage>
       }
@@ -173,8 +289,8 @@ export function RegressionDemo() {
       }
       metrics={
         <>
-          <Metric label="Epoch" value={epoch} />
-          <Metric label="MSE" value={Number.isFinite(loss) ? loss.toFixed(4) : '∞'} />
+          <Metric label="Epoch" value={<Count value={epoch} />} />
+          <Metric label="MSE" value={<Count value={loss} decimals={4} />} />
           <Metric label="Model" value={<span className="text-sm">y = {model.current.w.toFixed(2)}x {model.current.b < 0 ? '−' : '+'} {Math.abs(model.current.b).toFixed(2)}</span>} />
           <div className="col-span-2 rounded-xl border border-line bg-ink-2 px-3 py-2 sm:col-span-3">
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Loss over time</p>
@@ -185,11 +301,12 @@ export function RegressionDemo() {
           </div>
         </>
       }
+      extra={<LossLandscape pts={pts.current} version={version} path={path.current} model={model.current} />}
       how={
         <p>
           The model is <code className="text-cream">y = w·x + b</code>. Each step measures the mean squared error, computes how it changes with{' '}
           <code className="text-cream">w</code> and <code className="text-cream">b</code> (the gradient), and nudges both downhill by the learning rate.
-          Toggle <strong className="text-cream">Exact fit</strong> to compare with the closed-form least-squares answer it converges to.
+          The <strong className="text-cream">loss landscape</strong> maps the error of every possible line — watch the dot roll downhill to the ✕. Toggle <strong className="text-cream">Exact fit</strong> to compare with the closed-form answer.
         </p>
       }
     />

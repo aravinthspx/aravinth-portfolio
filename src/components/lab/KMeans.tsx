@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Btn, DemoShell, INK, Metric, SOFT, Slider, Stage, drawGrid, gauss, prepare, seeded, unit, useBoxSize } from './shared'
+import { Btn, Count, DemoShell, INK, Metric, SOFT, Slider, Stage, drawGrid, gauss, prepare, seeded, unit, useBoxSize, useStamp } from './shared'
 
 type P = { x: number; y: number }
 
@@ -76,22 +76,34 @@ export function KMeansDemo() {
   const cv = useRef<HTMLCanvasElement>(null)
   const { w, h } = useBoxSize(box)
   const [k, setK] = useState(3)
+  const [smart, setSmart] = useState(false)
+  const smartRef = useRef(smart)
+  smartRef.current = smart
   const [seed, setSeed] = useState(7)
   const pts = useRef<P[]>(blobs(3, 7))
   const cents = useRef<P[]>([])
   const shown = useRef<P[]>([]) // centroid positions on screen, eased toward `cents`
   const assign = useRef<number[]>([])
+  const pop = useRef<number[]>([]) // per-point pulse when it changes cluster
+  const trails = useRef<P[][]>([]) // recent centroid positions
+  const burst = useRef(0) // ring burst on convergence
   const [iter, setIter] = useState(0)
   const [converged, setConverged] = useState(false)
   const [running, setRunning] = useState(false)
   const [inertia, setInertia] = useState<number | null>(null)
   const [count, setCount] = useState(pts.current.length)
+  const stamp = useStamp(converged, 'Converged')
 
   const reset = useCallback((kk: number, s: number, data?: P[]) => {
     if (data) pts.current = data
-    cents.current = seedCentroids(pts.current, kk, seeded(s * 31 + kk))
+    const rnd = seeded(s * 31 + kk)
+    // Random starts move further (better to watch); k-means++ starts converge faster.
+    cents.current = smartRef.current ? seedCentroids(pts.current, kk, rnd) : Array.from({ length: kk }, () => ({ x: 0.1 + rnd() * 0.8, y: 0.1 + rnd() * 0.8 }))
     shown.current = cents.current.map((c) => ({ ...c }))
     assign.current = []
+    pop.current = []
+    trails.current = []
+    burst.current = 0
     setIter(0)
     setConverged(false)
     setInertia(null)
@@ -110,7 +122,10 @@ export function KMeansDemo() {
     const next = P.map((p, i) => {
       let best = 0
       for (let j = 1; j < C.length; j++) if (d2(p, C[j]) < d2(p, C[best])) best = j
-      if (assign.current[i] !== best) changed = true
+      if (assign.current[i] !== best) {
+        changed = true
+        pop.current[i] = 1
+      }
       return best
     })
     assign.current = next
@@ -120,7 +135,10 @@ export function KMeansDemo() {
     })
     setInertia(P.reduce((a, p, i) => a + d2(p, cents.current[next[i]]), 0))
     setIter((n) => n + 1)
-    if (!changed) setConverged(true)
+    if (!changed) {
+      setConverged(true)
+      burst.current = 1
+    }
     return !changed
   }, [])
 
@@ -146,7 +164,34 @@ export function KMeansDemo() {
         if (!S[j]) S[j] = { ...t }
         S[j].x += (t.x - S[j].x) * 0.18
         S[j].y += (t.y - S[j].y) * 0.18
+        const tr = (trails.current[j] ||= [])
+        const last = tr[tr.length - 1]
+        if (!last || Math.hypot(last.x - S[j].x, last.y - S[j].y) > 0.002) tr.push({ x: S[j].x, y: S[j].y })
+        if (tr.length > 90) tr.shift()
       })
+      // centroid trails, fading towards the tail
+      ctx.lineWidth = 2
+      trails.current.forEach((tr) => {
+        for (let i = 1; i < tr.length; i++) {
+          ctx.strokeStyle = `rgba(10,10,10,${(i / tr.length) * 0.5})`
+          ctx.beginPath()
+          ctx.moveTo(tr[i - 1].x * w, tr[i - 1].y * h)
+          ctx.lineTo(tr[i].x * w, tr[i].y * h)
+          ctx.stroke()
+        }
+      })
+      // convergence burst
+      if (burst.current > 0) {
+        burst.current = Math.max(0, burst.current - 0.018)
+        const t = 1 - burst.current
+        ctx.lineWidth = 2
+        S.forEach((s) => {
+          ctx.strokeStyle = `rgba(10,10,10,${burst.current * 0.8})`
+          ctx.beginPath()
+          ctx.arc(s.x * w, s.y * h, 12 + t * 90, 0, Math.PI * 2)
+          ctx.stroke()
+        })
+      }
       const A = assign.current
       // spokes from points to their centroid
       if (A.length) {
@@ -170,7 +215,11 @@ export function KMeansDemo() {
           ctx.arc(p.x * w, p.y * h, 3.2, 0, Math.PI * 2)
           ctx.fill()
           ctx.fillStyle = INK
-        } else marker(ctx, A[i], p.x * w, p.y * h, 3.6)
+        } else {
+          const k = pop.current[i] ?? 0
+          if (k > 0) pop.current[i] = Math.max(0, k - 0.05)
+          marker(ctx, A[i], p.x * w, p.y * h, 3.6 * (1 + k * 1.2))
+        }
       })
       // centroids: crosshair + label
       S.forEach((s, j) => {
@@ -215,7 +264,7 @@ export function KMeansDemo() {
       title="K-means clustering"
       summary="Group unlabelled points into k clusters. Click the canvas to add points, then step through the algorithm and watch each centroid move to the middle of its group."
       canvas={
-        <Stage boxRef={box} caption="Click to add points · each shape is one cluster · crosshairs are centroids">
+        <Stage boxRef={box} stamp={stamp} caption="Click to add points · each shape is one cluster · crosshairs are centroids, lines are their paths">
           <canvas ref={cv} onPointerDown={addPoint} className="absolute inset-0 size-full cursor-crosshair touch-none" role="img" aria-label={`K-means plot with ${count} points and ${k} centroids`} />
         </Stage>
       }
@@ -235,6 +284,7 @@ export function KMeansDemo() {
           </Btn>
           <Btn onClick={() => { setRunning(false); reset(k, seed + 100 + iter) }}>New centroids</Btn>
           <Btn onClick={() => { setRunning(false); reset(k, seed, []) }}>Clear</Btn>
+          <Btn pressed={smart} onClick={() => { smartRef.current = !smart; setSmart(!smart); setRunning(false); reset(k, seed) }}>k-means++ start</Btn>
           <div className="w-full pt-2">
             <Slider label="Clusters (k)" min={2} max={6} step={1} value={k} onChange={(v) => { setK(v); setRunning(false); reset(v, seed) }} />
           </div>
@@ -242,15 +292,15 @@ export function KMeansDemo() {
       }
       metrics={
         <>
-          <Metric label="Points" value={count} />
-          <Metric label="Iteration" value={iter} />
+          <Metric label="Points" value={<Count value={count} />} />
+          <Metric label="Iteration" value={<Count value={iter} />} />
           <Metric label="Status" value={converged ? 'Converged' : running ? 'Running' : iter ? 'Paused' : 'Ready'} />
-          <Metric label="Inertia" value={inertia === null ? '—' : inertia.toFixed(3)} />
+          <Metric label="Inertia" value={inertia === null ? '—' : <Count value={inertia} decimals={3} />} />
         </>
       }
       how={
         <ol className="list-decimal space-y-1.5 pl-4">
-          <li>Place k centroids (k-means++ spreads them out).</li>
+          <li>Place k centroids — randomly, or spread out with <strong className="text-cream">k-means++</strong> (fewer steps).</li>
           <li><strong className="text-cream">Assign</strong> every point to its nearest centroid.</li>
           <li><strong className="text-cream">Update</strong> each centroid to the average of its points.</li>
           <li>Repeat until no point changes cluster. <em>Inertia</em> — the summed squared distance to centroids — falls each step.</li>

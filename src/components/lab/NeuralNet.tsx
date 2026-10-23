@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Btn, DemoShell, INK, Metric, Slider, Stage, gauss, prepare, seeded, unit, useBoxSize } from './shared'
+import { Btn, Count, DemoShell, INK, Metric, Slider, Stage, gauss, prepare, seeded, unit, useBoxSize, useStamp } from './shared'
 
 type Pt = { x: number; y: number; c: 0 | 1 } // x, y in -1..1
 type Dataset = 'circle' | 'xor' | 'spiral' | 'blobs'
@@ -66,6 +66,11 @@ class MLP {
     }
     return this.a[this.a.length - 1][0]
   }
+  /** Every layer's activations for one input (for the network diagram). */
+  activations(x: number, y: number) {
+    this.forward(x, y)
+    return this.a.map((l) => [...l])
+  }
   /** One SGD update on a single example; returns its loss. */
   learn(p: Pt, lr: number) {
     const out = this.forward(p.x, p.y)
@@ -86,6 +91,67 @@ class MLP {
 
 const RES = 46 // decision-map resolution
 
+/**
+ * Live diagram of the network. Edge thickness = weight strength (solid positive, dashed negative);
+ * neuron shading = its activation for the probe point under the cursor. Edges flow while training.
+ */
+function NetworkDiagram({ net, probe, running }: { net: MLP; probe: { x: number; y: number }; running: boolean }) {
+  const acts = net.activations(probe.x, probe.y)
+  const sizes = net.sizes
+  const Wd = 320
+  const Hd = 190
+  const col = (l: number) => 26 + (l / (sizes.length - 1)) * (Wd - 52)
+  const row = (n: number, i: number) => (Hd / 2) + (i - (n - 1) / 2) * Math.min(22, (Hd - 30) / Math.max(n - 1, 1))
+  const maxW = Math.max(0.5, ...net.W.flat(2).map(Math.abs))
+  const label = (l: number, i: number) => (l === 0 ? (i ? 'y' : 'x') : l === sizes.length - 1 ? 'p' : '')
+  return (
+    <figure className="rounded-2xl border border-line bg-ink-2 p-3">
+      <figcaption className="mb-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        <span>Inside the network</span>
+        <span>
+          probe ({probe.x.toFixed(2)}, {probe.y.toFixed(2)}) → <span className="text-cream">{(acts[acts.length - 1][0] * 100).toFixed(0)}% dark</span>
+        </span>
+      </figcaption>
+      <svg viewBox={`0 0 ${Wd} ${Hd}`} className="w-full" role="img" aria-label="Diagram of the neural network's weights and activations">
+        {net.W.map((layer, l) =>
+          layer.map((rowW, j) =>
+            rowW.map((wt, i) => (
+              <line
+                key={`${l}-${j}-${i}`}
+                x1={col(l)}
+                y1={row(sizes[l], i)}
+                x2={col(l + 1)}
+                y2={row(sizes[l + 1], j)}
+                stroke="#0a0a0a"
+                strokeOpacity={0.15 + (Math.abs(wt) / maxW) * 0.75}
+                strokeWidth={0.4 + (Math.abs(wt) / maxW) * 3}
+                strokeDasharray={wt < 0 ? '3 3' : undefined}
+                className={running && wt >= 0 ? 'nn-flow' : undefined}
+              />
+            )),
+          ),
+        )}
+        {acts.map((layer, l) =>
+          layer.map((v, i) => {
+            const t = l === acts.length - 1 ? v : (v + 1) / 2 // tanh is −1..1, sigmoid 0..1
+            const r = l === 0 || l === acts.length - 1 ? 9 : 7
+            return (
+              <g key={`n-${l}-${i}`}>
+                <circle cx={col(l)} cy={row(sizes[l], i)} r={r} fill={`rgb(${Math.round(255 - t * 245)},${Math.round(255 - t * 245)},${Math.round(255 - t * 245)})`} stroke="#0a0a0a" strokeWidth="1.5" />
+                {label(l, i) && (
+                  <text x={col(l) + (l === 0 ? -16 : 15)} y={row(sizes[l], i) + 3.5} fontSize="10" fontFamily="JetBrains Mono, monospace" fill="#737373" textAnchor="middle">
+                    {label(l, i)}
+                  </text>
+                )}
+              </g>
+            )
+          }),
+        )}
+      </svg>
+    </figure>
+  )
+}
+
 export function NeuralNetDemo() {
   const box = useRef<HTMLDivElement>(null)
   const cv = useRef<HTMLCanvasElement>(null)
@@ -97,6 +163,9 @@ export function NeuralNetDemo() {
   const [brush, setBrush] = useState<0 | 1>(1)
   const [stats, setStats] = useState({ epoch: 0, loss: 0, acc: 0 })
   const [count, setCount] = useState(160)
+  const [probe, setProbe] = useState({ x: 0.3, y: 0.3 })
+  const [solvedFlag, setSolvedFlag] = useState(false)
+  const solved = useStamp(solvedFlag, 'Solved')
   const data = useRef<Pt[]>(makeData('circle', 11))
   const net = useRef(new MLP([2, 6, 6, 1], 5))
   const seed = useRef(5)
@@ -116,11 +185,13 @@ export function NeuralNetDemo() {
       if ((o > 0.5 ? 1 : 0) === p.c) ok++
     }
     setStats({ epoch, loss: D.length ? loss / D.length : 0, acc: D.length ? ok / D.length : 0 })
+    if (epoch > 0 && D.length && ok === D.length) setSolvedFlag(true)
   }
 
   const newNet = (h = hidden) => {
     seed.current += 1
     net.current = new MLP([2, h, h, 1], seed.current)
+    setSolvedFlag(false)
     evaluate(0)
   }
 
@@ -217,8 +288,8 @@ export function NeuralNetDemo() {
       title="A neural network learns a boundary"
       summary="A small network sorts dark points from light ones. Shading shows how sure it is; the line is where it flips. Try the spiral — a straight line can’t solve it, but hidden layers can."
       canvas={
-        <Stage boxRef={box} caption={`Click to add a ${brush ? 'dark ●' : 'light ○'} point · darker shading = more confident “dark”`}>
-          <canvas ref={cv} onPointerDown={add} className="absolute inset-0 size-full cursor-crosshair touch-none" role="img" aria-label={`Neural network decision map on the ${dataset} dataset, accuracy ${(stats.acc * 100).toFixed(0)} percent`} />
+        <Stage boxRef={box} stamp={solved} caption={`Click to add a ${brush ? 'dark ●' : 'light ○'} point · darker shading = more confident “dark”`}>
+          <canvas ref={cv} onPointerDown={add} onPointerMove={(e) => { const p = unit(e); setProbe({ x: p.x * 2 - 1, y: 1 - p.y * 2 }) }} className="absolute inset-0 size-full cursor-crosshair touch-none" role="img" aria-label={`Neural network decision map on the ${dataset} dataset, accuracy ${(stats.acc * 100).toFixed(0)} percent`} />
         </Stage>
       }
       controls={
@@ -243,20 +314,17 @@ export function NeuralNetDemo() {
       }
       metrics={
         <>
-          <Metric label="Epoch" value={stats.epoch} />
-          <Metric label="Loss" value={stats.loss.toFixed(3)} />
-          <Metric label="Accuracy" value={`${(stats.acc * 100).toFixed(0)}%`} />
-          <div className="col-span-2 rounded-xl border border-line bg-ink-2 px-3 py-2 sm:col-span-3">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Architecture</p>
-            <p className="mt-0.5 font-mono text-sm text-cream">2 → {hidden} → {hidden} → 1 · tanh · sigmoid</p>
-          </div>
+          <Metric label="Epoch" value={<Count value={stats.epoch} />} />
+          <Metric label="Loss" value={<Count value={stats.loss} decimals={3} />} />
+          <Metric label="Accuracy" value={<Count value={stats.acc * 100} suffix="%" />} />
         </>
       }
+      extra={<NetworkDiagram net={net.current} probe={probe} running={running} />}
       how={
         <p>
           Each point’s x and y go in; two hidden layers of <code className="text-cream">tanh</code> neurons bend the space; a sigmoid gives the probability of “dark”.
           Training runs <strong className="text-cream">backpropagation</strong> — the chain rule pushes each error back through the layers — and updates every weight
-          by stochastic gradient descent. Accuracy is measured on the points shown, so it shows fit, not generalisation.
+          by stochastic gradient descent. Hover the plot to send that point through the diagram. Accuracy is measured on the points shown, so it shows fit, not generalisation.
         </p>
       }
     />
