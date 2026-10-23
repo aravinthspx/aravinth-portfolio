@@ -3,7 +3,6 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
-import { RainField } from './components/RainField'
 import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { useMotionPref } from './lib/motion'
@@ -106,7 +105,6 @@ export default function App() {
   return (
     <CommandPaletteProvider>
       <HashScroller />
-      <RainField />
       <IntroGate
         open={gate}
         onEnter={() => {
