@@ -414,14 +414,14 @@ export function PaletteButton({ className = '' }: { className?: string }) {
       type="button"
       onClick={open}
       aria-label="Open command palette"
-      className={`group inline-flex items-center gap-2 rounded-full border border-line px-3 py-2 text-[13px] text-cream-2 transition-colors hover:border-cream hover:text-cream cursor-pointer ${className}`}
+      className={`group inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-line px-3 py-2 text-[13px] text-cream-2 transition-colors hover:border-cream hover:text-cream cursor-pointer ${className}`}
     >
       <svg viewBox="0 0 24 24" className="size-4 transition-transform duration-500 group-hover:-rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" />
       </svg>
       <span>Search</span>
-      <kbd className="rounded-md border border-line bg-ink-2 px-1.5 py-0.5 font-mono text-[10px] text-muted">{shortcutLabel}</kbd>
+      <kbd className="whitespace-nowrap rounded-md border border-line bg-ink-2 px-1.5 py-0.5 font-mono text-[10px] text-muted">{shortcutLabel}</kbd>
     </button>
   )
 }

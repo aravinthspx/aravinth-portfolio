@@ -133,15 +133,23 @@ export function Nav() {
   return (
     <>
       <motion.header
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ${open ? 'border-b border-transparent bg-transparent' : scrolled ? 'border-b border-line/60 bg-ink/80 backdrop-blur-xl' : 'border-b border-transparent'}`}
-        animate={{ y: hidden && !open ? '-100%' : '0%' }}
+        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4"
+        animate={{ y: hidden && !open ? '-130%' : '0%' }}
         transition={{ duration: 0.5, ease: SMOOTH }}
       >
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-cream focus:px-4 focus:py-2 focus:text-ink">
           Skip to content
         </a>
         {/* While the black menu is open, the bar's colours invert so it stays readable on top of it. */}
-        <nav aria-label="Primary" className={`container-x flex h-16 items-center justify-between gap-4 transition-[filter] duration-500 md:h-20 ${open ? 'invert' : ''}`}>
+        {/* floating glass bar; inverts (and loses its glass) over the open black menu */}
+        <nav
+          aria-label="Primary"
+          className={`mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 rounded-full border pl-1.5 pr-1.5 transition-[filter,background-color,border-color,box-shadow] duration-500 md:h-16 md:pl-2 md:pr-2 ${
+            open
+              ? 'invert border-transparent bg-transparent shadow-none'
+              : `border-line/80 bg-ink/75 backdrop-blur-xl ${scrolled ? 'shadow-[0_14px_40px_-18px_rgba(0,0,0,0.4)]' : 'shadow-[0_8px_30px_-20px_rgba(0,0,0,0.25)]'}`
+          }`}
+        >
           <motion.span className="inline-flex" initial="rest" animate="rest" whileHover="hover" whileFocus="hover">
             <Link to="/" className="group flex items-center gap-3 rounded-2xl" aria-label={`${profile.name} — home`}>
               <BrandMark />
@@ -149,7 +157,7 @@ export function Nav() {
                 <span className="font-display text-[17px] font-bold tracking-tight text-cream transition-colors">
                   {profile.shortName} <span className="text-accent">M</span>
                 </span>
-                <span className="mt-1.5 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex">
+                <span className="mt-1.5 hidden items-center gap-2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex xl:hidden 2xl:flex">
                   <span className="h-px w-4 bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
                   {profile.shortTitle}
                 </span>
@@ -178,7 +186,7 @@ export function Nav() {
 
           <div className="hidden items-center gap-2 md:flex">
             {!open && <PaletteButton />}
-            {!open && <MotionToggle />}
+            {!open && <MotionToggle className="xl:hidden 2xl:inline-flex" />}
             <motion.span className="inline-flex" whileHover={{ y: -2, scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={spring}>
               <Link
                 to={{ pathname: '/', hash: '#contact' }}
