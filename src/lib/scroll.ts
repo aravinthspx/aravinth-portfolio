@@ -56,7 +56,8 @@ export function startSmoothScroll() {
 /** Scrolls to an element (or the top), smoothly when smooth scrolling is active. */
 export function scrollToTarget(target: HTMLElement | 0, opts: { immediate?: boolean } = {}) {
   if (lenis) {
-    lenis.scrollTo(target, { offset: target === 0 ? 0 : -80, immediate: opts.immediate, duration: 1.3 })
+    // force: also works in the instant a closing menu/dialog still has the page paused.
+    lenis.scrollTo(target, { offset: target === 0 ? 0 : -80, immediate: opts.immediate, duration: 1.3, force: true })
     return
   }
   if (target === 0) window.scrollTo(0, 0)
