@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
 import { PageBackground } from './components/PageBackground'
+import { Cursor } from './components/Cursor'
 import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { useMotionPref } from './lib/motion'
@@ -146,6 +147,7 @@ export default function App() {
         </>
       )}
       <div className="grain" aria-hidden="true" />
+      <Cursor />
     </CommandPaletteProvider>
   )
 }
