@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
-import { Starfield } from './components/Starfield'
+import { DotField } from './components/DotField'
 import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { useMotionPref } from './lib/motion'
@@ -106,7 +106,7 @@ export default function App() {
   return (
     <CommandPaletteProvider>
       <HashScroller />
-      <Starfield />
+      <DotField />
       <IntroGate
         open={gate}
         onEnter={() => {
