@@ -63,7 +63,7 @@ function HackathonCard({ h, index }: { h: Hackathon; index: number }) {
             <div className="mt-6 flex flex-wrap gap-2">
               {h.caseStudy && (
                 <motion.span className="inline-flex" whileHover={{ x: 3 }} whileTap={{ scale: 0.96 }} transition={spring}>
-                  <Link to={h.caseStudy.href} className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-6px_rgba(79,217,234,0.8)] hover:bg-accent-2">
+                  <Link to={h.caseStudy.href} className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-6px_rgba(0,0,0,0.24)] hover:bg-accent-2">
                     {h.caseStudy.label} <ArrowIcon className="size-4" />
                   </Link>
                 </motion.span>

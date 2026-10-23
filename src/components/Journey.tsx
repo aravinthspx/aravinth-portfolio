@@ -8,12 +8,12 @@ import { ArrowIcon } from './ui'
 type Tone = { text: string; chip: string; ring: string; glow: string; dot: string; beam: string; card: string }
 
 const tones: Record<Milestone['kind'], Tone> = {
-  Project: { text: 'text-accent', chip: 'border-accent/40 bg-accent/10 text-accent', ring: 'border-accent/60', glow: 'shadow-[0_0_30px_-4px_rgba(79,217,234,0.8)]', dot: 'bg-accent', beam: 'from-accent', card: 'border-accent/40 shadow-[0_0_44px_-14px_rgba(79,217,234,0.5)]' },
-  'Job simulation': { text: 'text-leaf', chip: 'border-leaf/40 bg-leaf/10 text-leaf', ring: 'border-leaf/60', glow: 'shadow-[0_0_30px_-4px_rgba(159,220,116,0.8)]', dot: 'bg-leaf', beam: 'from-leaf', card: 'border-leaf/40 shadow-[0_0_44px_-14px_rgba(159,220,116,0.45)]' },
-  Hackathon: { text: 'text-accent-2', chip: 'border-accent-2/40 bg-accent-2/10 text-accent-2', ring: 'border-accent-2/60', glow: 'shadow-[0_0_30px_-4px_rgba(162,238,247,0.8)]', dot: 'bg-accent-2', beam: 'from-accent-2', card: 'border-accent-2/40 shadow-[0_0_44px_-14px_rgba(162,238,247,0.45)]' },
-  Certificate: { text: 'text-warm', chip: 'border-warm/40 bg-warm/10 text-warm', ring: 'border-warm/60', glow: 'shadow-[0_0_30px_-4px_rgba(229,180,95,0.8)]', dot: 'bg-warm', beam: 'from-warm', card: 'border-warm/40 shadow-[0_0_44px_-14px_rgba(229,180,95,0.45)]' },
+  Project: { text: 'text-accent', chip: 'border-accent/40 bg-accent/10 text-accent', ring: 'border-accent/60', glow: 'shadow-[0_0_30px_-4px_rgba(0,0,0,0.24)]', dot: 'bg-accent', beam: 'from-accent', card: 'border-accent/40 shadow-[0_0_44px_-14px_rgba(0,0,0,0.15)]' },
+  'Job simulation': { text: 'text-leaf', chip: 'border-leaf/40 bg-leaf/10 text-leaf', ring: 'border-leaf/60', glow: 'shadow-[0_0_30px_-4px_rgba(212,212,212,0.8)]', dot: 'bg-leaf', beam: 'from-leaf', card: 'border-leaf/40 shadow-[0_0_44px_-14px_rgba(212,212,212,0.45)]' },
+  Hackathon: { text: 'text-accent-2', chip: 'border-accent-2/40 bg-accent-2/10 text-accent-2', ring: 'border-accent-2/60', glow: 'shadow-[0_0_30px_-4px_rgba(217,217,217,0.8)]', dot: 'bg-accent-2', beam: 'from-accent-2', card: 'border-accent-2/40 shadow-[0_0_44px_-14px_rgba(217,217,217,0.45)]' },
+  Certificate: { text: 'text-warm', chip: 'border-warm/40 bg-warm/10 text-warm', ring: 'border-warm/60', glow: 'shadow-[0_0_30px_-4px_rgba(163,163,163,0.8)]', dot: 'bg-warm', beam: 'from-warm', card: 'border-warm/40 shadow-[0_0_44px_-14px_rgba(163,163,163,0.45)]' },
   Next: { text: 'text-muted', chip: 'border-dashed border-cream-2/30 bg-transparent text-cream-2', ring: 'border-dashed border-cream-2/50', glow: '', dot: 'bg-cream-2', beam: 'from-cream-2', card: 'border-dashed border-cream-2/30' },
-  Now: { text: 'text-cream', chip: 'border-cream-2/40 bg-cream-2/10 text-cream', ring: 'border-cream/60', glow: 'shadow-[0_0_30px_-4px_rgba(238,243,248,0.7)]', dot: 'bg-cream', beam: 'from-cream', card: 'border-cream-2/40 shadow-[0_0_44px_-14px_rgba(238,243,248,0.35)]' },
+  Now: { text: 'text-cream', chip: 'border-cream-2/40 bg-cream-2/10 text-cream', ring: 'border-cream/60', glow: 'shadow-[0_0_30px_-4px_rgba(245,245,245,0.7)]', dot: 'bg-cream', beam: 'from-cream', card: 'border-cream-2/40 shadow-[0_0_44px_-14px_rgba(245,245,245,0.35)]' },
 }
 
 function KindIcon({ kind }: { kind: Milestone['kind'] }) {
@@ -44,10 +44,10 @@ function Constellation() {
   ]
   return (
     <svg className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <polyline points={stars.slice(0, 5).map((s) => s.join(',')).join(' ')} fill="none" stroke="rgba(79,217,234,0.12)" strokeWidth="0.15" />
-      <polyline points={stars.slice(5).map((s) => s.join(',')).join(' ')} fill="none" stroke="rgba(159,220,116,0.1)" strokeWidth="0.15" />
+      <polyline points={stars.slice(0, 5).map((s) => s.join(',')).join(' ')} fill="none" stroke="rgba(0,0,0,0.036)" strokeWidth="0.15" />
+      <polyline points={stars.slice(5).map((s) => s.join(',')).join(' ')} fill="none" stroke="rgba(212,212,212,0.1)" strokeWidth="0.15" />
       {stars.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="0.35" fill={i < 5 ? 'rgba(162,238,247,0.6)' : 'rgba(198,237,168,0.5)'} />
+        <circle key={i} cx={x} cy={y} r="0.35" fill={i < 5 ? 'rgba(217,217,217,0.6)' : 'rgba(235,235,235,0.5)'} />
       ))}
     </svg>
   )
@@ -101,7 +101,7 @@ export function Journey() {
         />
         {!reduced && (
           <span className="pointer-events-none absolute bottom-6 left-[21px] top-6 md:left-1/2" aria-hidden="true">
-            <motion.span className="absolute left-0 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_18px_6px_rgba(79,217,234,0.75)]" style={{ top: cometTop }} />
+            <motion.span className="absolute left-0 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_18px_6px_rgba(0,0,0,0.225)]" style={{ top: cometTop }} />
           </span>
         )}
 

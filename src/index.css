@@ -1,24 +1,24 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Deep-space navy neutrals */
-  --color-ink: #060a13;
-  --color-ink-2: #0b111d;
-  --color-ink-3: #121a2a;
-  --color-line: #1d283b;
-  /* Cool white, soft slate, muted steel */
-  --color-cream: #eef3f8;
-  --color-cream-2: #b1bccb;
-  --color-muted: #75829a;
-  /* Glow accents: cyan (primary) and leaf green (secondary); amber for "planned" */
-  --color-accent: #4fd9ea;
-  --color-accent-2: #a2eef7;
-  --color-leaf: #9fdc74;
-  --color-leaf-2: #c6eda8;
-  --color-warm: #e5b45f;
-  --color-ok: #8fdc8a;
-  --color-warn: #e9bd6a;
-  --color-bad: #f0928a;
+  /* Paper-white surfaces */
+  --color-ink: #ffffff;
+  --color-ink-2: #f7f7f7;
+  --color-ink-3: #efefef;
+  --color-line: #e2e2e2;
+  /* Ink-black text and greys */
+  --color-cream: #0a0a0a;
+  --color-cream-2: #474747;
+  --color-muted: #737373;
+  /* Monochrome accents: black (primary), dark grey (secondary), mid grey for "planned" */
+  --color-accent: #0a0a0a;
+  --color-accent-2: #2e2e2e;
+  --color-leaf: #3d3d3d;
+  --color-leaf-2: #5c5c5c;
+  --color-warm: #6b6b6b;
+  --color-ok: #1f1f1f;
+  --color-warn: #4d4d4d;
+  --color-bad: #000000;
 
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
@@ -98,19 +98,20 @@
   }
   .outline-text {
     color: transparent;
-    -webkit-text-stroke: 1px rgb(238 243 248 / 0.08);
+    -webkit-text-stroke: 1px rgb(0 0 0 / 0.08);
   }
   .glow-accent {
-    background: radial-gradient(closest-side, rgb(79 217 234 / 0.16), transparent);
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.06), transparent);
   }
   .glow-warm {
-    background: radial-gradient(closest-side, rgb(159 220 116 / 0.12), transparent);
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.04), transparent);
   }
   .glow-ring {
-    box-shadow: 0 0 0 1px rgb(79 217 234 / 0.18), 0 0 40px -8px rgb(79 217 234 / 0.35);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06), 0 18px 40px -24px rgb(0 0 0 / 0.25);
   }
   .panel {
-    background: linear-gradient(180deg, rgb(18 26 42 / 0.82), rgb(11 17 29 / 0.82));
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(249 249 249 / 0.92));
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -20px rgb(0 0 0 / 0.18);
     border: 1px solid var(--color-line);
     backdrop-filter: blur(8px);
   }
@@ -144,4 +145,16 @@
 }
 .orbit-slow {
   animation: orbit 120s linear infinite;
+}
+
+/* Black-and-white theme: screenshots and thumbnails show in greyscale and reveal
+   their real colours on hover (or keyboard focus) of the image or its card. */
+.mono-media {
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 0.5s ease;
+}
+.mono-media:hover,
+.group:hover .mono-media,
+.group:focus-within .mono-media {
+  filter: none;
 }

@@ -34,7 +34,7 @@ export function DirectionSection() {
           <GoalCard tone="accent" icon="flag" {...direction.shortTerm} delay={0} />
           <GoalCard tone="leaf" icon="star" {...direction.vision} delay={0.08} />
         </div>
-        <Reveal delay={0.12} className="relative mx-auto mt-5 max-w-5xl overflow-hidden rounded-3xl border border-accent/25 bg-[linear-gradient(120deg,rgba(79,217,234,0.08),rgba(159,220,116,0.06))] px-6 py-8 text-center sm:px-12">
+        <Reveal delay={0.12} className="relative mx-auto mt-5 max-w-5xl overflow-hidden rounded-3xl border border-accent/25 bg-[linear-gradient(120deg,rgba(0,0,0,0.024),rgba(212,212,212,0.06))] px-6 py-8 text-center sm:px-12">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">The guiding conviction</p>
           <p className="mx-auto mt-3 max-w-3xl font-display text-xl font-semibold leading-snug text-cream sm:text-2xl">“{direction.conviction}”</p>
         </Reveal>

@@ -32,7 +32,7 @@ export function HeroShowcase() {
 
   return (
     <div
-      className="relative mx-auto aspect-[5/4] w-full max-w-[36rem]"
+      className="group relative mx-auto aspect-[5/4] w-full max-w-[36rem]"
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}

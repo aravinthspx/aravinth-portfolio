@@ -35,8 +35,8 @@ export function ArchitectureView({ project }: { project: Project }) {
   const green = project.accent === 'green'
   const layers = project.architecture ?? []
   return (
-    <div className="relative flex aspect-[4/3] w-full flex-col overflow-y-auto rounded-[1.5rem] bg-[radial-gradient(120%_90%_at_50%_0%,#0f2733_0%,#080d17_72%)] p-4 sm:p-5">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(79,217,234,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(79,217,234,0.05)_1px,transparent_1px)] bg-[size:24px_24px]" aria-hidden="true" />
+    <div className="relative flex aspect-[4/3] w-full flex-col overflow-y-auto rounded-[1.5rem] bg-[radial-gradient(120%_90%_at_50%_0%,#fafafa_0%,#ededed_72%)] p-4 sm:p-5">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.015)_1px,transparent_1px)] bg-[size:24px_24px]" aria-hidden="true" />
       <div className="relative rounded-xl border border-line bg-ink/80 px-3 py-2 font-mono text-[11px] leading-relaxed text-cream-2">
         <span className={green ? 'text-leaf' : 'text-accent'}>Flow:</span> {project.journey.join(' → ')}
       </div>

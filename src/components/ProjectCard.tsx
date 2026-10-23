@@ -19,7 +19,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const srx = useSpring(rx, { stiffness: 200, damping: 20 })
   const sry = useSpring(ry, { stiffness: 200, damping: 20 })
   const glareX = useTransform(sry, [-5, 5], ['15%', '85%'])
-  const glare = useTransform(glareX, (x) => `radial-gradient(500px circle at ${x} 0%, rgba(79,217,234,0.10), transparent 50%)`)
+  const glare = useTransform(glareX, (x) => `radial-gradient(500px circle at ${x} 0%, rgba(0,0,0,0.03), transparent 50%)`)
   const tiltOn = fine && !reduced
   const [webgl] = useState(hasWebGL)
   const [view, setView] = useState<'ui' | 'arch'>('ui')
@@ -117,7 +117,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             <motion.span className="inline-flex" whileHover={{ x: 4 }} whileTap={{ scale: 0.96 }} transition={spring}>
               <Link
               to={`/work/${project.slug}`}
-              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-ink ${green ? 'bg-leaf shadow-[0_0_24px_-6px_rgba(159,220,116,0.8)] hover:bg-leaf-2' : 'bg-accent shadow-[0_0_24px_-6px_rgba(79,217,234,0.8)] hover:bg-accent-2'}`}
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-ink ${green ? 'bg-leaf shadow-[0_0_24px_-6px_rgba(212,212,212,0.8)] hover:bg-leaf-2' : 'bg-accent shadow-[0_0_24px_-6px_rgba(0,0,0,0.24)] hover:bg-accent-2'}`}
             >
               Inspect case study <span className="sr-only">: {project.name}</span>
               <ArrowIcon />

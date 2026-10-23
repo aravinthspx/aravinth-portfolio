@@ -14,10 +14,10 @@ type Shot = { x: number; y: number; vx: number; vy: number; life: number; max: n
 type Ring = { x: number; y: number; t: number }
 
 const COLORS = [
-  ['#ffffff', 0.68],
-  ['#a2eef7', 0.18],
-  ['#c6eda8', 0.09],
-  ['#f1d39a', 0.05],
+  ['#1a1a1a', 0.68],
+  ['#404040', 0.18],
+  ['#2b2b2b', 0.09],
+  ['#555555', 0.05],
 ] as const
 
 function pickColor(r: number) {
@@ -26,7 +26,7 @@ function pickColor(r: number) {
     acc += p
     if (r <= acc) return c
   }
-  return '#ffffff'
+  return '#1a1a1a'
 }
 
 export function Starfield() {
@@ -144,8 +144,8 @@ export function Starfield() {
             continue
           }
           const g = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * 0.12, s.y - s.vy * 0.12)
-          g.addColorStop(0, `rgba(210,248,255,${0.85 * k})`)
-          g.addColorStop(1, 'rgba(210,248,255,0)')
+          g.addColorStop(0, `rgba(20,20,20,${0.5 * k})`)
+          g.addColorStop(1, 'rgba(20,20,20,0)')
           ctx.globalAlpha = 1
           ctx.strokeStyle = g
           ctx.lineWidth = 1.4
@@ -163,7 +163,7 @@ export function Starfield() {
             continue
           }
           ctx.globalAlpha = (1 - r.t) * 0.55
-          ctx.strokeStyle = '#4fd9ea'
+          ctx.strokeStyle = '#1a1a1a'
           ctx.lineWidth = 1.2
           ctx.beginPath()
           ctx.arc(r.x, r.y, 8 + r.t * 70, 0, Math.PI * 2)
@@ -206,7 +206,7 @@ export function Starfield() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
       {/* deep-space wash: faint nebula glows under the stars */}
-      <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(79,217,234,0.07),transparent_70%),radial-gradient(40%_40%_at_85%_70%,rgba(159,220,116,0.05),transparent_70%),radial-gradient(50%_50%_at_10%_80%,rgba(79,217,234,0.04),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(0,0,0,0.021),transparent_70%),radial-gradient(40%_40%_at_85%_70%,rgba(212,212,212,0.05),transparent_70%),radial-gradient(50%_50%_at_10%_80%,rgba(0,0,0,0.012),transparent_70%)]" />
       <canvas ref={ref} className="absolute inset-0 size-full" />
     </div>
   )

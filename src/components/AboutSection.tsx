@@ -8,7 +8,7 @@ import { JumpingPortrait } from './JumpingPortrait'
 import { Reveal } from './ui'
 
 // Fade the cut-out's bottom (the photo crops the legs) so it melts into the page.
-const PORTRAIT_FADE = 'linear-gradient(to bottom, #000 0%, #000 72%, transparent 97%)'
+const PORTRAIT_FADE = 'linear-gradient(to bottom, #000000 0%, #000000 72%, transparent 97%)'
 
 type IconName = (typeof about.cards)[number]['icon']
 
@@ -34,7 +34,7 @@ function SpotlightCard({ children, delay }: { children: ReactNode; delay: number
     >
       <span
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: 'radial-gradient(260px circle at var(--x, 50%) var(--y, 0%), rgba(79,217,234,0.12), transparent 70%)' }}
+        style={{ background: 'radial-gradient(260px circle at var(--x, 50%) var(--y, 0%), rgba(0,0,0,0.036), transparent 70%)' }}
         aria-hidden="true"
       />
       <span className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true" />
@@ -80,7 +80,7 @@ export function AboutSection() {
   return (
     <section ref={sectionRef} id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-36">
       {/* soft band of light behind the whole section */}
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 h-[70%] -translate-y-1/2 bg-[radial-gradient(60%_60%_at_25%_50%,rgba(79,217,234,0.08),transparent_70%)]" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 h-[70%] -translate-y-1/2 bg-[radial-gradient(60%_60%_at_25%_50%,rgba(0,0,0,0.024),transparent_70%)]" aria-hidden="true" />
 
       <div className="container-x relative">
         {/* ---------- Portrait stage: a large background layer behind the text ---------- */}
@@ -88,8 +88,8 @@ export function AboutSection() {
           <div className="pointer-events-none absolute left-1/2 top-0 h-[34rem] w-full max-w-[40rem] -translate-x-1/2 sm:h-[40rem] lg:-bottom-36 lg:-top-28 lg:left-[10%] lg:h-auto lg:w-[62%] lg:max-w-none lg:translate-x-0">
             {/* faint grid floor */}
             <div
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(79,217,234,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(79,217,234,0.07)_1px,transparent_1px)] bg-[size:36px_36px]"
-              style={{ maskImage: 'radial-gradient(60% 55% at 50% 55%, #000, transparent)', WebkitMaskImage: 'radial-gradient(60% 55% at 50% 55%, #000, transparent)' }}
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.021)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.021)_1px,transparent_1px)] bg-[size:36px_36px]"
+              style={{ maskImage: 'radial-gradient(60% 55% at 50% 55%, #000000, transparent)', WebkitMaskImage: 'radial-gradient(60% 55% at 50% 55%, #000000, transparent)' }}
               aria-hidden="true"
             />
             {/* oversized outline word */}
@@ -97,10 +97,10 @@ export function AboutSection() {
               BUILD
             </p>
             {/* rim light and orbit rings around the head */}
-            <div className="pointer-events-none absolute left-1/2 top-[-6%] aspect-square w-[80%] max-w-[42rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(79,217,234,0.35),rgba(159,220,116,0.08)_55%,transparent)] blur-2xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute left-1/2 top-[-6%] aspect-square w-[80%] max-w-[42rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(0,0,0,0.105),rgba(212,212,212,0.08)_55%,transparent)] blur-2xl" aria-hidden="true" />
             <div className="pointer-events-none absolute left-1/2 top-[-6%] aspect-square w-[66%] max-w-[36rem] -translate-x-[46%]" aria-hidden="true">
               <div className="orbit-slow absolute inset-0 rounded-full border border-accent/25">
-                <span className="absolute left-1/2 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(79,217,234,1)]" />
+                <span className="absolute left-1/2 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(0,0,0,0.3)]" />
               </div>
               <div className="absolute inset-[12%] rounded-full border border-dashed border-leaf/20" />
             </div>
@@ -125,7 +125,7 @@ export function AboutSection() {
             </JumpingPortrait>
 
             <Chip className="left-0 top-[18%] sm:left-[4%]" delay={0.1}>
-              <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(212,212,212,0.9)]" aria-hidden="true" />
               SRM IST Ramapuram
             </Chip>
             <Chip className="right-0 top-[38%] sm:right-[6%] lg:right-[18%]" delay={0.25}>
@@ -144,7 +144,7 @@ export function AboutSection() {
         <div className="relative z-10 pt-[24rem] sm:pt-[30rem] lg:ml-auto lg:w-[50%] lg:pt-0">
           <Reveal className="rounded-3xl border border-white/[0.06] bg-ink/55 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md sm:p-8">
             <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-              <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(0,0,0,0.27)]" aria-hidden="true" />
               Profile &amp; perspective
             </p>
             <h2 id="about-title" className="mt-5 font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl md:text-5xl">

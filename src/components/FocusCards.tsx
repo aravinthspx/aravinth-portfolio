@@ -4,10 +4,10 @@ import { focusAreas, type FocusArea, type Tone } from '../content/focus'
 import { spring } from '../lib/motion'
 
 const tones: Record<Tone, { ring: string; text: string; chip: string; bg: string }> = {
-  cyan: { ring: 'border-accent/50 shadow-[0_0_40px_-12px_rgba(79,217,234,0.7)]', text: 'text-accent', chip: 'border-accent/40 bg-accent/10 text-accent', bg: 'from-accent/10' },
-  leaf: { ring: 'border-leaf/50 shadow-[0_0_40px_-12px_rgba(159,220,116,0.6)]', text: 'text-leaf', chip: 'border-leaf/40 bg-leaf/10 text-leaf', bg: 'from-leaf/10' },
-  amber: { ring: 'border-warm/50 shadow-[0_0_40px_-12px_rgba(229,180,95,0.6)]', text: 'text-warm', chip: 'border-warm/40 bg-warm/10 text-warm', bg: 'from-warm/10' },
-  slate: { ring: 'border-cream-2/40 shadow-[0_0_40px_-12px_rgba(177,188,203,0.45)]', text: 'text-cream-2', chip: 'border-cream-2/30 bg-cream-2/10 text-cream-2', bg: 'from-cream-2/10' },
+  cyan: { ring: 'border-accent/50 shadow-[0_0_40px_-12px_rgba(0,0,0,0.21)]', text: 'text-accent', chip: 'border-accent/40 bg-accent/10 text-accent', bg: 'from-accent/10' },
+  leaf: { ring: 'border-leaf/50 shadow-[0_0_40px_-12px_rgba(212,212,212,0.6)]', text: 'text-leaf', chip: 'border-leaf/40 bg-leaf/10 text-leaf', bg: 'from-leaf/10' },
+  amber: { ring: 'border-warm/50 shadow-[0_0_40px_-12px_rgba(163,163,163,0.6)]', text: 'text-warm', chip: 'border-warm/40 bg-warm/10 text-warm', bg: 'from-warm/10' },
+  slate: { ring: 'border-cream-2/40 shadow-[0_0_40px_-12px_rgba(180,180,180,0.45)]', text: 'text-cream-2', chip: 'border-cream-2/30 bg-cream-2/10 text-cream-2', bg: 'from-cream-2/10' },
 }
 
 function Icon({ name, className = '' }: { name: FocusArea['icon']; className?: string }) {

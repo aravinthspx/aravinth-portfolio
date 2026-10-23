@@ -48,7 +48,7 @@ export function EducationSection() {
                   </div>
 
                   {e.cgpa && (
-                    <div className="shrink-0 rounded-2xl border border-warm/40 bg-[radial-gradient(120%_120%_at_50%_0%,rgba(229,180,95,0.12),rgba(11,17,29,0.9)_70%)] px-8 py-6 text-center shadow-[0_0_40px_-16px_rgba(229,180,95,0.6)] md:min-w-[14rem]">
+                    <div className="shrink-0 rounded-2xl border border-warm/40 bg-ink-2 px-8 py-6 text-center shadow-[0_18px_40px_-24px_rgba(0,0,0,0.25)] md:min-w-[14rem]">
                       <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-warm">Cumulative CGPA</p>
                       <p className="mt-2 font-display text-5xl font-bold text-cream">
                         {e.cgpa.value} <span className="text-3xl text-cream-2">/ {e.cgpa.scale}</span>
@@ -120,7 +120,7 @@ export function ExperienceSection() {
         <ol className="relative mx-auto max-w-3xl border-l border-line pl-8">
           {experience.map((x, i) => (
             <Reveal as="li" key={x.id} delay={0.06 * i} className="relative pb-10 last:pb-0">
-              <span className="absolute -left-[41px] top-1.5 size-4 rounded-full border-2 border-ink bg-accent shadow-[0_0_12px_rgba(79,217,234,0.9)]" aria-hidden="true" />
+              <span className="absolute -left-[41px] top-1.5 size-4 rounded-full border-2 border-ink bg-accent shadow-[0_0_12px_rgba(0,0,0,0.27)]" aria-hidden="true" />
               <p className="font-mono text-xs text-accent">{x.start} – {x.end} · {x.kind}</p>
               <h3 className="mt-1 font-display text-xl font-bold text-cream">{x.role}</h3>
               <p className="text-sm text-cream-2">{x.organization}</p>

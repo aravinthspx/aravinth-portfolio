@@ -6,7 +6,7 @@ export function Heading({ pill, title, id, children }: { pill: string; title: Re
   return (
     <Reveal className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
       <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/5 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-        <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(79,217,234,0.9)]" aria-hidden="true" />
+        <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(0,0,0,0.27)]" aria-hidden="true" />
         {pill}
       </p>
       <h2 id={id} className="mt-5 font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl md:text-5xl">

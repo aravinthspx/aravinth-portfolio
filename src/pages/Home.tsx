@@ -59,7 +59,7 @@ function Hero() {
         {/* Left: identity and calls to action */}
         <div className="min-w-0 text-center lg:text-left">
           <motion.p {...rise(0)} className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2/70 px-3 py-1.5 font-mono text-[11px] text-cream-2 backdrop-blur">
-            <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(159,220,116,0.9)]" aria-hidden="true" />
+            <span className="size-1.5 rounded-full bg-leaf shadow-[0_0_8px_rgba(212,212,212,0.9)]" aria-hidden="true" />
             B.Tech CSE (AI &amp; ML) · SRM IST Ramapuram
           </motion.p>
 

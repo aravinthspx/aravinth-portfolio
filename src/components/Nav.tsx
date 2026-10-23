@@ -36,12 +36,12 @@ function BrandMark() {
   return (
     <span className="relative block size-11 [perspective:400px]" aria-hidden="true">
       <motion.span
-        className="relative block size-full rounded-[14px] bg-gradient-to-br from-accent-2 via-accent to-leaf p-[1.5px] shadow-[0_0_0_rgba(79,217,234,0)] transition-shadow duration-300 group-hover:shadow-[0_0_26px_-4px_rgba(79,217,234,0.75)] group-focus-visible:shadow-[0_0_26px_-4px_rgba(79,217,234,0.75)]"
+        className="relative block size-full rounded-[14px] bg-gradient-to-br from-accent-2 via-accent to-leaf p-[1.5px] shadow-[0_0_0_rgba(0,0,0,0)] transition-shadow duration-300 group-hover:shadow-[0_0_26px_-4px_rgba(0,0,0,0.225)] group-focus-visible:shadow-[0_0_26px_-4px_rgba(0,0,0,0.225)]"
         variants={reduced ? undefined : { rest: { rotateX: 0, rotateY: 0, scale: 1 }, hover: { rotateX: -14, rotateY: 20, scale: 1.06 } }}
         transition={spring}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,#13213a_0%,#080d17_75%)]">
+        <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,#ffffff_0%,#ececec_75%)]">
           {/* glass sheen */}
           <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/12 to-transparent" />
           <span className="relative font-display text-[15px] font-bold leading-none tracking-[-0.04em]" style={{ transform: 'translateZ(12px)' }}>
@@ -146,7 +146,7 @@ export function Nav() {
           <motion.span className="inline-flex" whileHover={{ y: -2, scale: 1.04 }} whileTap={{ scale: 0.95 }} transition={spring}>
             <Link
               to={{ pathname: '/', hash: '#contact' }}
-              className="ml-1 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-4px_rgba(79,217,234,0.75)] hover:bg-accent-2"
+              className="ml-1 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_24px_-4px_rgba(0,0,0,0.225)] hover:bg-accent-2"
             >
               <span className="size-1.5 rounded-full bg-ink/70" aria-hidden="true" />
               Let’s talk

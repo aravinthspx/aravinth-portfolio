@@ -13,7 +13,7 @@ function OrbitFallback({ framed }: { framed: boolean }) {
   return (
     <div className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1/2 ${framed ? 'top-1/2' : 'top-[44%]'}`} aria-hidden="true">
       <div className={`orbit-slow relative rounded-full border border-accent/10 ${framed ? 'size-[min(80vw,30rem)]' : 'size-[44rem] max-w-[160vw]'}`}>
-        <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(79,217,234,0.9)]" />
+        <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(0,0,0,0.27)]" />
       </div>
       <div className="absolute inset-[18%] rounded-full border border-leaf/10" />
       <div className="glow-accent absolute inset-[25%] rounded-full blur-2xl" />
