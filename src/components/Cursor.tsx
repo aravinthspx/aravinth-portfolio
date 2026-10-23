@@ -1,80 +1,68 @@
-import { useEffect, useRef } from 'react'
-import { useMotionPref } from '../lib/motion'
+import { useEffect, useRef, useState } from 'react'
 
-const INTERACTIVE = 'a, button, [role="button"], [role="option"], [role="tab"], input, textarea, select, label, summary'
+const LINKS = 'a, button, [role="button"], [role="option"], [role="tab"], select, label, summary'
+const TEXT = 'input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, [contenteditable="true"]'
+
+type Kind = 'arrow' | 'hand' | 'text'
+
+/** Shapes drawn white; mix-blend difference turns them black on white and white on black. */
+const SHAPES: Record<Kind, { path: string; w: number; h: number; hot: [number, number] }> = {
+  // classic pointer arrow, tip at (1,1)
+  arrow: { path: 'M1 1 L1 18 L5.6 13.6 L8.6 20.6 L11.4 19.4 L8.4 12.4 L14.4 12.4 Z', w: 16, h: 22, hot: [1, 1] },
+  // pointing hand, fingertip at (7,1)
+  hand: {
+    path: 'M7 1.5c-1 0-1.8.8-1.8 1.8v8.4l-1.3-1.4c-.7-.8-1.9-.8-2.6 0-.6.6-.6 1.6 0 2.3l4.4 5.3c1 1.2 2.4 1.9 4 1.9h3.1c2.6 0 4.7-2.1 4.7-4.7V10c0-.9-.8-1.7-1.7-1.7s-1.6.8-1.6 1.7V9.3c0-.9-.8-1.7-1.7-1.7s-1.7.8-1.7 1.7v-.6c0-.9-.7-1.7-1.6-1.7s-1.6.8-1.6 1.7V3.3C8.8 2.3 8 1.5 7 1.5Z',
+    w: 19,
+    h: 22,
+    hot: [7, 1.5],
+  },
+  // text I-beam, centred
+  text: { path: 'M3 1h6v1.6H6.8v14.8H9V19H3v-1.6h2.2V2.6H3Z', w: 12, h: 20, hot: [6, 10] },
+}
 
 /**
- * Custom cursor that inverts what's under it (mix-blend difference): black on white
- * areas, white on black ones. A dot sits exactly on the pointer; a ring glides after it
- * and grows over links and buttons. Mouse/trackpad only — touch keeps its normal behaviour.
+ * Custom system-style cursor that inverts what's under it: an arrow (hand over links,
+ * I-beam over text fields) that is black on white areas and white on black ones.
+ * Follows the pointer exactly, like the normal cursor. Mouse/trackpad only.
  */
 export function Cursor() {
-  const dot = useRef<HTMLDivElement>(null)
-  const ring = useRef<HTMLDivElement>(null)
-  const { reduced } = useMotionPref()
+  const el = useRef<HTMLDivElement>(null)
+  const [kind, setKind] = useState<Kind>('arrow')
 
   useEffect(() => {
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)')
-    if (!fine.matches) return
-    const d = dot.current
-    const r = ring.current
-    if (!d || !r) return
+    const node = el.current
+    if (!fine.matches || !node) return
     document.documentElement.classList.add('has-custom-cursor')
-
-    const pos = { x: -100, y: -100, rx: -100, ry: -100, scale: 1, target: 1, shown: 0, want: 0, down: 0 }
-    let raf = 0
-
-    const loop = () => {
-      // ring follows with a soft lag (instant when motion is reduced)
-      const k = reduced ? 1 : 0.18
-      pos.rx += (pos.x - pos.rx) * k
-      pos.ry += (pos.y - pos.ry) * k
-      pos.scale += (pos.target - pos.scale) * (reduced ? 1 : 0.2)
-      pos.shown += (pos.want - pos.shown) * 0.25
-      pos.down += (0 - pos.down) * 0.2
-      const s = pos.scale * (1 - pos.down * 0.25)
-      d.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%) scale(${pos.target > 1 ? 0 : 1})`
-      r.style.transform = `translate3d(${pos.rx}px, ${pos.ry}px, 0) translate(-50%, -50%) scale(${s})`
-      d.style.opacity = r.style.opacity = String(pos.shown)
-      raf = requestAnimationFrame(loop)
-    }
 
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return
-      pos.x = e.clientX
-      pos.y = e.clientY
-      if (pos.want === 0) {
-        pos.rx = pos.x
-        pos.ry = pos.y
-      }
-      pos.want = 1
+      node.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`
+      node.style.opacity = '1'
     }
     const onOver = (e: PointerEvent) => {
-      const el = (e.target as Element | null)?.closest?.(INTERACTIVE)
-      pos.target = el ? 2.2 : 1
+      const t = e.target as Element | null
+      setKind(t?.closest?.(TEXT) ? 'text' : t?.closest?.(LINKS) ? 'hand' : 'arrow')
     }
-    const onDown = () => (pos.down = 1)
-    const onLeave = () => (pos.want = 0)
+    const onLeave = () => (node.style.opacity = '0')
 
-    raf = requestAnimationFrame(loop)
     window.addEventListener('pointermove', onMove, { passive: true })
     window.addEventListener('pointerover', onOver, { passive: true })
-    window.addEventListener('pointerdown', onDown, { passive: true })
     document.documentElement.addEventListener('pointerleave', onLeave)
     return () => {
-      cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerover', onOver)
-      window.removeEventListener('pointerdown', onDown)
       document.documentElement.removeEventListener('pointerleave', onLeave)
       document.documentElement.classList.remove('has-custom-cursor')
     }
-  }, [reduced])
+  }, [])
 
+  const s = SHAPES[kind]
   return (
-    <>
-      <div ref={ring} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[100] size-8 rounded-full border-[1.5px] border-white opacity-0 mix-blend-difference" />
-      <div ref={dot} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[100] size-2 rounded-full bg-white opacity-0 mix-blend-difference" />
-    </>
+    <div ref={el} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[100] opacity-0 mix-blend-difference">
+      <svg width={s.w} height={s.h} viewBox={`0 0 ${s.w} ${s.h}`} className="block" style={{ transform: `translate(${-s.hot[0]}px, ${-s.hot[1]}px)` }}>
+        <path d={s.path} fill="#ffffff" />
+      </svg>
+    </div>
   )
 }
