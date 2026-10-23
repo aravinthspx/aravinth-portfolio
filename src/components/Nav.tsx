@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { profile } from '../content/profile'
 import { useMotionPref, spring } from '../lib/motion'
 import { GitHubIcon, LinkedInIcon } from './ui'
+import { PaletteButton, useCommandPalette } from './CommandPalette'
 
 const links = navSections.map((sec) => ({ id: sec.id, hash: `#${sec.id}`, label: sec.label }))
 
@@ -81,6 +82,7 @@ export function Nav() {
   const btnRef = useRef<HTMLButtonElement>(null)
   const { pathname } = useLocation()
   const active = useActiveSection(pathname === '/')
+  const palette = useCommandPalette()
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24)
@@ -112,7 +114,7 @@ export function Nav() {
           <Link to="/" className="group flex items-center gap-3 rounded-2xl" aria-label={`${profile.name} — home`}>
             <BrandMark />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-[17px] font-bold tracking-tight text-cream transition-colors group-hover:text-white">
+              <span className="font-display text-[17px] font-bold tracking-tight text-cream transition-colors">
                 {profile.shortName} <span className="text-accent">M</span>
               </span>
               <span className="mt-1.5 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted sm:flex">
@@ -139,9 +141,21 @@ export function Nav() {
               </motion.li>
             )
           })}
+          <motion.li whileHover={{ y: -2 }} whileTap={{ scale: 0.94 }} transition={spring} className="relative ml-1">
+            {pathname === '/lab' && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-full border border-accent/40 bg-accent/10" transition={spring} aria-hidden="true" />}
+            <Link
+              to="/lab"
+              aria-current={pathname === '/lab' ? 'page' : undefined}
+              className="relative flex items-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-semibold text-cream"
+            >
+              ML Lab
+              <span className="rounded-full bg-cream px-1.5 py-px font-mono text-[9px] uppercase tracking-wider text-ink">New</span>
+            </Link>
+          </motion.li>
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
+          <PaletteButton />
           <MotionToggle />
           <motion.span className="inline-flex" whileHover={{ y: -2, scale: 1.04 }} whileTap={{ scale: 0.95 }} transition={spring}>
             <Link
@@ -201,8 +215,33 @@ export function Nav() {
                     </Link>
                   </motion.li>
                 ))}
+                <li>
+                  <Link
+                    to="/lab"
+                    onClick={() => setOpen(false)}
+                    aria-current={pathname === '/lab' ? 'page' : undefined}
+                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 font-display text-2xl font-bold text-cream hover:bg-ink-3"
+                  >
+                    ML Lab
+                    <span className="rounded-full bg-cream px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink">New</span>
+                  </Link>
+                </li>
               </ul>
               <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false)
+                    palette.open()
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-sm text-cream cursor-pointer md:hidden"
+                >
+                  <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                  Search the site
+                </button>
                 <MotionToggle className="md:hidden" />
                 <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub profile (opens in new tab)" className="grid size-11 place-items-center rounded-full border border-line">
                   <GitHubIcon />

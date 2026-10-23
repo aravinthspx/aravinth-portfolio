@@ -10,6 +10,7 @@ import { AboutSection } from '../components/AboutSection'
 import { Heading } from '../components/Heading'
 import { SkillsSection } from '../components/sections/Skills'
 import { ProjectsSection } from '../components/sections/Projects'
+import { LabTeaser } from '../components/sections/LabTeaser'
 import { HackathonsSection } from '../components/sections/Hackathons'
 import { CertificatesSection } from '../components/sections/Certificates'
 import { ContactSection } from '../components/sections/Contact'
@@ -170,6 +171,7 @@ export default function Home() {
       <Focus />
       <SkillsSection />
       <ProjectsSection />
+      <LabTeaser />
       <HackathonsSection />
       <CertificatesSection />
       <JourneySection />
