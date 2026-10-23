@@ -159,13 +159,3 @@
   filter: none;
 }
 
-/* Lab: signal flowing along positive network weights while training. */
-@keyframes nn-flow {
-  to {
-    stroke-dashoffset: -14;
-  }
-}
-.nn-flow {
-  stroke-dasharray: 6 8;
-  animation: nn-flow 0.7s linear infinite;
-}

@@ -141,17 +141,6 @@ export function Nav() {
               </motion.li>
             )
           })}
-          <motion.li whileHover={{ y: -2 }} whileTap={{ scale: 0.94 }} transition={spring} className="relative ml-1">
-            {pathname === '/lab' && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-full border border-accent/40 bg-accent/10" transition={spring} aria-hidden="true" />}
-            <Link
-              to="/lab"
-              aria-current={pathname === '/lab' ? 'page' : undefined}
-              className="relative flex items-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-semibold text-cream"
-            >
-              ML Lab
-              <span className="rounded-full bg-cream px-1.5 py-px font-mono text-[9px] uppercase tracking-wider text-ink">New</span>
-            </Link>
-          </motion.li>
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -215,17 +204,6 @@ export function Nav() {
                     </Link>
                   </motion.li>
                 ))}
-                <li>
-                  <Link
-                    to="/lab"
-                    onClick={() => setOpen(false)}
-                    aria-current={pathname === '/lab' ? 'page' : undefined}
-                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 font-display text-2xl font-bold text-cream hover:bg-ink-3"
-                  >
-                    ML Lab
-                    <span className="rounded-full bg-cream px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink">New</span>
-                  </Link>
-                </li>
               </ul>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button

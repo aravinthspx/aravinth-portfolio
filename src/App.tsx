@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
 import { Starfield } from './components/Starfield'
@@ -12,9 +12,15 @@ import NotFound from './pages/NotFound'
 
 const CaseStudy = lazy(() => import('./pages/CaseStudy'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
-const Lab = lazy(() => import('./pages/Lab'))
 
 const EASE = [0.76, 0, 0.24, 1] as const
+
+/** Thin bar across the top that fills as you scroll, with a springy follow. */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 260, damping: 26, mass: 0.4 })
+  return <motion.div className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-cream" style={{ scaleX }} aria-hidden="true" />
+}
 
 /** Scrolls to the #section when a hash is present (waits for the new page to mount). */
 function HashScroller() {
@@ -82,7 +88,6 @@ export default function App() {
   const routes = (
     <Routes location={location}>
       <Route path="/" element={<Home />} />
-      <Route path="/lab" element={<Lab />} />
       <Route path="/work/:slug" element={<CaseStudy />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="*" element={<NotFound />} />
@@ -104,6 +109,7 @@ export default function App() {
       {/* The site mounts when the intro closes, so the hero's entrance plays on entry. */}
       {!gate && (
         <>
+          <ScrollProgress />
           <Nav />
           <main id="main" tabIndex={-1} className="relative z-10 outline-none">
             <Suspense fallback={<div className="min-h-dvh" />}>

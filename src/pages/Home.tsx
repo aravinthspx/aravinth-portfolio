@@ -10,7 +10,6 @@ import { AboutSection } from '../components/AboutSection'
 import { Heading } from '../components/Heading'
 import { SkillsSection } from '../components/sections/Skills'
 import { ProjectsSection } from '../components/sections/Projects'
-import { LabTeaser } from '../components/sections/LabTeaser'
 import { HackathonsSection } from '../components/sections/Hackathons'
 import { CertificatesSection } from '../components/sections/Certificates'
 import { ContactSection } from '../components/sections/Contact'
@@ -71,12 +70,26 @@ function Hero() {
             <motion.h1
               id="hero-title"
               className="whitespace-nowrap font-display [text-shadow:none] text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[0.95] tracking-tight"
-              initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 0.9, delay: 0.15, ease }}
+              aria-label={profile.name}
+              initial="hidden"
+              animate="show"
+              transition={{ staggerChildren: 0.055, delayChildren: 0.2 }}
             >
-              <span className="bg-gradient-to-r from-accent-2 via-accent to-leaf bg-clip-text text-transparent">{profile.shortName}</span>{' '}
-              <span className="text-cream">M</span>
+              {/* Each letter drops in and bounces on landing. */}
+              {`${profile.shortName} M`.split('').map((ch, i) => (
+                <motion.span
+                  key={i}
+                  aria-hidden="true"
+                  className={`inline-block ${ch === 'M' && i > 0 ? 'text-muted' : 'text-cream'}`}
+                  variants={{
+                    hidden: { y: -120, opacity: 0, rotate: i % 2 ? 8 : -8 },
+                    show: { y: 0, opacity: 1, rotate: 0, transition: { type: 'spring', stiffness: 520, damping: 13, mass: 0.8 } },
+                  }}
+                  whileHover={{ y: -14, transition: { type: 'spring', stiffness: 600, damping: 10 } }}
+                >
+                  {ch === ' ' ? ' ' : ch}
+                </motion.span>
+              ))}
             </motion.h1>
           </Tilt3D>
 
@@ -171,7 +184,6 @@ export default function Home() {
       <Focus />
       <SkillsSection />
       <ProjectsSection />
-      <LabTeaser />
       <HackathonsSection />
       <CertificatesSection />
       <JourneySection />

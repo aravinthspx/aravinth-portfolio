@@ -78,7 +78,6 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     const ext = (url: string) => () => window.open(url, '_blank', 'noopener')
     return [
       { id: 'home', group: 'Pages', label: 'Home', hint: '/', run: () => navigate('/') },
-      { id: 'lab', group: 'Pages', label: 'ML Playground', hint: '/lab', keywords: 'lab demos machine learning kmeans regression neural network', run: () => navigate('/lab') },
       ...projects.map<Item>((p) => ({ id: `case-${p.slug}`, group: 'Pages', label: `${p.name} case study`, hint: `/work/${p.slug}`, keywords: p.caseTitle, run: () => navigate(`/work/${p.slug}`) })),
       ...navSections.filter((s) => s.id !== 'home').map<Item>((s) => ({ id: `sec-${s.id}`, group: 'Sections', label: s.label, hint: `#${s.id}`, run: () => navigate({ pathname: '/', hash: `#${s.id}` }) })),
       ...projects.flatMap<Item>((p) => [

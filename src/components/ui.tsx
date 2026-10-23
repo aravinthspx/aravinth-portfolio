@@ -91,15 +91,16 @@ export function IconLink({ href, label, children }: { href: string; label: strin
 }
 
 /* ---------- Reveal ---------- */
+/** Fades content in as it scrolls into view, landing with a small spring bounce. */
 export function Reveal({ children, delay = 0, className = '', as = 'div' }: { children: ReactNode; delay?: number; className?: string; as?: 'div' | 'li' | 'section' | 'article' }) {
   const M = motion[as]
   return (
     <M
       className={className}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 56, scale: 0.94 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ duration: 0.7, delay, ease: [0.2, 0.7, 0.2, 1] }}
+      transition={{ type: 'spring', stiffness: 210, damping: 15, mass: 0.9, delay, opacity: { duration: 0.35, delay } }}
     >
       {children}
     </M>

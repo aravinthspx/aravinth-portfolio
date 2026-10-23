@@ -1,5 +1,33 @@
 import type { ReactNode } from 'react'
+import { motion } from 'motion/react'
 import { Reveal } from './ui'
+
+/** Title words jump up one after another from behind a mask, with a springy landing. */
+export function BounceWords({ text, delay = 0.08 }: { text: string; delay?: number }) {
+  const words = text.split(' ')
+  return (
+    <motion.span
+      className="inline"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      transition={{ staggerChildren: 0.08, delayChildren: delay }}
+      aria-label={text}
+    >
+      {words.map((w, i) => (
+        <span key={i} className="inline-block overflow-hidden pb-[0.12em] align-bottom" aria-hidden="true">
+          <motion.span
+            className="inline-block"
+            variants={{ hidden: { y: '110%', rotate: 6 }, show: { y: '0%', rotate: 0, transition: { type: 'spring', stiffness: 300, damping: 14 } } }}
+          >
+            {w}
+            {i < words.length - 1 ? ' ' : ''}
+          </motion.span>
+        </span>
+      ))}
+    </motion.span>
+  )
+}
 
 /** Centred section heading: glowing pill eyebrow, big title, accent bar. */
 export function Heading({ pill, title, id, children }: { pill: string; title: ReactNode; id: string; children?: ReactNode }) {
@@ -10,9 +38,16 @@ export function Heading({ pill, title, id, children }: { pill: string; title: Re
         {pill}
       </p>
       <h2 id={id} className="mt-5 font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl md:text-5xl">
-        {title}
+        {typeof title === 'string' ? <BounceWords text={title} /> : title}
       </h2>
-      <span className="mx-auto mt-5 block h-1 w-16 rounded-full bg-gradient-to-r from-accent to-leaf" aria-hidden="true" />
+      <motion.span
+        className="mx-auto mt-5 block h-1 w-16 origin-left rounded-full bg-gradient-to-r from-accent to-leaf"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ type: 'spring', stiffness: 160, damping: 12, delay: 0.35 }}
+        aria-hidden="true"
+      />
       {children && <div className="mt-5 text-lg leading-relaxed text-cream-2">{children}</div>}
     </Reveal>
   )
