@@ -49,11 +49,11 @@ function SpotlightCard({ children, delay }: { children: ReactNode; delay: number
   )
 }
 
-/** Small glass chip floating at the edge of the portrait frame. */
+/** Small glass chip with a gentle float. */
 function Chip({ children, className, delay = 0 }: { children: ReactNode; className: string; delay?: number }) {
   return (
     <motion.span
-      className={`absolute z-20 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-ink/85 px-3 py-1.5 font-mono text-[11px] text-cream shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] backdrop-blur-md ${className}`}
+      className={`relative inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-ink/85 px-3 py-1.5 font-mono text-[11px] text-cream shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] backdrop-blur-md ${className}`}
       initial={{ opacity: 0, scale: 0.85, y: 12 }}
       whileInView={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
       viewport={{ once: true }}
@@ -64,90 +64,105 @@ function Chip({ children, className, delay = 0 }: { children: ReactNode; classNa
   )
 }
 
-/**
- * Framed portrait: wipes in from the bottom as it scrolls into view, drifts with a gentle
- * parallax, and reveals the photo in colour inside a soft spotlight that follows the cursor.
- */
-function PortraitCard() {
-  const p = profile.portrait!
-  const { reduced } = useMotionPref()
-  const frame = useRef<HTMLDivElement>(null)
-  const [spot, setSpot] = useState<{ x: number; y: number } | null>(null)
-  const { scrollYProgress } = useScroll({ target: frame, offset: ['start end', 'end start'] })
-  const y = useSpring(useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [40, -40]), { stiffness: 80, damping: 26 })
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], reduced ? [1, 1, 1] : [1.08, 1, 1.04])
-
+/** Quick facts as floating chips, in a row above the About text. */
+function Chips() {
   return (
-    <div className="relative mx-auto w-full max-w-[30rem]">
-      <motion.div
-        ref={frame}
-        className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-line bg-ink-2 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.6)]"
-        initial={{ clipPath: 'inset(100% 0% 0% 0% round 32px)' }}
-        whileInView={{ clipPath: 'inset(0% 0% 0% 0% round 32px)' }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 1.2, ease: SMOOTH }}
-        onPointerMove={(e) => {
-          if (e.pointerType === 'touch') return
-          const r = e.currentTarget.getBoundingClientRect()
-          setSpot({ x: e.clientX - r.left, y: e.clientY - r.top })
-        }}
-        onPointerLeave={() => setSpot(null)}
-      >
-        {/* studio backdrop: faint grid and a light falling from above */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:28px_28px]" aria-hidden="true" />
-        <div className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_15%,rgba(255,255,255,0.95),transparent_70%)]" aria-hidden="true" />
-
-        {/* black and white */}
-        <motion.div className="absolute inset-0" style={{ y, scale }}>
-          <img
-            src={p.src}
-            srcSet={p.srcSet}
-            sizes="(min-width: 1024px) 480px, 90vw"
-            width={p.width}
-            height={p.height}
-            alt={p.alt}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
-          />
-        </motion.div>
-        {/* colour copy, moving identically, masked to a soft circle under the cursor (frame coordinates) */}
-        {p.colorSrc && (
-          <div
-            className="absolute inset-0 transition-opacity duration-500"
-            style={{
-              opacity: spot ? 1 : 0,
-              maskImage: `radial-gradient(140px circle at ${spot?.x ?? 0}px ${spot?.y ?? 0}px, black 50%, transparent 100%)`,
-              WebkitMaskImage: `radial-gradient(140px circle at ${spot?.x ?? 0}px ${spot?.y ?? 0}px, black 50%, transparent 100%)`,
-            }}
-            aria-hidden="true"
-          >
-            <motion.div className="absolute inset-0" style={{ y, scale }}>
-              <img src={p.colorSrc} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[50%_18%]" />
-            </motion.div>
-          </div>
-        )}
-
-        {/* soft floor so the suit melts into the frame */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink-2/90 to-transparent" aria-hidden="true" />
-        <p className="pointer-events-none absolute bottom-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-cream-2">
-          {spot ? 'Colour reveal' : 'Hover to reveal colour'}
-        </p>
-      </motion.div>
-
-      <Chip className="-left-3 top-[12%] sm:-left-8" delay={0.5}>
+    <div className="mb-6 flex flex-wrap gap-2">
+      <Chip className="" delay={0.2}>
         <span className="size-1.5 rounded-full bg-cream" aria-hidden="true" />
         SRM IST Ramapuram
       </Chip>
-      <Chip className="-right-3 top-[34%] sm:-right-10" delay={0.65}>
+      <Chip className="" delay={0.3}>
         <span aria-hidden="true">◆</span> CSE · AI &amp; ML
       </Chip>
-      <Chip className="-left-3 bottom-[30%] sm:-left-10" delay={0.8}>
+      <Chip className="" delay={0.4}>
         <b>{String(projects.length).padStart(2, '0')}</b> team prototypes
       </Chip>
-      <Chip className="-right-3 bottom-[12%] sm:-right-6" delay={0.95}>
+      <Chip className="" delay={0.5}>
         <b>{String(certificates.length).padStart(2, '0')}</b> certificates
       </Chip>
+    </div>
+  )
+}
+
+const SLATS = 10
+// Soft oval: the face stays solid, the photo's cut edges and the bottom dissolve into the page.
+const PORTRAIT_MASK = 'radial-gradient(ellipse 55% 70% at 50% 38%, black 55%, transparent 85%)'
+
+/**
+ * Portrait as the section's background: a large black-and-white photo whose edges dissolve
+ * into the page. It opens through horizontal blinds as it scrolls into view, drifts slower
+ * than the text (parallax), and shows the photo in colour inside a soft spotlight under the cursor.
+ */
+function PortraitBackdrop() {
+  const p = profile.portrait!
+  const { reduced } = useMotionPref()
+  const box = useRef<HTMLDivElement>(null)
+  const [spot, setSpot] = useState<{ x: number; y: number } | null>(null)
+  const { scrollYProgress } = useScroll({ target: box, offset: ['start end', 'end start'] })
+  const y = useSpring(useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [70, -70]), { stiffness: 70, damping: 26 })
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], reduced ? [1, 1, 1] : [1.08, 1, 1.03])
+
+  const photo = (src: string, alt: string, extra?: { srcSet?: string }) => (
+    <motion.div className="absolute inset-0" style={{ y, scale }}>
+      <img
+        src={src}
+        srcSet={extra?.srcSet}
+        sizes="(min-width: 1024px) 760px, 100vw"
+        width={p.width}
+        height={p.height}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        className="absolute bottom-0 left-1/2 h-[106%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom"
+      />
+    </motion.div>
+  )
+
+  return (
+    <div
+      ref={box}
+      className="absolute inset-x-0 top-0 h-[30rem] sm:h-[34rem] lg:right-auto lg:top-6 lg:h-[56rem] lg:w-[62%]"
+      style={{ maskImage: PORTRAIT_MASK, WebkitMaskImage: PORTRAIT_MASK }}
+      onPointerMove={(e) => {
+        if (e.pointerType === 'touch') return
+        const r = e.currentTarget.getBoundingClientRect()
+        setSpot({ x: e.clientX - r.left, y: e.clientY - r.top })
+      }}
+      onPointerLeave={() => setSpot(null)}
+    >
+      {photo(p.src, p.alt, { srcSet: p.srcSet })}
+
+      {/* colour copy, moving identically, visible only in a soft circle under the cursor */}
+      {p.colorSrc && (
+        <div
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{
+            opacity: spot ? 1 : 0,
+            maskImage: `radial-gradient(150px circle at ${spot?.x ?? 0}px ${spot?.y ?? 0}px, black 45%, transparent 100%)`,
+            WebkitMaskImage: `radial-gradient(150px circle at ${spot?.x ?? 0}px ${spot?.y ?? 0}px, black 45%, transparent 100%)`,
+          }}
+          aria-hidden="true"
+        >
+          {photo(p.colorSrc, '')}
+        </div>
+      )}
+
+      {/* blinds: white slats that open one after another as the section arrives */}
+      {!reduced && (
+        <div className="pointer-events-none absolute inset-0 flex flex-col" aria-hidden="true">
+          {Array.from({ length: SLATS }).map((_, i) => (
+            <motion.div
+              key={i}
+              className={`flex-1 bg-ink ${i % 2 ? 'origin-bottom' : 'origin-top'}`}
+              initial={{ scaleY: 1.02 }}
+              whileInView={{ scaleY: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.9, delay: 0.1 + i * 0.06, ease: SMOOTH }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -170,11 +185,12 @@ export function AboutSection() {
         </div>
       </div>
 
-      <div className="container-x relative grid items-center gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-        {profile.portrait && <PortraitCard />}
+      {profile.portrait && <PortraitBackdrop />}
 
-        <div className="relative z-10">
-          <Reveal>
+      <div className="container-x pointer-events-none relative z-10">
+        <div className="pointer-events-auto pt-[25rem] sm:pt-[29rem] lg:ml-auto lg:w-[50%] lg:pt-0">
+          <Chips />
+          <Reveal className="rounded-3xl border border-line bg-ink/75 p-6 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.5)] backdrop-blur-md sm:p-8">
             <p className="inline-flex items-center gap-2 rounded-full border border-line bg-ink/70 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-cream-2">
               <span className="size-1.5 rounded-full bg-cream" aria-hidden="true" />
               Profile &amp; perspective
