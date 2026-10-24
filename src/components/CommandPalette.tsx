@@ -8,7 +8,6 @@ import { navSections } from '../lib/sections'
 import { gmailUrl } from '../lib/email'
 import { SMOOTH, spring, useMotionPref } from '../lib/motion'
 import { menuInfo } from './MenuExtras'
-import { themeLabel, useTheme, type Theme } from '../lib/theme'
 
 type Group = 'Pages' | 'Sections' | 'Projects' | 'Certificates' | 'Actions'
 type Preview = { img: string; fit?: 'cover' | 'contain' } | { big: string; small: string }
@@ -146,7 +145,6 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const returnTo = useRef<HTMLElement | null>(null)
   const navigate = useNavigate()
   const { toggle, reduced } = useMotionPref()
-  const { theme, setTheme } = useTheme()
 
   const close = useCallback(() => {
     setOpen(false)
@@ -195,17 +193,9 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
       { id: 'email', group: 'Actions', label: 'Write me an email', hint: 'Opens Gmail', keywords: 'contact mail', preview: { big: 'Hello', small: 'Opens Gmail' }, run: ext(gmailUrl()) },
       { id: 'github', group: 'Actions', label: 'Open GitHub profile', hint: '@aravinthspx', preview: { big: 'GH', small: '@aravinthspx' }, run: ext(profile.links.github) },
       { id: 'linkedin', group: 'Actions', label: 'Open LinkedIn profile', preview: { big: 'in', small: 'LinkedIn' }, run: ext(profile.links.linkedin) },
-      ...(['system', 'light', 'dark'] as Theme[]).map<Item>((t) => ({
-        id: `theme-${t}`,
-        group: 'Actions',
-        label: `Theme: ${themeLabel[t]}${t === theme ? ' (current)' : ''}`,
-        keywords: 'theme appearance dark light mode system colour color',
-        preview: { big: themeLabel[t], small: t === 'system' ? 'Follow your device' : `${themeLabel[t]} mode` },
-        run: () => setTheme(t),
-      })),
       { id: 'motion', group: 'Actions', label: reduced ? 'Turn animations on' : 'Turn animations off', keywords: 'motion reduce', preview: { big: reduced ? 'On' : 'Off', small: 'Animations' }, run: toggle },
     ]
-  }, [navigate, reduced, toggle, theme, setTheme])
+  }, [navigate, reduced, toggle])
 
   const shown = useMemo(() => (q.trim() ? items.filter((i) => matches(i, q)) : items), [items, q])
   const safeActive = Math.min(active, Math.max(shown.length - 1, 0))

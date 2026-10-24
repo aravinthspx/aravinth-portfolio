@@ -25,46 +25,6 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Dark theme: chosen explicitly, or following the system when no choice is saved. */
-:root[data-theme='dark'] {
-  --color-ink: #0a0a0a;
-  --color-ink-2: #121212;
-  --color-ink-3: #1b1b1b;
-  --color-line: #2b2b2b;
-  --color-cream: #f2f2f2;
-  --color-cream-2: #b3b3b3;
-  --color-muted: #8c8c8c;
-  --color-accent: #f2f2f2;
-  --color-accent-2: #d6d6d6;
-  --color-leaf: #c9c9c9;
-  --color-leaf-2: #a9a9a9;
-  --color-warm: #9b9b9b;
-  --color-ok: #e2e2e2;
-  --color-warn: #bababa;
-  --color-bad: #ffffff;
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-ink: #0a0a0a;
-    --color-ink-2: #121212;
-    --color-ink-3: #1b1b1b;
-    --color-line: #2b2b2b;
-    --color-cream: #f2f2f2;
-    --color-cream-2: #b3b3b3;
-    --color-muted: #8c8c8c;
-    --color-accent: #f2f2f2;
-    --color-accent-2: #d6d6d6;
-    --color-leaf: #c9c9c9;
-    --color-leaf-2: #a9a9a9;
-    --color-warm: #9b9b9b;
-    --color-ok: #e2e2e2;
-    --color-warn: #bababa;
-    --color-bad: #ffffff;
-    color-scheme: dark;
-  }
-}
-
 @layer base {
   html {
     background: var(--color-ink);
@@ -138,7 +98,7 @@
   }
   .outline-text {
     color: transparent;
-    -webkit-text-stroke: 1px color-mix(in srgb, var(--color-cream) 8%, transparent);
+    -webkit-text-stroke: 1px rgb(0 0 0 / 0.08);
   }
   .glow-accent {
     background: radial-gradient(closest-side, rgb(0 0 0 / 0.06), transparent);
@@ -150,7 +110,7 @@
     box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06), 0 18px 40px -24px rgb(0 0 0 / 0.25);
   }
   .panel {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-ink) 92%, transparent), color-mix(in srgb, var(--color-ink-2) 92%, transparent));
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(249 249 249 / 0.92));
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -20px rgb(0 0 0 / 0.18);
     border: 1px solid var(--color-line);
     backdrop-filter: blur(8px);

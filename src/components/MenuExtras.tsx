@@ -107,7 +107,7 @@ export function MenuBigNumber({ n }: { n: string }) {
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={n}
-          className="block select-none font-display text-[38vw] font-bold leading-[0.8] text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-ink)_12%,transparent)] sm:text-[24vw]"
+          className="block select-none font-display text-[38vw] font-bold leading-[0.8] text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.12)] sm:text-[24vw]"
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: '0%', opacity: 1, transition: { duration: 0.6, ease: SMOOTH } }}
           exit={{ y: '-100%', opacity: 0, transition: { duration: 0.4, ease: SMOOTH } }}

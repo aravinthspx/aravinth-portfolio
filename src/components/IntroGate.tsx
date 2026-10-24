@@ -58,7 +58,7 @@ function LaunchOrb({ onLaunch, btnRef }: { onLaunch: () => void; btnRef: React.R
       <span className="absolute inset-0 animate-[spin_9s_linear_infinite] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(0,0,0,0.27)_70deg,transparent_140deg,transparent_200deg,rgba(212,212,212,0.8)_260deg,transparent_330deg)] p-[2px] [mask:radial-gradient(farthest-side,transparent_calc(100%-2px),black_calc(100%-2px))]" aria-hidden="true" />
       <span className="absolute inset-4 animate-[spin_14s_linear_infinite_reverse] rounded-full border border-dashed border-cream/15" aria-hidden="true" />
       {/* core */}
-      <span className="absolute inset-8 rounded-full bg-[radial-gradient(circle_at_35%_30%,var(--color-ink),var(--color-ink-3)_70%)] shadow-[0_0_60px_-8px_rgba(0,0,0,0.21),inset_0_0_30px_rgba(0,0,0,0.045)] transition-shadow duration-300 group-hover:shadow-[0_0_80px_-4px_rgba(0,0,0,0.285),inset_0_0_30px_rgba(0,0,0,0.075)]" aria-hidden="true" />
+      <span className="absolute inset-8 rounded-full bg-[radial-gradient(circle_at_35%_30%,#ffffff,#ececec_70%)] shadow-[0_0_60px_-8px_rgba(0,0,0,0.21),inset_0_0_30px_rgba(0,0,0,0.045)] transition-shadow duration-300 group-hover:shadow-[0_0_80px_-4px_rgba(0,0,0,0.285),inset_0_0_30px_rgba(0,0,0,0.075)]" aria-hidden="true" />
       <span className="relative flex flex-col items-center">
         <span className="bg-gradient-to-br from-accent-2 via-accent to-leaf bg-clip-text font-display text-4xl font-bold text-transparent sm:text-5xl">AM</span>
         <span className="mt-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-cream-2 transition-colors group-hover:text-accent">
@@ -108,7 +108,7 @@ function Reel({ onDone }: { onDone: () => void }) {
 
       {/* giant outlined name behind everything */}
       <motion.p
-        className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none text-center font-display text-[22vw] font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-cream)_6%,transparent)] lg:text-[16vw]"
+        className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none text-center font-display text-[22vw] font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(0,0,0,0.054)] lg:text-[16vw]"
         initial={{ opacity: 0, scale: 1.25, letterSpacing: '0.2em' }}
         animate={{ opacity: 1, scale: 1, letterSpacing: '-0.02em' }}
         transition={{ duration: 2.2, ease: [0.2, 0.8, 0.2, 1] }}
@@ -286,7 +286,7 @@ export function IntroGate({ open, onEnter }: { open: boolean; onEnter: () => voi
           role="dialog"
           aria-modal="true"
           aria-label={`${profile.name} — intro`}
-          className="fixed inset-0 z-[70] bg-[radial-gradient(circle_at_50%_50%,color-mix(in_srgb,var(--color-ink)_35%,transparent),color-mix(in_srgb,var(--color-ink)_92%,transparent))]"
+          className="fixed inset-0 z-[70] bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.35),rgba(255,255,255,0.92))]"
           initial={{ opacity: 1 }}
           // stays fully visible while the black panel below rises over it
           exit={{ opacity: 1, transition: { duration: 0.75 } }}
