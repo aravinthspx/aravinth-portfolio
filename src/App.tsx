@@ -4,7 +4,6 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
 import { PageBackground } from './components/PageBackground'
-import { Cursor } from './components/Cursor'
 import { IntroGate, shouldShowIntro } from './components/IntroGate'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { useMotionPref } from './lib/motion'
@@ -16,6 +15,31 @@ const CaseStudy = lazy(() => import('./pages/CaseStudy'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
 
 const EASE = [0.76, 0, 0.24, 1] as const
+
+/**
+ * After the intro: the black panel that covered the screen lifts away upward, revealing the
+ * site (which has just mounted underneath, so the hero's entrance plays as it uncovers).
+ */
+function IntroReveal() {
+  return (
+    <motion.div
+      className="pointer-events-none fixed inset-0 z-[66] grid origin-top place-items-center bg-cream"
+      initial={{ scaleY: 1 }}
+      animate={{ scaleY: 0 }}
+      transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
+      aria-hidden="true"
+    >
+      <motion.span
+        className="font-display text-3xl font-bold tracking-tight text-ink sm:text-5xl"
+        initial={{ opacity: 1, y: 0 }}
+        animate={{ opacity: 0, y: -30 }}
+        transition={{ duration: 0.45, ease: EASE }}
+      >
+        Aravinth M
+      </motion.span>
+    </motion.div>
+  )
+}
 
 /** Thin bar across the top that fills smoothly as you scroll. */
 function ScrollProgress() {
@@ -77,6 +101,8 @@ export default function App() {
   const { reduced } = useMotionPref()
   // Deep links (case studies, #sections) skip the intro.
   const [gate, setGate] = useState(() => !hash && shouldShowIntro(pathname))
+  // true once the intro has played this visit, so the reveal curtain runs exactly once
+  const [revealing, setRevealing] = useState(false)
   // No curtain until the first real page change (hash links within a page never trigger it).
   const [first, setFirst] = useState(true)
   // Without the curtain, jump to the top as soon as the page changes.
@@ -112,6 +138,7 @@ export default function App() {
         open={gate}
         onEnter={() => {
           setGate(false)
+          if (!reduced) setRevealing(true)
           // Hand keyboard focus to the page once it mounts.
           requestAnimationFrame(() => document.getElementById('main')?.focus({ preventScroll: true }))
         }}
@@ -119,6 +146,7 @@ export default function App() {
       {/* The site mounts when the intro closes, so the hero's entrance plays on entry. */}
       {!gate && (
         <>
+          {revealing && <IntroReveal />}
           <ScrollProgress />
           <Nav />
           <main id="main" tabIndex={-1} className="relative z-10 outline-none">
@@ -147,7 +175,6 @@ export default function App() {
         </>
       )}
       <div className="grain" aria-hidden="true" />
-      <Cursor />
     </CommandPaletteProvider>
   )
 }

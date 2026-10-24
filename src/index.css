@@ -190,9 +190,3 @@ html.lenis body {
 }
 
 
-/* Custom inverting cursor (mouse/trackpad only): hide the system cursor, except while a
-   native <dialog> is open — dialogs sit in the top layer, above the custom cursor. */
-html.has-custom-cursor:not(:has(dialog[open])),
-html.has-custom-cursor:not(:has(dialog[open])) * {
-  cursor: none !important;
-}

@@ -268,9 +268,27 @@ export function IntroGate({ open, onEnter }: { open: boolean; onEnter: () => voi
           aria-label={`${profile.name} — intro`}
           className="fixed inset-0 z-[70] bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.35),rgba(255,255,255,0.92))]"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.04, filter: 'blur(6px)' }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+          // stays fully visible while the black panel below rises over it
+          exit={{ opacity: 1, transition: { duration: 0.75 } }}
         >
+          {/* exit: a black panel rises from the bottom and covers the intro; the site then
+              mounts underneath and App's IntroReveal lifts the same black panel away */}
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-20 grid origin-bottom place-items-center bg-cream"
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 0 }}
+            exit={{ scaleY: 1, transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] } }}
+            aria-hidden="true"
+          >
+            <motion.span
+              className="font-display text-3xl font-bold tracking-tight text-ink sm:text-5xl"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 0, y: 24 }}
+              exit={{ opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] } }}
+            >
+              {profile.name}
+            </motion.span>
+          </motion.div>
           <AnimatePresence mode="wait">
             {phase === 'gate' ? (
               <motion.div
