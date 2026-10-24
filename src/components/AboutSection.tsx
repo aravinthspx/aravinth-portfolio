@@ -178,7 +178,7 @@ export function AboutSection() {
     <section id="about" aria-labelledby="about-title" className="relative overflow-hidden py-24 md:py-36">
       {/* giant outlined name drifting behind the section */}
       <div className="pointer-events-none absolute inset-x-0 top-[38%] -rotate-3 select-none" aria-hidden="true">
-        <div className="marquee flex w-max gap-12 whitespace-nowrap font-display text-[clamp(5rem,14vw,12rem)] font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(10,10,10,0.08)]">
+        <div className="marquee flex w-max gap-12 whitespace-nowrap font-display text-[clamp(5rem,14vw,12rem)] font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-cream)_8%,transparent)]">
           {Array.from({ length: 4 }).map((_, i) => (
             <span key={i}>{profile.name.toUpperCase()} —</span>
           ))}
@@ -196,7 +196,7 @@ export function AboutSection() {
               Profile &amp; perspective
             </p>
             <h2 id="about-title" className="mt-5 font-display text-4xl font-bold tracking-tight text-cream sm:text-5xl md:text-6xl">
-              About <span className="text-transparent [-webkit-text-stroke:1.5px_#0a0a0a]">me</span>
+              About <span className="text-transparent [-webkit-text-stroke:1.5px_var(--color-cream)]">me</span>
             </h2>
             <motion.span
               className="mt-5 block h-1 w-16 origin-left rounded-full bg-cream"

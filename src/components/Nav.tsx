@@ -6,6 +6,8 @@ import { profile } from '../content/profile'
 import { SMOOTH, useMotionPref, spring } from '../lib/motion'
 import { gmailUrl } from '../lib/email'
 import { CursorPreview, MenuBigNumber, RollText, menuInfo } from './MenuExtras'
+import { ThemeToggle } from './ThemeToggle'
+import { themeLabel, useTheme } from '../lib/theme'
 import { GitHubIcon, LinkedInIcon } from './ui'
 import { PaletteButton, useCommandPalette } from './CommandPalette'
 
@@ -44,7 +46,7 @@ function BrandMark() {
         transition={spring}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,#ffffff_0%,#ececec_75%)]">
+        <span className="relative grid size-full place-items-center overflow-hidden rounded-[12.5px] bg-[linear-gradient(160deg,var(--color-ink)_0%,var(--color-ink-3)_75%)]">
           {/* glass sheen */}
           <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/12 to-transparent" />
           <span className="relative font-display text-[15px] font-bold leading-none tracking-[-0.04em]" style={{ transform: 'translateZ(12px)' }}>
@@ -86,6 +88,7 @@ export function Nav() {
   const active = useActiveSection(pathname === '/')
   const palette = useCommandPalette()
   const { reduced, systemReduced, toggle: toggleMotion } = useMotionPref()
+  const { theme, cycle: cycleTheme } = useTheme()
 
   // Header hides while scrolling down and slides back on any scroll up.
   const [hidden, setHidden] = useState(false)
@@ -186,6 +189,7 @@ export function Nav() {
 
           <div className="hidden items-center gap-2 md:flex">
             {!open && <PaletteButton />}
+            {!open && <ThemeToggle />}
             {!open && <MotionToggle className="xl:hidden 2xl:inline-flex" />}
             <motion.span className="inline-flex" whileHover={{ y: -2, scale: 1.03 }} whileTap={{ scale: 0.96 }} transition={spring}>
               <Link
@@ -306,6 +310,9 @@ export function Nav() {
                   </button>
                   <button type="button" onClick={toggleMotion} disabled={systemReduced} aria-pressed={!reduced} className="rounded-full border border-ink/25 px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider hover:bg-ink hover:text-cream disabled:opacity-50 cursor-pointer">
                     Motion {reduced ? 'off' : 'on'}
+                  </button>
+                  <button type="button" onClick={cycleTheme} className="rounded-full border border-ink/25 px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider hover:bg-ink hover:text-cream cursor-pointer">
+                    Theme · {themeLabel[theme]}
                   </button>
                   <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub profile (opens in new tab)" className="grid size-11 place-items-center rounded-full border border-ink/25 hover:bg-ink hover:text-cream">
                     <GitHubIcon />
