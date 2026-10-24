@@ -24,6 +24,8 @@ const lines = [
   { at: 3300, label: 'Building', text: 'Agri-Yield Pro · SITTO' },
   { at: 4100, label: 'Aiming for', text: 'Machine Learning Engineer' },
 ]
+// Soft oval so the photo's edges and bottom dissolve into the screen.
+const INTRO_MASK = 'radial-gradient(ellipse 52% 62% at 50% 40%, black 55%, transparent 88%)'
 const TAGLINE_AT = 5000
 const WELCOME_AT = 6200
 
@@ -115,30 +117,48 @@ function Reel({ onDone }: { onDone: () => void }) {
         {profile.wordmark}
       </motion.p>
 
-      <div className="container-x relative grid h-full items-center gap-6 lg:grid-cols-[1fr_1fr]">
-        {/* portrait */}
-        {portrait && (
+      {/* portrait as a full-screen backdrop: opens through blinds, then slowly pushes in */}
+      {portrait && (
+        <div
+          className="pointer-events-none absolute inset-0 lg:left-[32%]"
+          style={{ maskImage: INTRO_MASK, WebkitMaskImage: INTRO_MASK }}
+          aria-hidden="true"
+        >
           <motion.div
-            className="relative order-1 mx-auto h-[30vh] sm:h-[38vh] lg:order-2 lg:h-[78vh]"
-            initial={{ opacity: 0, scale: 1.35, y: 60, filter: 'blur(12px)' }}
-            animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 1.8, ease: [0.2, 0.8, 0.2, 1] }}
+            className="absolute inset-0 origin-[50%_35%]"
+            initial={{ scale: 1.16 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: REEL_MS / 1000, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <div className="glow-accent absolute inset-[15%] rounded-full blur-3xl" aria-hidden="true" />
             <img
               src={portrait.src}
               srcSet={portrait.srcSet}
-              sizes="(min-width: 1024px) 40vw, 60vw"
+              sizes="(min-width: 1024px) 60vw, 100vw"
               width={portrait.width}
               height={portrait.height}
               alt={portrait.alt}
-              className="relative h-full w-auto object-contain grayscale contrast-110 [mask-image:linear-gradient(to_bottom,black_78%,transparent)]"
+              className="absolute bottom-0 left-1/2 h-[78vh] w-auto max-w-none -translate-x-1/2 object-contain object-bottom grayscale contrast-110 lg:h-[94vh]"
             />
           </motion.div>
-        )}
+          <div className="absolute inset-0 flex flex-col">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className={`flex-1 bg-ink ${i % 2 ? 'origin-bottom' : 'origin-top'}`}
+                initial={{ scaleY: 1.02 }}
+                animate={{ scaleY: 0 }}
+                transition={{ duration: 0.9, delay: 0.25 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {/* white fade so the text reads over the photo (bottom on phones, left on desktop) */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-ink via-ink/85 to-transparent lg:inset-y-0 lg:left-0 lg:right-auto lg:h-auto lg:w-[60%] lg:bg-gradient-to-r" aria-hidden="true" />
 
+      <div className="container-x relative grid h-full items-end pb-28 lg:grid-cols-[1fr_1fr] lg:items-center lg:pb-0">
         {/* text */}
-        <div className="relative order-2 text-center lg:order-1 lg:text-left">
+        <div className="relative text-center lg:text-left">
           <motion.p
             className="font-mono text-xs uppercase tracking-[0.35em] text-accent"
             initial={{ opacity: 0, y: 10 }}

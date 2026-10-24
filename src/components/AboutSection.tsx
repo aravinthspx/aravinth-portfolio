@@ -27,7 +27,7 @@ function SpotlightCard({ children, delay }: { children: ReactNode; delay: number
     <Reveal
       as="li"
       delay={delay}
-      className="group relative overflow-hidden rounded-2xl border border-line bg-ink-2/70 p-5 backdrop-blur transition-colors duration-300 hover:border-cream/30"
+      className="group relative overflow-hidden rounded-2xl border border-line bg-ink/75 p-5 backdrop-blur-md transition-colors duration-300 hover:border-cream/30"
     >
       <span
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -87,7 +87,7 @@ function Chips() {
 
 const SLATS = 10
 // Soft oval: the face stays solid, the photo's cut edges and the bottom dissolve into the page.
-const PORTRAIT_MASK = 'radial-gradient(ellipse 55% 70% at 50% 38%, black 55%, transparent 85%)'
+const PORTRAIT_MASK = 'radial-gradient(ellipse 55% 62% at 50% 36%, black 55%, transparent 85%)'
 
 /**
  * Portrait as the section's background: a large black-and-white photo whose edges dissolve
@@ -212,8 +212,11 @@ export function AboutSection() {
               {about.enjoyBuilding}
             </p>
           </Reveal>
+        </div>
 
-          <ul className="mt-9 grid gap-4 sm:grid-cols-2">
+        {/* full-width row: the cards sit over the photo's faded lower half, so no side is left empty */}
+        <div className="pointer-events-auto mt-9 lg:mt-14">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {about.cards.map((s, i) => (
               <SpotlightCard key={s.title} delay={0.06 * i}>
                 <span className="grid size-10 place-items-center rounded-xl border border-line bg-ink text-cream">
@@ -226,7 +229,7 @@ export function AboutSection() {
           </ul>
 
           <Reveal delay={0.1}>
-            <dl className="mt-8 grid grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl border border-line bg-ink-2/60">
+            <dl className="mx-auto mt-8 grid max-w-3xl grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl border border-line bg-ink/70 backdrop-blur">
               {stats.map((st) => (
                 <div key={st.label} className="px-4 py-4 text-center sm:px-5">
                   <dt className="sr-only">{st.label}</dt>
