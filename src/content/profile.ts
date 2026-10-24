@@ -24,12 +24,14 @@ export const profile = {
   study: 'B.Tech Computer Science and Engineering (AI & Machine Learning), SRM Institute of Science and Technology, Ramapuram',
   // Portrait: background removed, shown in black and white. Set to null to hide.
   portrait: {
-    src: '/images/aravinth-cutout-801.webp',
-    srcSet: '/images/aravinth-cutout-480.webp 480w, /images/aravinth-cutout-801.webp 801w',
-    width: 801,
-    height: 1509,
-    alt: 'Black and white portrait of Aravinth M, seated and looking to the side',
-  } as { src: string; srcSet: string; width: number; height: number; alt: string } | null,
+    src: '/images/aravinth-portrait-900.webp',
+    srcSet: '/images/aravinth-portrait-480.webp 480w, /images/aravinth-portrait-900.webp 900w',
+    width: 900,
+    height: 1206,
+    alt: 'Black and white portrait of Aravinth M in a dark suit, white shirt and tie, facing the camera',
+    // colour version, revealed under the cursor in the About section (optional)
+    colorSrc: '/images/aravinth-portrait-color-900.webp',
+  } as { src: string; srcSet: string; width: number; height: number; alt: string; colorSrc?: string } | null,
   // ▼ RESUME: put your PDF in /public (e.g. public/resume.pdf) and set '/resume.pdf' here.
   //   While null, the site hides the download buttons and shows an email fallback instead.
   resumeUrl: null as string | null,

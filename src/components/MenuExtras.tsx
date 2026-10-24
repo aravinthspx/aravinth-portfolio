@@ -8,7 +8,7 @@ type Preview = { blurb: string } & ({ img: string; fit?: 'cover' | 'contain' } |
 /** One-line description and a hover preview for each home-page section in the menu. */
 export const menuInfo: Record<string, Preview> = {
   home: { blurb: 'Start here', big: 'Hi.', small: 'AI/ML engineering student' },
-  about: { blurb: 'Who I am', img: '/images/aravinth-cutout-480.webp', fit: 'contain' },
+  about: { blurb: 'Who I am', img: '/images/aravinth-portrait-480.webp', fit: 'contain' },
   skills: { blurb: 'Tools I use', big: 'Py · TS', small: 'Python · React · FastAPI · ML' },
   projects: { blurb: 'Agri-Yield Pro · SITTO', img: '/images/agri/dashboard-800.webp' },
   hackathons: { blurb: 'Tech Horizon 2.0', img: '/images/sitto/home-800.webp' },
