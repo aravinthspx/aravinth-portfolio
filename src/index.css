@@ -209,27 +209,6 @@ html.lenis body {
     transition-duration: 0.12s;
   }
 
-  /* solid black buttons: a light streak sweeps across on hover */
-  :where(a, button)[class*='bg-accent'],
-  :where(a, button)[class*='bg-cream'] {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-  }
-  :where(a, button)[class*='bg-accent']::after,
-  :where(a, button)[class*='bg-cream']::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.32) 50%, transparent 70%);
-    translate: -130% 0;
-    transition: translate 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  :where(a, button)[class*='bg-accent']:is(:hover, :focus-visible)::after,
-  :where(a, button)[class*='bg-cream']:is(:hover, :focus-visible)::after {
-    translate: 130% 0;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   :where(button, [role='button'], summary, a) {
@@ -251,5 +230,58 @@ html.lenis body {
   }
   a:not([class*='rounded']):not([class*='underline']):not(:has(img)):not(#mobile-menu a):is(:hover, :focus-visible) {
     background-size: 100% 1px;
+  }
+}
+
+/*
+ * Fill sweep on every pill-shaped button and link:
+ * - outline pills: black fills in from the left, content turns white;
+ * - solid black pills: white fills in from the left, content turns black, border appears.
+ * The fill is a ::before layer behind the content, scaled in on hover/focus.
+ */
+@layer base {
+  :where(a, button)[class*='rounded-full']:is([class*='border'], [class*='bg-accent'], [class*='bg-cream']):not(:disabled) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  :where(a, button)[class*='rounded-full']:is([class*='border'], [class*='bg-accent'], [class*='bg-cream']):not(:disabled)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--color-cream);
+    transform-origin: left center;
+    scale: 0 1;
+    transition: scale 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  :where(a, button)[class*='rounded-full']:is([class*='bg-accent'], [class*='bg-cream']):not(:disabled)::before {
+    background: var(--color-ink);
+  }
+  :where(a, button)[class*='rounded-full']:is([class*='border'], [class*='bg-accent'], [class*='bg-cream']):not(:disabled):is(:hover, :focus-visible)::before {
+    scale: 1 1;
+  }
+  /* outline pills: content turns white over the black fill */
+  :where(a, button)[class*='rounded-full'][class*='border']:not([class*='bg-accent']):not([class*='bg-cream']):not(:disabled):is(:hover, :focus-visible) {
+    color: var(--color-ink) !important;
+    border-color: var(--color-cream) !important;
+  }
+  /* solid pills: content turns black over the white fill */
+  :where(a, button)[class*='rounded-full']:is([class*='bg-accent'], [class*='bg-cream']):not(:disabled):is(:hover, :focus-visible) {
+    color: var(--color-cream) !important;
+    box-shadow: inset 0 0 0 1.5px var(--color-cream), 0 10px 24px -14px rgb(0 0 0 / 0.45);
+  }
+  :where(a, button)[class*='rounded-full']:is([class*='border'], [class*='bg-accent'], [class*='bg-cream']):not(:disabled):is(:hover, :focus-visible) *:not(kbd):not(kbd *) {
+    color: inherit !important;
+  }
+
+  /* arrows inside buttons nudge forward */
+  :where(a, button) svg {
+    transition: translate 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :where(a, button):is(:hover, :focus-visible) > svg:last-child:not(:first-child) {
+    translate: 3px 0;
   }
 }
