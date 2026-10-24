@@ -183,10 +183,73 @@ html.lenis body {
   input,
   textarea,
   select {
-    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform;
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform, translate, scale;
     transition-duration: 0.35s;
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
 
+
+/*
+ * One motion language for every button and pill-shaped link: lift + soft shadow on hover
+ * or keyboard focus, a squeeze on press that springs back on release. Uses the individual
+ * `translate` / `scale` properties, so it combines with (never overrides) component
+ * animations that set `transform`. Lives in the base layer, so utility classes still win.
+ */
+@layer base {
+  :where(button, [role='button'], summary, a[class*='rounded-full'], a[class*='rounded-xl'], a[class*='rounded-2xl']):not(:disabled):not([aria-disabled='true']):is(:hover, :focus-visible) {
+    translate: 0 -2px;
+    box-shadow: 0 10px 24px -14px rgb(0 0 0 / 0.45);
+  }
+  :where(button, [role='button'], summary, a[class*='rounded-full'], a[class*='rounded-xl'], a[class*='rounded-2xl']):not(:disabled):not([aria-disabled='true']):active {
+    translate: 0 0;
+    scale: 0.96;
+    box-shadow: 0 4px 10px -8px rgb(0 0 0 / 0.4);
+    transition-duration: 0.12s;
+  }
+
+  /* solid black buttons: a light streak sweeps across on hover */
+  :where(a, button)[class*='bg-accent'],
+  :where(a, button)[class*='bg-cream'] {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  :where(a, button)[class*='bg-accent']::after,
+  :where(a, button)[class*='bg-cream']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.32) 50%, transparent 70%);
+    translate: -130% 0;
+    transition: translate 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :where(a, button)[class*='bg-accent']:is(:hover, :focus-visible)::after,
+  :where(a, button)[class*='bg-cream']:is(:hover, :focus-visible)::after {
+    translate: 130% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(button, [role='button'], summary, a) {
+    translate: none !important;
+    scale: none !important;
+  }
+}
+
+/* Plain text links (no pill/card shape): an underline draws in from the left on hover/focus. */
+@layer base {
+  a:not([class*='rounded']):not([class*='underline']):not(:has(img)):not(#mobile-menu a) {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition-property: color, background-size, opacity;
+    transition-duration: 0.45s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  a:not([class*='rounded']):not([class*='underline']):not(:has(img)):not(#mobile-menu a):is(:hover, :focus-visible) {
+    background-size: 100% 1px;
+  }
+}
