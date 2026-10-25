@@ -5,6 +5,8 @@ import { getProject, projects, type Status } from '../content/projects'
 import { ScreenView } from '../components/ScreenView'
 import { ProjectLinks } from '../components/ProjectLinks'
 import { ArrowIcon, ButtonLink, Reveal, StatusTag } from '../components/ui'
+import { ScrollUnfold, TiltCard, WordReveal } from '../components/fx'
+import { SMOOTH } from '../lib/motion'
 import NotFound from './NotFound'
 import { SITE_TITLE } from '../lib/meta'
 
@@ -83,14 +85,9 @@ export default function CaseStudy() {
         <motion.p className="eyebrow relative" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           Case study · {p.name}
         </motion.p>
-        <motion.h1
-          className="relative mt-5 max-w-5xl font-display text-3xl font-bold leading-[1.08] tracking-tight text-cream sm:text-4xl md:text-5xl"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          {p.caseTitle}
-        </motion.h1>
+        <h1 className="relative mt-5 max-w-5xl font-display text-3xl font-bold leading-[1.08] tracking-tight text-cream sm:text-4xl md:text-5xl">
+          <WordReveal text={p.caseTitle} delay={0.1} />
+        </h1>
         {p.fullName && (
           <motion.p className="relative mt-4 font-mono text-sm uppercase tracking-[0.18em] text-accent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
             {p.fullName}
@@ -102,8 +99,16 @@ export default function CaseStudy() {
         <motion.div className="relative mt-6 flex flex-col gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
           {p.categories && (
             <ul className="flex flex-wrap gap-2" aria-label="Categories">
-              {p.categories.map((c) => (
-                <li key={c} className="rounded-full border border-line bg-ink-2/70 px-3 py-1 font-mono text-[11px] text-cream-2">{c}</li>
+              {p.categories.map((c, i) => (
+                <motion.li
+                  key={c}
+                  className="rounded-full border border-line bg-ink-2/70 px-3 py-1 font-mono text-[11px] text-cream-2"
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.45 + i * 0.07, duration: 0.5, ease: SMOOTH }}
+                >
+                  {c}
+                </motion.li>
               ))}
             </ul>
           )}
@@ -115,7 +120,11 @@ export default function CaseStudy() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
         >
-          <ScreenView screen={heroScreen} priority />
+          <ScrollUnfold>
+            <TiltCard max={4} className="rounded-2xl">
+              <ScreenView screen={heroScreen} priority />
+            </TiltCard>
+          </ScrollUnfold>
           <p className="mt-4 text-center text-sm text-cream-2">
             {heroScreen.caption}{' '}
             <span className="text-muted">{heroScreen.image ? 'Screenshot from the running application.' : 'Illustrative mockup — not a shipped screen.'}</span>
@@ -282,7 +291,11 @@ export default function CaseStudy() {
                 return (
                   <Reveal key={s.title} className="grid items-start gap-6 md:grid-cols-12">
                     <div className={`md:col-span-7 ${i % 2 ? 'md:order-2' : ''}`}>
-                      <ScreenView screen={s} />
+                      <ScrollUnfold>
+                        <TiltCard max={5} className="rounded-2xl">
+                          <ScreenView screen={s} />
+                        </TiltCard>
+                      </ScrollUnfold>
                     </div>
                     <div className="md:col-span-5">
                       <StatusTag status={s.image ? 'screenshot' : 'illustrative'} />

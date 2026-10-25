@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { formatDate, type Certificate } from '../content/certificates'
 import { Dialog } from './Dialog'
 import { ExternalIcon } from './ui'
+import { TiltCard } from './fx'
 import { spring } from '../lib/motion'
 
 export function CertificateCard({ cert }: { cert: Certificate }) {
@@ -11,11 +12,8 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
   const by = cert.issuer ? `${cert.provider} · via ${cert.issuer}` : cert.provider
 
   return (
-    <motion.article
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-ink-2 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.8)]"
-      whileHover={{ y: -6, rotate: -0.4 }}
-      transition={spring}
-    >
+    <TiltCard holo max={9} className="rounded-3xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-ink-2 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.8)] transition-shadow duration-500 hover:shadow-[0_40px_80px_-30px_rgba(0,0,0,0.45)]">
       {cert.thumb && (
         <div className="relative aspect-[16/10] overflow-hidden border-b border-line bg-cream/90">
           <img src={cert.thumb} alt="" loading="lazy" width={720} height={450} className="size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]" />
@@ -83,6 +81,7 @@ export function CertificateCard({ cert }: { cert: Certificate }) {
           </p>
         </Dialog>
       )}
-    </motion.article>
+    </article>
+    </TiltCard>
   )
 }

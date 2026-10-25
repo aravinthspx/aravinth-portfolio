@@ -3,6 +3,9 @@ import { education, experience, achievements, blogPosts } from '../../content/re
 import { formatDate } from '../../content/certificates'
 import { Heading } from '../Heading'
 import { ArrowIcon, ExternalIcon, Reveal } from '../ui'
+import { motion } from 'motion/react'
+import { CountUp, TiltCard } from '../fx'
+import { SMOOTH } from '../../lib/motion'
 
 /* ------------------------------ Education ------------------------------- */
 const CheckIcon = () => (
@@ -11,6 +14,91 @@ const CheckIcon = () => (
     <path d="m8.5 12 2.5 2.5 4.5-5" />
   </svg>
 )
+
+/** CGPA as a ring that fills to value/scale while the number counts up. */
+function CgpaDial({ value, scale }: { value: number; scale: number }) {
+  const r = 52
+  const len = 2 * Math.PI * r
+  const decimals = String(value).split('.')[1]?.length ?? 0
+  return (
+    <TiltCard max={10} className="rounded-2xl">
+      <div className="flex shrink-0 items-center gap-5 rounded-2xl border border-warm/40 bg-ink-2 px-6 py-5 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.25)]">
+        <div className="relative grid size-32 place-items-center">
+          <svg viewBox="0 0 120 120" className="absolute inset-0 size-full -rotate-90" aria-hidden="true">
+            <circle cx="60" cy="60" r={r} fill="none" stroke="currentColor" strokeWidth="8" className="text-line" />
+            <motion.circle
+              cx="60"
+              cy="60"
+              r={r}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="8"
+              strokeLinecap="round"
+              className="text-cream"
+              strokeDasharray={len}
+              initial={{ strokeDashoffset: len }}
+              whileInView={{ strokeDashoffset: len * (1 - value / scale) }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 1.6, ease: SMOOTH }}
+            />
+          </svg>
+          <p className="text-center leading-none">
+            <span className="font-display text-4xl font-bold text-cream">
+              <CountUp value={value} decimals={decimals} />
+            </span>
+            <span className="mt-1 block font-mono text-[10px] text-muted">/ {scale}</span>
+          </p>
+        </div>
+        <p className="font-mono text-[11px] font-semibold uppercase leading-relaxed tracking-[0.2em] text-warm">
+          Cumulative
+          <br />
+          CGPA
+        </p>
+      </div>
+    </TiltCard>
+  )
+}
+
+/** Degree timeline from start to graduation, with a marker for today. */
+function YearTrack({ start, end }: { start: number; end: number }) {
+  const now = new Date()
+  const yearNow = now.getFullYear() + now.getMonth() / 12
+  const p = Math.min(1, Math.max(0, (yearNow - start) / (end - start)))
+  const years = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+  return (
+    <div className="relative mt-8" aria-label={`Degree timeline ${start} to ${end}`}>
+      <div className="relative h-1.5 rounded-full bg-line">
+        <motion.div
+          className="absolute inset-y-0 left-0 rounded-full bg-cream"
+          initial={{ width: 0 }}
+          whileInView={{ width: `${p * 100}%` }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 1.4, ease: SMOOTH }}
+        />
+        <motion.span
+          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+          initial={{ left: '0%', opacity: 0 }}
+          whileInView={{ left: `${p * 100}%`, opacity: 1 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 1.4, ease: SMOOTH }}
+        >
+          <span className="relative flex size-4">
+            <span className="absolute inset-0 animate-ping rounded-full bg-cream/40" />
+            <span className="relative size-4 rounded-full border-[3px] border-ink bg-cream shadow" />
+          </span>
+          <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-full bg-cream px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-ink">Now</span>
+        </motion.span>
+      </div>
+      <div className="mt-3 flex justify-between font-mono text-[10px] text-muted">
+        {years.map((y) => (
+          <span key={y} className={y <= yearNow ? 'text-cream-2' : ''}>
+            {y}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export function EducationSection() {
   if (!education.length) return null
@@ -47,15 +135,9 @@ export function EducationSection() {
                     )}
                   </div>
 
-                  {e.cgpa && (
-                    <div className="shrink-0 rounded-2xl border border-warm/40 bg-ink-2 px-8 py-6 text-center shadow-[0_18px_40px_-24px_rgba(0,0,0,0.25)] md:min-w-[14rem]">
-                      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-warm">Cumulative CGPA</p>
-                      <p className="mt-2 font-display text-5xl font-bold text-cream">
-                        {e.cgpa.value} <span className="text-3xl text-cream-2">/ {e.cgpa.scale}</span>
-                      </p>
-                    </div>
-                  )}
+                  {e.cgpa && <CgpaDial value={Number(e.cgpa.value)} scale={Number(e.cgpa.scale)} />}
                 </div>
+                {e.startYear && e.graduationYear && <YearTrack start={Number(e.startYear)} end={Number(e.graduationYear)} />}
 
                 {(e.coursework.length > 0 || e.projects.length > 0) && (
                   <div className="relative mt-8 border-t border-line pt-8">
@@ -75,7 +157,8 @@ export function EducationSection() {
                       {e.projects.map((p) => (
                         <li key={p.name}>
                           {p.href ? (
-                            <Link to={p.href} className="group flex h-full items-center gap-3 rounded-xl border border-line bg-ink-2/70 px-4 py-3.5 text-sm transition-colors hover:border-accent/50">
+                            <Link to={p.href} className="group relative flex h-full items-center gap-3 overflow-hidden rounded-xl border border-line bg-ink-2/70 px-4 py-3.5 text-sm transition-colors hover:border-accent/50">
+                              <span className="pointer-events-none absolute inset-y-0 left-0 w-1 origin-left scale-y-0 bg-cream transition-transform duration-300 group-hover:scale-y-100" aria-hidden="true" />
                               <span className="text-leaf"><CheckIcon /></span>
                               <span className="min-w-0 flex-1">
                                 <span className="block font-semibold text-cream group-hover:text-accent-2">{p.name}</span>
