@@ -128,6 +128,129 @@ const TREES = [
   [-1.9, 1.7, 0.95], [1.5, 1.9, 0.8], [2.0, 1.3, 1],
 ] as const
 
+/* A season loop: sprouts grow, ripen to gold, get harvested, then the next crop starts. */
+const SEASON = 14 // seconds per loop
+const CROPS = (() => {
+  const out: [number, number][] = []
+  for (let row = 0; row < SEG; row++) {
+    const mz = -SIZE / 2 + (row + 0.5) * CELL
+    if (row % 2 === 0 || Math.abs(mz - 0.2) >= 1.0) continue // only the green crop rows
+    for (let mx = -1.4; mx <= 1.0; mx += 0.2) out.push([mx, mz])
+  }
+  return out
+})()
+
+function Crops({ animate }: { animate: boolean }) {
+  const ref = useRef<THREE.InstancedMesh>(null)
+  const m = useMemo(() => new THREE.Matrix4(), [])
+  const q = useMemo(() => new THREE.Quaternion(), [])
+  const pos = useMemo(() => new THREE.Vector3(), [])
+  const scl = useMemo(() => new THREE.Vector3(), [])
+  const green = useMemo(() => new THREE.Color(palette.lime), [])
+  const gold = useMemo(() => new THREE.Color(palette.amber), [])
+  const c = useMemo(() => new THREE.Color(), [])
+  const t = useRef(SEASON * 0.45) // start mid-growth so the first frame isn't empty
+
+  useFrame((_, dt) => {
+    const mesh = ref.current
+    if (!mesh) return
+    if (animate) t.current = (t.current + dt) % SEASON
+    const p = t.current / SEASON
+    CROPS.forEach(([x, z], i) => {
+      const lag = (i % 7) * 0.012 // small offsets so rows don't move in lockstep
+      const grow = THREE.MathUtils.smoothstep(p - lag, 0.02, 0.55) // sprout → full height
+      const ripe = THREE.MathUtils.smoothstep(p - lag, 0.6, 0.75) // green → gold
+      const cut = 1 - THREE.MathUtils.smoothstep(p - lag * 2, 0.86, 0.94) // harvest
+      const s = Math.max(0.001, grow * cut)
+      m.compose(pos.set(x, height(x, z) + 0.09 * s, z), q, scl.setScalar(s))
+      mesh.setMatrixAt(i, m)
+      mesh.setColorAt(i, c.copy(green).lerp(gold, ripe))
+    })
+    mesh.instanceMatrix.needsUpdate = true
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
+  })
+
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, CROPS.length]}>
+      <coneGeometry args={[0.07, 0.2, 5]} />
+      <meshStandardMaterial flatShading roughness={0.8} />
+    </instancedMesh>
+  )
+}
+
+/** Small tractor that sweeps back and forth along the field edge. */
+function Tractor({ animate }: { animate: boolean }) {
+  const g = useRef<THREE.Group>(null)
+  const t = useRef(0)
+  useFrame((_, dt) => {
+    if (!g.current) return
+    if (animate) t.current += dt
+    const u = (Math.sin(t.current * 0.45) + 1) / 2 // 0..1 ping-pong
+    const x = -1.45 + u * 2.5
+    const z = 1.35
+    const dir = Math.cos(t.current * 0.45) >= 0 ? 0 : Math.PI
+    g.current.position.set(x, height(x, z) + 0.02, z)
+    g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, dir, 0.08)
+    g.current.position.y += Math.abs(Math.sin(t.current * 14)) * 0.008 // engine rumble
+  })
+  return (
+    <group ref={g} scale={0.9}>
+      <mesh position={[0, 0.1, 0]}>
+        <boxGeometry args={[0.28, 0.1, 0.16]} />
+        <meshStandardMaterial color={palette.amber} roughness={0.6} />
+      </mesh>
+      <mesh position={[-0.05, 0.2, 0]}>
+        <boxGeometry args={[0.12, 0.12, 0.13]} />
+        <meshStandardMaterial color={palette.ivory} roughness={0.5} />
+      </mesh>
+      {[[-0.08, 0.09], [-0.08, -0.09], [0.1, 0.09], [0.1, -0.09]].map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.06, z]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[i < 2 ? 0.07 : 0.045, i < 2 ? 0.07 : 0.045, 0.04, 10]} />
+          <meshStandardMaterial color="#1c1c1a" roughness={1} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+/** A cloud that drifts across the farm, raining while it's over the fields. */
+const DROPS = 40
+function RainCloud({ animate }: { animate: boolean }) {
+  const g = useRef<THREE.Group>(null)
+  const rain = useRef<THREE.InstancedMesh>(null)
+  const t = useRef(4)
+  const seeds = useMemo(() => Array.from({ length: DROPS }, () => [Math.random() - 0.5, Math.random() - 0.5, Math.random()]), [])
+  const m = useMemo(() => new THREE.Matrix4(), [])
+  useFrame((_, dt) => {
+    if (!g.current || !rain.current) return
+    if (animate) t.current = (t.current + dt) % 18
+    const x = -3.2 + (t.current / 18) * 6.4
+    g.current.position.set(x, 1.75, -0.2 + Math.sin(t.current * 0.4) * 0.3)
+    const raining = Math.abs(x) < 1.8 ? 1 : 0
+    seeds.forEach(([sx, sz, s], i) => {
+      const fall = (s + t.current * 1.6) % 1 // 0 at the cloud, 1 at the ground
+      m.makeScale(raining, raining, raining)
+      m.setPosition(sx * 1.1, -0.15 - fall * 1.5, sz * 0.7)
+      rain.current!.setMatrixAt(i, m)
+    })
+    rain.current.instanceMatrix.needsUpdate = true
+  })
+  return (
+    <group ref={g}>
+      {[[0, 0, 0, 0.32], [0.32, -0.05, 0.05, 0.25], [-0.3, -0.06, -0.03, 0.24], [0.1, 0.12, -0.08, 0.22]].map(([x, y, z, r], i) => (
+        <mesh key={i} position={[x, y, z]}>
+          <icosahedronGeometry args={[r, 1]} />
+          <meshStandardMaterial color="#f4f2ec" flatShading roughness={1} />
+        </mesh>
+      ))}
+      <instancedMesh ref={rain} args={[undefined, undefined, DROPS]}>
+        <boxGeometry args={[0.012, 0.12, 0.012]} />
+        <meshBasicMaterial color="#bcd2e6" transparent opacity={0.8} />
+      </instancedMesh>
+    </group>
+  )
+}
+
 function AgriScene({ animate, hovered }: SceneProps) {
   const [wave, setWave] = useState(0)
   useEffect(() => {
@@ -136,6 +259,9 @@ function AgriScene({ animate, hovered }: SceneProps) {
   return (
     <TiltRig animate={animate} hovered={hovered} base={[0, -0.5, 0]}>
       <Terrain />
+      <Crops animate={animate} />
+      <Tractor animate={animate} />
+      <RainCloud animate={animate} />
       {TREES.map(([x, z, s], i) => (
         <Tree key={i} x={x} z={z} s={s} delay={i * 0.06} animate={animate} wave={wave} />
       ))}
@@ -171,14 +297,21 @@ const toneColor = { ivory: palette.ivory, graphite: '#2c2c29', amber: palette.am
 function Building({ b, animate, index }: { b: (typeof BUILDINGS)[number]; animate: boolean; index: number }) {
   const g = useRef<THREE.Group>(null)
   const lift = useMemo(() => new Spring1(110, 8, 0), [])
+  // Buildings rise out of the board one after another the first time the scene runs
+  const rise = useMemo(() => new Spring1(90, 11, animate ? 0.001 : 1), [])
+  const wait = useRef(0.25 + index * 0.12)
   const [over, setOver] = useState(false)
   useFrame((_, dt) => {
     if (!g.current) return
     if (animate) {
       lift.target = over ? 0.22 : 0
       lift.step(dt)
-    }
+      if (wait.current > 0) wait.current -= dt
+      else rise.target = 1
+      rise.step(dt)
+    } else rise.value = 1 // paused or reduced motion: show the finished campus
     g.current.position.y = lift.value
+    g.current.scale.set(1, Math.max(0.001, rise.value), 1)
   })
   return (
     <group
@@ -206,6 +339,74 @@ function Building({ b, animate, index }: { b: (typeof BUILDINGS)[number]; animat
   )
 }
 
+/* Students walking the campus paths (the four lines drawn on the board). */
+const WALKERS: { axis: 'x' | 'z'; line: number; speed: number; phase: number; tone: string }[] = [
+  { axis: 'x', line: -0.55, speed: 0.22, phase: 0, tone: palette.ivory },
+  { axis: 'x', line: -0.55, speed: -0.18, phase: 0.5, tone: palette.amber },
+  { axis: 'x', line: 1.05, speed: 0.2, phase: 0.3, tone: palette.ivory },
+  { axis: 'x', line: 1.05, speed: -0.25, phase: 0.8, tone: palette.lime },
+  { axis: 'z', line: -0.95, speed: 0.2, phase: 0.15, tone: palette.ivory },
+  { axis: 'z', line: 0.7, speed: -0.22, phase: 0.6, tone: palette.amber },
+  { axis: 'z', line: 0.7, speed: 0.17, phase: 0.05, tone: palette.ivory },
+]
+
+function Walker({ w, animate }: { w: (typeof WALKERS)[number]; animate: boolean }) {
+  const g = useRef<THREE.Group>(null)
+  const t = useRef(w.phase)
+  useFrame((_, dt) => {
+    if (!g.current) return
+    if (animate) t.current += dt * w.speed
+    const u = (((t.current % 1) + 1) % 1) * 4.6 - 2.3 // along the path
+    const bob = Math.abs(Math.sin(t.current * 90)) * 0.025
+    if (w.axis === 'x') g.current.position.set(u, 0.13 + bob, w.line)
+    else g.current.position.set(w.line, 0.13 + bob, u + 0.25)
+  })
+  return (
+    <group ref={g}>
+      <mesh>
+        <capsuleGeometry args={[0.06, 0.1, 4, 8]} />
+        <meshStandardMaterial color={w.tone} roughness={0.6} />
+      </mesh>
+    </group>
+  )
+}
+
+/** Map pin hovering over the library (the reserved seat), with a pulse ring on the roof. */
+function SeatPin({ animate }: { animate: boolean }) {
+  const pin = useRef<THREE.Group>(null)
+  const ring = useRef<THREE.Mesh>(null)
+  const t = useRef(0)
+  const lib = BUILDINGS[0]
+  const roof = lib.h + 0.13
+  useFrame((_, dt) => {
+    if (!pin.current || !ring.current) return
+    if (animate) t.current += dt
+    pin.current.position.y = roof + 0.45 + Math.sin(t.current * 2.2) * 0.07
+    pin.current.rotation.y = t.current * 1.2
+    const p = (t.current * 0.7) % 1
+    ring.current.scale.setScalar(0.3 + p * 1.6)
+    ;(ring.current.material as THREE.MeshBasicMaterial).opacity = 0.7 * (1 - p)
+  })
+  return (
+    <group position={[lib.x, 0, lib.z]}>
+      <group ref={pin} scale={1.5}>
+        <mesh position={[0, 0.1, 0]}>
+          <sphereGeometry args={[0.11, 16, 16]} />
+          <meshStandardMaterial color={palette.amber} emissive={palette.amber} emissiveIntensity={0.35} roughness={0.4} />
+        </mesh>
+        <mesh position={[0, -0.05, 0]} rotation={[Math.PI, 0, 0]}>
+          <coneGeometry args={[0.08, 0.2, 16]} />
+          <meshStandardMaterial color={palette.amber} roughness={0.4} />
+        </mesh>
+      </group>
+      <mesh ref={ring} position={[0, roof, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.18, 0.22, 40]} />
+        <meshBasicMaterial color={palette.amber} transparent opacity={0.6} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  )
+}
+
 function SittoScene({ animate, hovered }: SceneProps) {
   return (
     <TiltRig animate={animate} hovered={hovered} base={[0, 0.6, 0]}>
@@ -228,6 +429,10 @@ function SittoScene({ animate, hovered }: SceneProps) {
       {BUILDINGS.map((b, i) => (
         <Building key={i} b={b} index={i} animate={animate} />
       ))}
+      {WALKERS.map((w, i) => (
+        <Walker key={i} w={w} animate={animate} />
+      ))}
+      <SeatPin animate={animate} />
       {[[-2.4, 1.9], [2.3, -2.1], [-0.2, -0.55], [2.4, 1.1]].map(([x, z], i) => (
         <mesh key={i} position={[x, 0.24, z]}>
           <sphereGeometry args={[0.16, 12, 12]} />

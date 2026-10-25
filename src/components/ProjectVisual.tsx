@@ -1,6 +1,7 @@
-import { Suspense, lazy, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { hasWebGL, useOnScreen, useSeenOnce } from '../lib/hooks'
-import { useMotionPref } from '../lib/motion'
+import { SMOOTH, useMotionPref } from '../lib/motion'
 import { SceneBoundary } from '../three/SceneBoundary'
 
 const ProjectScene = lazy(() => import('../three/ProjectScene'))
@@ -43,6 +44,52 @@ function Fallback({ slug }: { slug: string }) {
   )
 }
 
+/** The real workflow each scene stands for, told one step at a time over the diorama. */
+const STEPS: Record<string, string[]> = {
+  'agri-yield-pro': ['Live weather for the farm', 'Crop plan → daily tasks', 'Harvest → live mandi price'],
+  sitto: ['Find a free study seat', 'Reserve it in a tap', 'Check in with a QR pass'],
+}
+
+function SceneCaption({ slug, run }: { slug: string; run: boolean }) {
+  const steps = STEPS[slug] ?? []
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    if (!run || steps.length < 2) return
+    const t = window.setInterval(() => setI((n) => (n + 1) % steps.length), 2800)
+    return () => window.clearInterval(t)
+  }, [run, steps.length])
+  if (!steps.length) return null
+  return (
+    <div className="pointer-events-none absolute inset-x-4 top-4 z-10 flex items-start justify-between gap-3">
+      <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/35 py-1.5 pl-3 pr-4 backdrop-blur-md">
+        <span className="font-mono text-[10px] text-white/50">0{i + 1}</span>
+        <span className="relative h-4 overflow-hidden">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={i}
+              className="block whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-white/90"
+              initial={{ y: '110%', opacity: 0 }}
+              animate={{ y: '0%', opacity: 1 }}
+              exit={{ y: '-110%', opacity: 0 }}
+              transition={{ duration: 0.45, ease: SMOOTH }}
+            >
+              {steps[i]}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+        <span className="flex gap-1">
+          {steps.map((_, n) => (
+            <span key={n} className={`h-1 rounded-full transition-all duration-500 ${n === i ? 'w-4 bg-white/90' : 'w-1 bg-white/30'}`} />
+          ))}
+        </span>
+      </div>
+      <span className="hidden rounded-full border border-white/10 bg-black/25 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-white/45 backdrop-blur-md sm:block">
+        Illustrative 3D
+      </span>
+    </div>
+  )
+}
+
 export function ProjectVisual({ slug }: { slug: string }) {
   const { reduced } = useMotionPref()
   const ref = useRef<HTMLDivElement>(null)
@@ -60,6 +107,7 @@ export function ProjectVisual({ slug }: { slug: string }) {
       onPointerLeave={() => setHovered(false)}
       className={`relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] ${green ? 'bg-[radial-gradient(120%_90%_at_50%_10%,#16261d_0%,#080d17_72%)]' : 'bg-[radial-gradient(120%_90%_at_50%_10%,#0f2733_0%,#080d17_72%)]'}`}
     >
+      <SceneCaption slug={slug} run={onScreen && !reduced} />
       {webgl && seen ? (
         <SceneBoundary fallback={<Fallback slug={slug} />}>
           <Suspense fallback={<Fallback slug={slug} />}>
