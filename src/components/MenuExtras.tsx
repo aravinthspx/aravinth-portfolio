@@ -10,7 +10,7 @@ export const menuInfo: Record<string, Preview> = {
   home: { blurb: 'Start here', big: 'Hi.', small: 'AI/ML engineering student' },
   about: { blurb: 'Who I am', img: '/images/aravinth-portrait-480.webp', fit: 'contain' },
   skills: { blurb: 'Tools I use', big: 'Py · TS', small: 'Python · React · FastAPI · ML' },
-  projects: { blurb: 'Agri-Yield Pro · SITTO', img: '/images/agri/dashboard-800.webp' },
+  projects: { blurb: 'Agri-Yield Pro · SITTO', img: '/images/agri/v2-dashboard-800.webp' },
   hackathons: { blurb: 'Tech Horizon 2.0', img: '/images/sitto/home-800.webp' },
   certificates: { blurb: '4 completed', img: '/certificates/thumb-deeplearningai.webp' },
   experience: { blurb: 'Where I’ve contributed', big: 'Work', small: 'Experience' },

@@ -47,7 +47,7 @@ export function HeroShowcase() {
         transition={spring}
       >
         <Link to="/work/agri-yield-pro" className="block rounded-xl focus-visible:outline-2" aria-label="Agri-Yield Pro case study">
-          <Window src="/images/agri/dashboard-800.webp" w={800} h={368} title="Agri-Yield Pro" url="agri-yield-pro / dashboard" alt="Agri-Yield Pro farm dashboard screenshot" />
+          <Window src="/images/agri/v2-dashboard-800.webp" w={800} h={364} title="Agri-Yield Pro" url="agri-yield-pro / dashboard" alt="Agri-Yield Pro dashboard with crop progress, estimated yield and the daily task list" />
         </Link>
       </motion.div>
 

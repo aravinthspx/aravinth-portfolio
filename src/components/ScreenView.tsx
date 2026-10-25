@@ -8,6 +8,8 @@ export function ScreenView({ screen, priority = false }: { screen: Screen; prior
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
   const img = screen.image
+  // Tall (phone/panel) screenshots stay at a readable size instead of stretching to the card width
+  const tall = !!img && img.height > img.width
 
   if (!img) {
     const M = screen.mockup ? mockups[screen.mockup] : null
@@ -31,14 +33,14 @@ export function ScreenView({ screen, priority = false }: { screen: Screen; prior
           alt={img.alt}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          className="block h-auto w-full transition-transform duration-500 group-hover:scale-[1.015]"
+          className={`block transition-transform duration-500 group-hover:scale-[1.015] ${tall ? 'mx-auto h-auto max-h-[32rem] w-auto max-w-full' : 'h-auto w-full'}`}
         />
         <span className="pointer-events-none absolute right-3 top-3 rounded-full border border-line bg-ink/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-cream-2 opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
           Click to enlarge
         </span>
       </button>
       <Dialog open={open} onClose={close} title={screen.title}>
-        {open && <img src={img.src} width={img.width} height={img.height} alt={img.alt} className="mx-auto h-auto w-full rounded-xl" />}
+        {open && <img src={img.src} width={img.width} height={img.height} alt={img.alt} className={`mx-auto h-auto rounded-xl ${tall ? 'w-auto max-w-full' : 'w-full'}`} />}
         {screen.note && <p className="mt-4 text-sm text-warn">{screen.note}</p>}
       </Dialog>
     </>
