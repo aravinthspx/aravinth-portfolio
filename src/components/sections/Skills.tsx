@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useInView } from 'motion/react'
 import { skillGroups, type SkillGroup } from '../../content/skills'
 import { Heading } from '../Heading'
 import { Reveal } from '../ui'
-import { spring } from '../../lib/motion'
+import { SMOOTH, spring, useMotionPref } from '../../lib/motion'
 
 function GroupIcon({ name }: { name: SkillGroup['icon'] }) {
   const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
@@ -65,31 +65,173 @@ function SkillCard({ group, index }: { group: SkillGroup; index: number }) {
   )
 }
 
-/** Monospace topology view: each group as a branch, each skill as a leaf with its evidence. */
-function SkillTree() {
+/** Wraps the part of `text` that matches `q` in a highlight. */
+function Mark({ text, q }: { text: string; q: string }) {
+  const i = q ? text.toLowerCase().indexOf(q) : -1
+  if (i < 0) return <>{text}</>
   return (
-    <Reveal className="panel mx-auto max-w-4xl overflow-x-auto rounded-3xl p-6 font-mono text-[13px] leading-7 sm:p-8">
-      <p className="text-accent">aravinth/skills</p>
-      <ul>
-        {skillGroups.map((g, gi) => {
-          const lastG = gi === skillGroups.length - 1
-          return (
-            <li key={g.id}>
-              <span className="text-muted">{lastG ? '└── ' : '├── '}</span>
-              <span className="font-semibold text-leaf">{g.title}/</span>
+    <>
+      {text.slice(0, i)}
+      <mark className="rounded-sm bg-cream px-0.5 text-ink">{text.slice(i, i + q.length)}</mark>
+      {text.slice(i + q.length)}
+    </>
+  )
+}
+
+const TREE_CMD = 'tree aravinth/skills --evidence'
+
+/**
+ * Terminal view: a `tree` command types itself, then each group streams in as a folder you can
+ * open or close, with a grep box that filters skills and evidence as you type.
+ */
+function SkillTree() {
+  const { reduced } = useMotionPref()
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.25 })
+  const [typed, setTyped] = useState(reduced ? TREE_CMD.length : 0)
+  const [closed, setClosed] = useState<Set<string>>(new Set())
+  const [query, setQuery] = useState('')
+  const [hover, setHover] = useState<string | null>(null)
+  const q = query.trim().toLowerCase()
+  const done = typed >= TREE_CMD.length
+
+  useEffect(() => {
+    if (!inView || done) return
+    const t = window.setTimeout(() => setTyped((n) => n + 1), 38)
+    return () => window.clearTimeout(t)
+  }, [inView, typed, done])
+
+  const groups = skillGroups
+    .map((g) => ({ ...g, skills: q ? g.skills.filter((s) => `${s.name} ${s.evidence} ${g.title}`.toLowerCase().includes(q)) : g.skills }))
+    .filter((g) => g.skills.length > 0)
+  const files = groups.reduce((n, g) => n + g.skills.length, 0)
+  const toggle = (id: string) =>
+    setClosed((c) => {
+      const n = new Set(c)
+      if (n.has(id)) n.delete(id)
+      else n.add(id)
+      return n
+    })
+
+  let row = 0 // running line number, used for the stream-in delay
+  return (
+    <Reveal className="mx-auto max-w-4xl">
+      <div ref={ref} className="panel overflow-hidden rounded-3xl font-mono text-[13px] leading-7 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.5)]">
+        {/* window chrome + grep box */}
+        <div className="flex flex-wrap items-center gap-3 border-b border-line bg-ink-2/80 px-5 py-3">
+          <span className="flex gap-1.5" aria-hidden="true">
+            <span className="size-2.5 rounded-full bg-cream/15" />
+            <span className="size-2.5 rounded-full bg-cream/15" />
+            <span className="size-2.5 rounded-full bg-cream/15" />
+          </span>
+          <span className="text-[11px] text-muted">~/aravinth — zsh</span>
+          <label className="ml-auto flex items-center gap-2 rounded-full border border-line bg-ink px-3 py-1 text-[12px] text-muted focus-within:border-cream/60">
+            <span aria-hidden="true">grep</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="react, python…"
+              aria-label="Filter skills"
+              className="w-28 bg-transparent text-cream outline-none placeholder:text-muted/60 sm:w-36"
+            />
+            {query && (
+              <button type="button" onClick={() => setQuery('')} className="text-muted hover:text-cream" aria-label="Clear filter">
+                ×
+              </button>
+            )}
+          </label>
+        </div>
+
+        <div className="overflow-x-auto p-6 sm:p-8" onMouseLeave={() => setHover(null)}>
+          <p>
+            <span className="text-leaf">➜</span> <span className="text-accent">~</span>{' '}
+            <span className="text-cream">{TREE_CMD.slice(0, typed)}</span>
+            {!done && <span className="ml-px inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-cream" aria-hidden="true" />}
+          </p>
+
+          {done && (
+            <>
+              <motion.p className="font-semibold text-cream" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }}>
+                aravinth/skills
+              </motion.p>
               <ul>
-                {g.skills.map((s, si) => (
-                  <li key={s.name} className="whitespace-nowrap">
-                    <span className="text-muted">{lastG ? '    ' : '│   '}{si === g.skills.length - 1 ? '└── ' : '├── '}</span>
-                    <span className="text-cream">{s.name}</span>
-                    <span className="text-muted">  # {s.evidence}</span>
-                  </li>
-                ))}
+                {groups.map((g, gi) => {
+                  const lastG = gi === groups.length - 1
+                  const open = q !== '' || !closed.has(g.id)
+                  const gDelay = row++ * 0.035
+                  return (
+                    <li key={g.id}>
+                      <motion.button
+                        type="button"
+                        onClick={() => toggle(g.id)}
+                        aria-expanded={open}
+                        className="group/dir flex w-full items-center whitespace-nowrap text-left"
+                        initial={reduced ? false : { opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: gDelay, duration: 0.3 }}
+                      >
+                        <span className="text-muted">{lastG ? '└── ' : '├── '}</span>
+                        <motion.span className="mr-1.5 inline-block text-[10px] text-muted" animate={{ rotate: open ? 90 : 0 }} transition={spring} aria-hidden="true">
+                          ▶
+                        </motion.span>
+                        <span className="font-semibold text-cream underline-offset-4 group-hover/dir:underline">{g.title}/</span>
+                        <span className="ml-3 text-[11px] text-muted">{g.skills.length}</span>
+                      </motion.button>
+                      <AnimatePresence initial={false}>
+                        {open && (
+                          <motion.ul
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.35, ease: SMOOTH }}
+                            className="overflow-hidden"
+                          >
+                            {g.skills.map((s, si) => {
+                              const key = `${g.id}/${s.name}`
+                              const dim = hover !== null && hover !== key
+                              const delay = row++ * 0.035
+                              return (
+                                <motion.li
+                                  key={s.name}
+                                  onMouseEnter={() => setHover(key)}
+                                  className={`relative -mx-2 whitespace-nowrap rounded-md px-2 transition-[opacity,background-color] duration-200 ${hover === key ? 'bg-ink-3' : ''} ${dim ? 'opacity-35' : ''}`}
+                                  initial={reduced ? false : { opacity: 0, x: -8 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay, duration: 0.3 }}
+                                >
+                                  <span className="text-muted">
+                                    {lastG ? '    ' : '│   '}
+                                    {si === g.skills.length - 1 ? '└── ' : '├── '}
+                                  </span>
+                                  <span className="text-cream">
+                                    <Mark text={s.name} q={q} />
+                                  </span>
+                                  <span className={`transition-colors ${hover === key ? 'text-cream-2' : 'text-muted'}`}>
+                                    {'  # '}
+                                    <Mark text={s.evidence} q={q} />
+                                  </span>
+                                </motion.li>
+                              )
+                            })}
+                          </motion.ul>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  )
+                })}
               </ul>
-            </li>
-          )
-        })}
-      </ul>
+              <motion.p className="mt-4 text-muted" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: row * 0.035 + 0.1 }} aria-live="polite">
+                {groups.length === 0 ? `grep: no skills match "${query.trim()}"` : `${groups.length} directories, ${files} files`}
+              </motion.p>
+              <p className="mt-1">
+                <span className="text-leaf">➜</span> <span className="text-accent">~</span>{' '}
+                <span className="inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-cream" aria-hidden="true" />
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Click a folder to open or close it · type to filter</p>
     </Reveal>
   )
 }
