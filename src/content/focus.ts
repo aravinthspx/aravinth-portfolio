@@ -25,7 +25,7 @@ export const focusAreas: FocusArea[] = [
     icon: 'spark',
     summary: 'Learning how models are trained and evaluated — and how to be clear about what demonstration data can and cannot show.',
     details: [
-      'Agri-Yield Pro uses custom decision-tree and random-forest regressors trained on synthetic crop samples.',
+      'Agri-Yield Pro uses custom decision-tree and random-forest regressors trained on generated crop samples, alongside live weather and mandi prices.',
       'Its report separates demonstration benchmark values from measured accuracy — none is claimed.',
       'Next: evaluating models on verified, held-out data.',
     ],
@@ -56,7 +56,7 @@ export const focusAreas: FocusArea[] = [
     summary: 'Connecting React interfaces to Python APIs and databases so ideas become prototypes that can be clicked through.',
     details: [
       'React, TypeScript, Vite and Tailwind CSS on the frontend.',
-      'FastAPI with SQLite/SQLAlchemy (Agri-Yield Pro) and Flask with Supabase (SITTO) on the backend.',
+      'FastAPI with PostgreSQL via SQLAlchemy (Agri-Yield Pro) and Flask with Supabase (SITTO) on the backend.',
       'Three.js / React Three Fiber for interactive visuals — including this site.',
     ],
     connected: ['Agri-Yield Pro', 'SITTO', 'This portfolio'],
