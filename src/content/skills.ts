@@ -48,8 +48,8 @@ export const skillGroups: SkillGroup[] = [
     skills: [
       { name: 'FastAPI', evidence: 'Agri-Yield Pro API' },
       { name: 'Flask', evidence: 'SITTO REST API' },
-      { name: 'SQLite & SQLAlchemy', evidence: 'Agri-Yield Pro storage' },
-      { name: 'Supabase / PostgreSQL', evidence: 'SITTO database and auth' },
+      { name: 'SQLAlchemy', evidence: 'Agri-Yield Pro data layer (SQLite in the first version, PostgreSQL now)' },
+      { name: 'PostgreSQL', evidence: 'Agri-Yield Pro on Neon; SITTO via Supabase (database and auth)' },
       { name: 'JWT auth', evidence: 'Agri-Yield Pro accounts (bcrypt + PyJWT)' },
     ],
   },

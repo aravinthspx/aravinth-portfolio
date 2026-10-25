@@ -3,6 +3,8 @@ import { AnimatePresence, motion, useInView } from 'motion/react'
 import { skillGroups, type SkillGroup } from '../../content/skills'
 import { Heading } from '../Heading'
 import { Reveal } from '../ui'
+import { TiltCard } from '../fx'
+import { Link } from 'react-router-dom'
 import { SMOOTH, spring, useMotionPref } from '../../lib/motion'
 
 function GroupIcon({ name }: { name: SkillGroup['icon'] }) {
@@ -18,50 +20,155 @@ function GroupIcon({ name }: { name: SkillGroup['icon'] }) {
   )
 }
 
-function SkillCard({ group, index }: { group: SkillGroup; index: number }) {
-  const [active, setActive] = useState<string | null>(null)
-  const current = group.skills.find((s) => s.name === active)
+/** Projects that have case studies: evidence mentioning them becomes a link. */
+const CASE_LINKS: [string, string][] = [
+  ['Agri-Yield Pro', '/work/agri-yield-pro'],
+  ['SITTO', '/work/sitto'],
+]
+
+/** Evidence text that types itself out whenever the selected skill changes. */
+function TypedEvidence({ text, reduced }: { text: string; reduced: boolean }) {
+  const [n, setN] = useState(reduced ? text.length : 0)
+  useEffect(() => {
+    if (reduced) return setN(text.length)
+    setN(0)
+    let i = 0
+    const t = window.setInterval(() => {
+      i += 2
+      setN(Math.min(i, text.length))
+      if (i >= text.length) window.clearInterval(t)
+    }, 18)
+    return () => window.clearInterval(t)
+  }, [text, reduced])
   return (
-    <Reveal as="li" delay={0.06 * index} className="panel group relative flex h-full flex-col overflow-hidden rounded-3xl p-6 transition-colors hover:border-accent/40">
-      <span className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
-      <div className="flex items-center gap-3">
-        <span className="grid size-11 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
-          <GroupIcon name={group.icon} />
-        </span>
-        <div>
-          <h3 className="font-display text-lg font-bold text-cream">{group.title}</h3>
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">{group.skills.length} skills</p>
-        </div>
-      </div>
-      <ul className="mt-5 flex flex-wrap gap-2" aria-label={`${group.title} skills`}>
-        {group.skills.map((s) => (
-          <li key={s.name}>
-            <motion.button
-              type="button"
-              onMouseEnter={() => setActive(s.name)}
-              onFocus={() => setActive(s.name)}
-              onClick={() => setActive((a) => (a === s.name ? null : s.name))}
-              aria-pressed={active === s.name}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={spring}
-              className={`rounded-lg border px-3 py-1.5 text-sm transition-colors cursor-pointer ${active === s.name ? 'border-accent/60 bg-accent/15 text-cream' : 'border-line bg-ink-3/60 text-cream-2 hover:text-cream'}`}
-            >
-              {s.name}
-            </motion.button>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-auto pt-5 text-xs leading-relaxed text-muted" aria-live="polite">
-        {current ? (
-          <>
-            <span className="text-accent">{current.name}</span> — {current.evidence}
-          </>
-        ) : (
-          'Hover or tap a skill to see where it was used.'
-        )}
-      </p>
+    <>
+      {text.slice(0, n)}
+      {n < text.length && <span className="ml-px inline-block h-3 w-1.5 translate-y-0.5 animate-pulse bg-cream" aria-hidden="true" />}
+    </>
+  )
+}
+
+function SkillCard({ group, index }: { group: SkillGroup; index: number }) {
+  const { reduced } = useMotionPref()
+  const ref = useRef<HTMLLIElement>(null)
+  const inView = useInView(ref, { amount: 0.4 })
+  const [active, setActive] = useState(0)
+  const [hover, setHover] = useState(false)
+  const current = group.skills[active]
+  const links = CASE_LINKS.filter(([name]) => current.evidence.includes(name))
+
+  // Step through the skills on its own while visible and not being used (staggered per card)
+  useEffect(() => {
+    if (!inView || hover || reduced || group.skills.length < 2) return
+    const t = window.setTimeout(() => setActive((a) => (a + 1) % group.skills.length), 3200 + index * 450)
+    return () => window.clearTimeout(t)
+  }, [active, inView, hover, reduced, group.skills.length, index])
+
+  return (
+    <Reveal as="li" delay={0.06 * index} className="h-full">
+      <TiltCard max={5} className="rounded-3xl">
+        <article
+          ref={ref}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          className="panel group relative flex h-full flex-col overflow-hidden rounded-3xl p-6 transition-colors hover:border-cream/30"
+        >
+          {/* big outlined index number */}
+          <span className="pointer-events-none absolute -right-2 -top-6 select-none font-display text-[7.5rem] font-bold leading-none text-transparent transition-transform duration-700 [-webkit-text-stroke:1px_rgba(10,10,10,0.08)] group-hover:-translate-x-2 group-hover:translate-y-2" aria-hidden="true">
+            0{index + 1}
+          </span>
+          <div className="relative flex items-center gap-3">
+            <motion.span className="grid size-11 place-items-center rounded-xl bg-cream text-ink" whileHover={{ rotate: -12, scale: 1.08 }} transition={spring}>
+              <GroupIcon name={group.icon} />
+            </motion.span>
+            <div>
+              <h3 className="font-display text-lg font-bold text-cream">{group.title}</h3>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                {String(active + 1).padStart(2, '0')} / {String(group.skills.length).padStart(2, '0')} skills
+              </p>
+            </div>
+          </div>
+
+          <ul className="relative mt-5 flex flex-wrap gap-2" aria-label={`${group.title} skills`}>
+            {group.skills.map((s, i) => {
+              const on = i === active
+              return (
+                <li key={s.name}>
+                  <motion.button
+                    type="button"
+                    onMouseEnter={() => setActive(i)}
+                    onFocus={() => setActive(i)}
+                    onClick={() => setActive(i)}
+                    aria-pressed={on}
+                    whileTap={{ scale: 0.94 }}
+                    transition={spring}
+                    className={`relative rounded-lg border px-3 py-1.5 text-sm transition-colors duration-300 cursor-pointer ${on ? 'border-cream text-ink' : 'border-line bg-ink-3/60 text-cream-2 hover:text-cream'}`}
+                  >
+                    {on && <motion.span layoutId={`skill-pill-${group.id}`} className="absolute inset-0 rounded-[7px] bg-cream" transition={spring} aria-hidden="true" />}
+                    <span className="relative">{s.name}</span>
+                  </motion.button>
+                </li>
+              )
+            })}
+          </ul>
+
+          {/* where it was used */}
+          <div className="relative mt-auto pt-6">
+            <div className="rounded-xl border border-line bg-ink-2/80 px-3.5 py-3 font-mono text-[11.5px] leading-relaxed" aria-live="polite">
+              <p className="text-muted">
+                <span className="text-cream">↳</span> used in
+              </p>
+              <p className="mt-1 min-h-[2.6em] text-cream-2">
+                <TypedEvidence key={current.name} text={current.evidence} reduced={reduced} />
+              </p>
+              {links.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {links.map(([name, to]) => (
+                    <Link key={name} to={to} className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-cream hover:border-cream">
+                      {name} case study →
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* auto-step progress */}
+            {!hover && !reduced && inView && group.skills.length > 1 && (
+              <motion.span
+                key={`${active}`}
+                className="absolute inset-x-0 -bottom-3 h-px origin-left bg-cream/40"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: (3200 + index * 450) / 1000, ease: 'linear' }}
+                aria-hidden="true"
+              />
+            )}
+          </div>
+        </article>
+      </TiltCard>
     </Reveal>
+  )
+}
+
+/** Two rows of every skill drifting in opposite directions; hovering pauses them. */
+function SkillMarquee() {
+  const { reduced } = useMotionPref()
+  const all = skillGroups.flatMap((g) => g.skills.map((s) => s.name))
+  const half = Math.ceil(all.length / 2)
+  const rows = [all.slice(0, half), all.slice(half)]
+  if (reduced) return null
+  return (
+    <div className="group/mq relative -mx-4 mb-10 space-y-3 overflow-hidden py-1 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]" aria-hidden="true">
+      {rows.map((row, r) => (
+        <div key={r} className="flex w-max gap-3 group-hover/mq:[animation-play-state:paused]" style={{ animation: `marquee ${38 + r * 8}s linear infinite ${r ? 'reverse' : ''}` }}>
+          {[...row, ...row].map((name, i) => (
+            <span key={i} className="flex items-center gap-3 whitespace-nowrap font-display text-2xl font-bold text-cream/80 sm:text-3xl">
+              {name}
+              <span className="text-base text-muted">✦</span>
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -260,6 +367,7 @@ export function SkillsSection() {
             ))}
           </div>
         </div>
+        <SkillMarquee />
         {view === 'cards' ? (
           <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {skillGroups.map((g, i) => (
